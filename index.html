@@ -1,0 +1,2764 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cash Control - Gestão Financeira Familiar</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Cash Control">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%2310b981' width='180' height='180'/><text x='90' y='110' font-size='90' font-weight='bold' fill='white' text-anchor='middle'>💰</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    }
+    .card-glass {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    .input-dark {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(71, 85, 105, 0.5);
+    }
+    .input-dark:focus {
+      border-color: #10b981;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+    .tab-active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: rgba(30, 41, 59, 0.5);
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full gradient-bg text-slate-100 overflow-auto">
+  <div id="app" class="min-h-full"><!-- Login Screen -->
+   <div id="login-screen" class="min-h-full flex items-center justify-center p-4">
+    <div class="card-glass rounded-2xl p-8 w-full max-w-md animate-fade-in">
+     <div class="text-center mb-8">
+      <div class="w-20 h-20 mx-auto mb-4 rounded-2xl btn-primary flex items-center justify-center">
+       <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+       </svg>
+      </div>
+      <h1 id="app-title" class="text-3xl font-bold text-white mb-2">Cash Control</h1>
+      <p class="text-slate-400">Gestão Financeira Familiar</p>
+     </div>
+     <div id="login-form">
+      <div class="mb-4"><label class="block text-sm font-medium text-slate-300 mb-2">Email</label> <input type="email" id="login-email" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="seu@email.com">
+      </div>
+      <div class="mb-6"><label class="block text-sm font-medium text-slate-300 mb-2">Senha</label> <input type="password" id="login-password" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="••••••••">
+      </div><button onclick="handleLogin()" class="btn-primary w-full py-3 rounded-xl font-semibold text-white mb-4 transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Entrar </button> <button onclick="showRegister()" class="w-full py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-emerald-500 hover:text-emerald-400 transition-all"> Criar Conta </button>
+      <div id="login-error" class="mt-4 text-red-400 text-sm text-center hidden"></div>
+     </div>
+     <div id="register-form" class="hidden">
+      <div class="mb-4"><label class="block text-sm font-medium text-slate-300 mb-2">Nome Completo</label> <input type="text" id="register-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Seu nome">
+      </div>
+      <div class="mb-4"><label class="block text-sm font-medium text-slate-300 mb-2">Email</label> <input type="email" id="register-email" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="seu@email.com">
+      </div>
+      <div class="mb-6"><label class="block text-sm font-medium text-slate-300 mb-2">Senha</label> <input type="password" id="register-password" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Mínimo 6 caracteres">
+      </div><button onclick="handleRegister()" class="btn-primary w-full py-3 rounded-xl font-semibold text-white mb-4 transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Criar Conta </button> <button onclick="showLogin()" class="w-full py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-emerald-500 hover:text-emerald-400 transition-all"> Já tenho conta </button>
+      <div id="register-error" class="mt-4 text-red-400 text-sm text-center hidden"></div>
+     </div>
+    </div>
+   </div><!-- Family Selection Screen -->
+   <div id="family-screen" class="min-h-full p-4 hidden">
+    <div class="max-w-2xl mx-auto">
+     <div class="card-glass rounded-2xl p-8 animate-fade-in">
+      <div class="flex items-center justify-between mb-8">
+       <div>
+        <h2 class="text-2xl font-bold text-white">Suas Famílias</h2>
+        <p class="text-slate-400 mt-1">Selecione ou crie uma família</p>
+       </div><button onclick="handleLogout()" class="text-slate-400 hover:text-red-400 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg></button>
+      </div>
+      <div id="family-list" class="space-y-3 mb-6 max-h-80 overflow-y-auto scrollbar-thin"><!-- Families will be loaded here -->
+      </div>
+      <div class="border-t border-slate-700 pt-6">
+       <h3 class="text-lg font-semibold text-white mb-4">Criar Nova Família</h3>
+       <div class="flex gap-3"><input type="text" id="new-family-name" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Nome da família (ex: Fonseca)"> <button onclick="createFamily()" class="btn-primary px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Criar </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- Main App Screen -->
+   <div id="main-screen" class="min-h-full flex flex-col hidden"><!-- Header -->
+    <header class="card-glass border-b border-slate-700/50 px-4 py-3 sticky top-0 z-50">
+     <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3"><button onclick="goToFamilySelection()" class="text-slate-400 hover:text-emerald-400 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg></button>
+       <div>
+        <h1 class="text-xl font-bold text-white" id="current-family-name">Cash Control</h1>
+        <p class="text-xs text-slate-400" id="current-user-name">Usuário</p>
+       </div>
+      </div><button onclick="openSettings()" class="text-slate-400 hover:text-emerald-400 transition-colors p-2">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+       </svg></button>
+     </div>
+    </header><!-- Tab Navigation -->
+    <nav class="card-glass border-b border-slate-700/50 px-4 py-2 sticky top-14 z-40">
+     <div class="max-w-7xl mx-auto flex gap-2 overflow-x-auto scrollbar-thin pb-1"><button onclick="switchTab('dashboard')" class="tab-btn tab-active px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all" data-tab="dashboard"> 📊 Dashboard </button> <button onclick="switchTab('finances')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="finances"> 💰 Finanças </button> <button onclick="switchTab('commitments')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="commitments"> 📋 Compromissos </button> <button onclick="switchTab('projections')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="projections"> 📈 Projeções </button>
+     </div>
+    </nav><!-- Content Area -->
+    <main class="flex-1 p-4 overflow-y-auto">
+     <div class="max-w-7xl mx-auto"><!-- Dashboard Tab -->
+      <div id="tab-dashboard" class="tab-content animate-fade-in">
+       <div class="flex gap-2 mb-6"><button onclick="setDashboardView('individual')" class="dashboard-view-btn px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white" data-view="individual"> 👤 Individual </button> <button onclick="setDashboardView('family')" class="dashboard-view-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all" data-view="family"> 👨‍👩‍👧‍👦 Familiar </button>
+       </div>
+       <div id="dashboard-content"><!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+         <div class="card-glass rounded-xl p-5">
+          <div class="flex items-center justify-between mb-3"><span class="text-slate-400 text-sm">Total de Entradas</span> <span class="text-2xl">💵</span>
+          </div>
+          <p class="text-2xl font-bold text-emerald-400" id="dash-total-income">R$ 0,00</p>
+          <p class="text-xs text-slate-500 mt-1">Este mês</p>
+         </div>
+         <div class="card-glass rounded-xl p-5">
+          <div class="flex items-center justify-between mb-3"><span class="text-slate-400 text-sm">Total de Despesas</span> <span class="text-2xl">💸</span>
+          </div>
+          <p class="text-2xl font-bold text-red-400" id="dash-total-expenses">R$ 0,00</p>
+          <p class="text-xs text-slate-500 mt-1">Este mês</p>
+         </div>
+         <div class="card-glass rounded-xl p-5">
+          <div class="flex items-center justify-between mb-3"><span class="text-slate-400 text-sm">Saldo</span> <span class="text-2xl">💰</span>
+          </div>
+          <p class="text-2xl font-bold text-blue-400" id="dash-balance">R$ 0,00</p>
+          <p class="text-xs text-slate-500 mt-1">Disponível</p>
+         </div>
+        </div><!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+         <div class="card-glass rounded-xl p-5">
+          <h3 class="text-lg font-semibold text-white mb-4">Distribuição por Categoria</h3>
+          <div id="category-chart" class="h-48 flex items-center justify-center">
+           <p class="text-slate-500">Adicione despesas para ver o gráfico</p>
+          </div>
+         </div>
+         <div class="card-glass rounded-xl p-5">
+          <h3 class="text-lg font-semibold text-white mb-4">Satisfação com Salário</h3>
+          <div id="satisfaction-chart" class="h-48 flex items-center justify-center">
+           <div class="text-center">
+            <div class="relative w-32 h-32 mx-auto">
+             <svg class="w-32 h-32 progress-ring"><circle cx="64" cy="64" r="56" stroke="#1e293b" stroke-width="12" fill="none" /> <circle id="satisfaction-ring" cx="64" cy="64" r="56" stroke="#10b981" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="351.86" />
+             </svg>
+             <div class="absolute inset-0 flex items-center justify-center"><span id="satisfaction-value" class="text-2xl font-bold text-white">0%</span>
+             </div>
+            </div>
+            <p class="text-slate-400 mt-2 text-sm">Nível de satisfação</p>
+           </div>
+          </div>
+         </div>
+        </div><!-- Recent Transactions -->
+        <div class="card-glass rounded-xl p-5">
+         <h3 class="text-lg font-semibold text-white mb-4">Transações Recentes</h3>
+         <div id="recent-transactions" class="space-y-3 max-h-64 overflow-y-auto scrollbar-thin">
+          <p class="text-slate-500 text-center py-4">Nenhuma transação registrada</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Finances Tab -->
+      <div id="tab-finances" class="tab-content hidden">
+       <div class="flex gap-2 mb-6 flex-wrap"><button onclick="setFinanceView('income')" class="finance-view-btn px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white" data-view="income"> 📥 Entradas </button> <button onclick="setFinanceView('expenses')" class="finance-view-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all" data-view="expenses"> 📤 Despesas </button> <button onclick="setFinanceView('report')" class="finance-view-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all" data-view="report"> 📊 Relatório </button>
+       </div><!-- Income View -->
+       <div id="finance-income" class="finance-content animate-fade-in">
+        <div class="card-glass rounded-xl p-5 mb-6">
+         <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-white">Meus Salários</h3>
+          <button onclick="openAddSalaryModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+            ➕ Novo Salário
+          </button>
+         </div>
+         <div id="salaries-list" class="space-y-3 max-h-96 overflow-y-auto scrollbar-thin">
+           <!-- Salaries will be loaded here -->
+         </div>
+        </div>
+        <div class="card-glass rounded-xl p-5 mb-6">
+         <h3 class="text-lg font-semibold text-white mb-4">Satisfação Geral</h3>
+         <div class="flex items-center gap-4">
+          <input type="range" id="salary-satisfaction" min="0" max="100" value="50" class="flex-1 accent-emerald-500">
+          <span id="satisfaction-display" class="text-emerald-400 text-lg font-semibold">50%</span>
+         </div>
+         <p class="text-slate-400 text-sm mt-2">Qual é seu nível de satisfação com seus ganhos?</p>
+         <button onclick="saveSatisfaction()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white">
+           Salvar Satisfação
+         </button>
+        </div>
+        <div class="card-glass rounded-xl p-5 mb-6">
+         <h3 class="text-lg font-semibold text-white mb-4">Adicionar Ganho Extra</h3>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label> <input type="text" id="extra-income-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Freelance">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Valor</label> <input type="number" id="extra-income-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Data</label> <input type="date" id="extra-income-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+          </div>
+         </div><button onclick="addExtraIncome()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Adicionar </button>
+        </div>
+        <div class="card-glass rounded-xl p-5">
+         <h3 class="text-lg font-semibold text-white mb-4">Histórico de Entradas</h3>
+         <div id="income-history" class="space-y-3 max-h-64 overflow-y-auto scrollbar-thin">
+          <p class="text-slate-500 text-center py-4">Nenhuma entrada registrada</p>
+         </div>
+        </div>
+       </div><!-- Expenses View -->
+       <div id="finance-expenses" class="finance-content hidden">
+        <div class="card-glass rounded-xl p-5 mb-6">
+         <h3 class="text-lg font-semibold text-white mb-4">Adicionar Despesa</h3>
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label> <input type="text" id="expense-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Conta de luz">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Valor</label> <input type="number" id="expense-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label> <select id="expense-category" class="input-dark w-full px-4 py-3 rounded-xl text-white"> <option value="moradia">🏠 Moradia</option> <option value="alimentacao">🍽️ Alimentação</option> <option value="transporte">🚗 Transporte</option> <option value="saude">🏥 Saúde</option> <option value="educacao">📚 Educação</option> <option value="lazer">🎮 Lazer</option> <option value="vestuario">👕 Vestuário</option> <option value="servicos">📱 Serviços</option> <option value="outros">📦 Outros</option> </select>
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Data</label> <input type="date" id="expense-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Recorrência</label> <select id="expense-recurrence" class="input-dark w-full px-4 py-3 rounded-xl text-white"> <option value="once">Uma única vez</option> <option value="weekly">Semanal</option> <option value="biweekly">Quinzenal</option> <option value="monthly">Mensal</option> <option value="yearly">Anual</option> </select>
+          </div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-300 mb-2">Observações</label> <textarea id="expense-notes" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 resize-none" rows="2" placeholder="Detalhes adicionais..."></textarea>
+          </div>
+         </div><button onclick="addExpense()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Adicionar Despesa </button>
+        </div>
+        <div class="card-glass rounded-xl p-5">
+         <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-white">Histórico de Despesas</h3><select id="expense-filter" onchange="filterExpenses()" class="input-dark px-3 py-2 rounded-lg text-sm text-white"> <option value="all">Todas</option> <option value="moradia">🏠 Moradia</option> <option value="alimentacao">🍽️ Alimentação</option> <option value="transporte">🚗 Transporte</option> <option value="saude">🏥 Saúde</option> <option value="educacao">📚 Educação</option> <option value="lazer">🎮 Lazer</option> <option value="vestuario">👕 Vestuário</option> <option value="servicos">📱 Serviços</option> <option value="outros">📦 Outros</option> </select>
+         </div>
+         <div id="expense-history" class="space-y-3 max-h-80 overflow-y-auto scrollbar-thin">
+          <p class="text-slate-500 text-center py-4">Nenhuma despesa registrada</p>
+         </div>
+        </div>
+       </div><!-- Report View -->
+       <div id="finance-report" class="finance-content hidden">
+        <div class="card-glass rounded-xl p-5 mb-6">
+         <h3 class="text-lg font-semibold text-white mb-4">Gerar Relatório</h3>
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Data Inicial</label> <input type="date" id="report-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+          </div>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Data Final</label> <input type="date" id="report-end" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+          </div>
+          <div class="flex items-end"><button onclick="generateReport()" class="btn-primary w-full px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Gerar </button>
+          </div>
+         </div>
+        </div>
+        <div id="report-content" class="card-glass rounded-xl p-5">
+         <p class="text-slate-500 text-center py-8">Selecione um período e clique em "Gerar" para ver o relatório</p>
+        </div>
+       </div>
+      </div><!-- Commitments Tab -->
+      <div id="tab-commitments" class="tab-content hidden">
+       <div class="card-glass rounded-xl p-5 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-white mb-2">Divisão Percentual</h3>
+            <p class="text-slate-400 text-sm">Defina como você quer dividir sua renda entre seus compromissos. O total deve ser 100%.</p>
+          </div>
+          <button onclick="toggleEditCommitments()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium" id="btn-edit-commitments">
+            ✏️ Editar Nomes
+          </button>
+        </div>
+        <div id="commitment-categories" class="space-y-4">
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-expenses">💳</span>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-expenses">Gastos Gerais</label> 
+            <input type="text" id="name-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Gastos Gerais">
+            <input type="number" id="commit-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="70" min="0" max="100">
+          </div><span class="text-slate-400">%</span>
+         </div>
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-invest">📈</span>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-invest">Investimentos</label> 
+            <input type="text" id="name-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Investimentos">
+            <input type="number" id="commit-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="20" min="0" max="100">
+          </div><span class="text-slate-400">%</span>
+         </div>
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-tithe">⛪</span>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-tithe">Dízimo/Doações</label> 
+            <input type="text" id="name-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Dízimo/Doações">
+            <input type="number" id="commit-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="10" min="0" max="100">
+          </div><span class="text-slate-400">%</span>
+         </div>
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-emergency">🎯</span>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-emergency">Reserva de Emergência</label> 
+            <input type="text" id="name-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Reserva de Emergência">
+            <input type="number" id="commit-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="0" min="0" max="100">
+          </div><span class="text-slate-400">%</span>
+         </div>
+        </div>
+        <div id="edit-commitments-section" class="hidden mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+          <h4 class="font-semibold text-white mb-3">Editar Nomes dos Compromissos</h4>
+          <div class="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin">
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-1">Gastos Gerais</label>
+              <input type="text" id="edit-name-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-1">Investimentos</label>
+              <input type="text" id="edit-name-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-1">Dízimo/Doações</label>
+              <input type="text" id="edit-name-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-1">Reserva de Emergência</label>
+              <input type="text" id="edit-name-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
+            </div>
+            <div id="custom-commitments-list" class="space-y-2">
+              <!-- Custom commitments will be added here -->
+            </div>
+          </div>
+
+          <div class="border-t border-emerald-500/20 pt-4 mt-4">
+            <h5 class="font-semibold text-white mb-3">Adicionar Nova Divisão</h5>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Emoji</label>
+                <input type="text" id="new-commitment-emoji" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Ex: 🎓" maxlength="5">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Nome</label>
+                <input type="text" id="new-commitment-name" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Ex: Educação">
+              </div>
+              <div class="flex items-end">
+                <button onclick="addNewCommitment()" class="w-full px-3 py-2 text-sm text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-all">
+                  ➕ Adicionar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <button onclick="saveCommitmentNames()" class="btn-primary flex-1 px-4 py-2 rounded-lg text-sm font-medium">
+              ✅ Salvar Nomes
+            </button>
+            <button onclick="toggleEditCommitments()" class="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-300 border border-slate-600 hover:border-slate-500">
+              ❌ Cancelar
+            </button>
+          </div>
+        </div>
+        <div class="mt-4 p-3 bg-slate-900/50 rounded-xl">
+         <div class="flex justify-between items-center"><span class="text-slate-300">Total:</span> <span id="commit-total" class="text-xl font-bold text-emerald-400">100%</span>
+         </div>
+        </div><button onclick="saveCommitments()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Salvar Divisão </button>
+       </div>
+       <div class="card-glass rounded-xl p-5">
+        <h3 class="text-lg font-semibold text-white mb-4">Valores Calculados</h3>
+        <p class="text-slate-400 text-sm mb-4">Baseado na sua renda mensal total</p>
+        <div id="commitment-values" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+         <div class="p-4 bg-slate-800/50 rounded-xl">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💳</span> <span class="text-slate-300">Gastos Gerais</span>
+          </div>
+          <p class="text-2xl font-bold text-white" id="val-expenses">R$ 0,00</p>
+         </div>
+         <div class="p-4 bg-slate-800/50 rounded-xl">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📈</span> <span class="text-slate-300">Investimentos</span>
+          </div>
+          <p class="text-2xl font-bold text-emerald-400" id="val-invest">R$ 0,00</p>
+         </div>
+         <div class="p-4 bg-slate-800/50 rounded-xl">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">⛪</span> <span class="text-slate-300">D��zimo/Doações</span>
+          </div>
+          <p class="text-2xl font-bold text-purple-400" id="val-tithe">R$ 0,00</p>
+         </div>
+         <div class="p-4 bg-slate-800/50 rounded-xl">
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎯</span> <span class="text-slate-300">Reserva de Emergência</span>
+          </div>
+          <p class="text-2xl font-bold text-blue-400" id="val-emergency">R$ 0,00</p>
+         </div>
+        </div>
+       </div>
+      </div><!-- Projections Tab -->
+      <div id="tab-projections" class="tab-content hidden">
+       <div class="card-glass rounded-xl p-5 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-white">Meus Objetivos</h3>
+          <button onclick="openAddGoalModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+            ➕ Novo Objetivo
+          </button>
+        </div>
+        <div id="goals-list" class="space-y-3">
+          <!-- Goals will be loaded here -->
+        </div>
+       </div>
+       <div id="projections-content">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"><!-- Current Salary Projection -->
+         <div class="card-glass rounded-xl p-5">
+          <h4 class="text-lg font-semibold text-white mb-2">📊 Projeção com Salário Atual</h4>
+          <p class="text-slate-400 text-sm mb-4">Considerando seu salário atual sem aumentos</p>
+          <div id="current-salary-projection" class="space-y-3">
+           <p class="text-slate-500 text-center py-4">Configure um objetivo para ver as projeções</p>
+          </div>
+         </div><!-- Projected Salary Projection -->
+         <div class="card-glass rounded-xl p-5">
+          <h4 class="text-lg font-semibold text-white mb-2">📈 Projeção com Aumentos</h4>
+          <p class="text-slate-400 text-sm mb-4">Considerando sua projeção de aumento salarial</p>
+          <div id="projected-salary-projection" class="space-y-3">
+           <p class="text-slate-500 text-center py-4">Configure um objetivo para ver as projeções</p>
+          </div>
+         </div>
+        </div><!-- Investment Options -->
+        <div class="card-glass rounded-xl p-5">
+         <h3 class="text-lg font-semibold text-white mb-4">Opções de Investimento</h3>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="investment-options">
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+           <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 bg-emerald-500 rounded-full"></span> <span class="font-medium text-white">SELIC</span>
+           </div>
+           <p class="text-slate-400 text-sm mb-2">Taxa atual: 10,75% a.a.</p>
+           <p class="text-xs text-slate-500">Baixo risco, liquidez diária</p>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+           <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 bg-blue-500 rounded-full"></span> <span class="font-medium text-white">Tesouro IPCA+</span>
+           </div>
+           <p class="text-slate-400 text-sm mb-2">IPCA + 5,5% a.a.</p>
+           <p class="text-xs text-slate-500">Proteção contra inflação</p>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+           <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 bg-purple-500 rounded-full"></span> <span class="font-medium text-white">Tesouro Prefixado</span>
+           </div>
+           <p class="text-slate-400 text-sm mb-2">12,5% a.a.</p>
+           <p class="text-xs text-slate-500">Taxa fixa garantida</p>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+           <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 bg-yellow-500 rounded-full"></span> <span class="font-medium text-white">CDB</span>
+           </div>
+           <p class="text-slate-400 text-sm mb-2">110% do CDI (~11,8% a.a.)</p>
+           <p class="text-xs text-slate-500">Garantido pelo FGC</p>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+           <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 bg-pink-500 rounded-full"></span> <span class="font-medium text-white">LCI/LCA</span>
+           </div>
+           <p class="text-slate-400 text-sm mb-2">95% do CDI (~10,2% a.a.)</p>
+           <p class="text-xs text-slate-500">Isento de IR</p>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+           <div class="flex items-center gap-2 mb-2"><span class="w-3 h-3 bg-orange-500 rounded-full"></span> <span class="font-medium text-white">Fundos Multimercado</span>
+           </div>
+           <p class="text-slate-400 text-sm mb-2">CDI + 3% (~13,75% a.a.)</p>
+           <p class="text-xs text-slate-500">Maior risco, maior retorno</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div><!-- Add Salary Modal -->
+   <div id="add-salary-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-white">Adicionar Novo Salário</h2>
+      <button onclick="closeAddSalaryModal()" class="text-slate-400 hover:text-white transition-colors">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+     </div>
+     <div class="space-y-4">
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Nome/Descrição do Salário</label>
+       <input type="text" id="modal-salary-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Salário Principal, Freelance">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
+       <input type="number" id="modal-salary-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Frequência</label>
+       <select id="modal-salary-frequency" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+        <option value="monthly">Mensal</option>
+        <option value="biweekly">Quinzenal</option>
+        <option value="weekly">Semanal</option>
+       </select>
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Data de Início</label>
+       <input type="date" id="modal-salary-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Data de Término (opcional)</label>
+       <input type="date" id="modal-salary-end" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Projeção de Aumento (%/ano)</label>
+       <input type="number" id="modal-salary-projection" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0" step="0.1">
+      </div>
+      <div class="flex gap-3 pt-4">
+       <button onclick="closeAddSalaryModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all">
+        Cancelar
+       </button>
+       <button onclick="addNewSalary()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary transition-all hover:shadow-lg hover:shadow-emerald-500/20">
+        Adicionar
+       </button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Add Goal Modal -->
+   <div id="add-goal-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-white">Adicionar Novo Objetivo</h2>
+      <button onclick="closeAddGoalModal()" class="text-slate-400 hover:text-white transition-colors">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+     </div>
+     <div class="space-y-4">
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Nome do Objetivo</label>
+       <input type="text" id="modal-goal-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Comprar um carro">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Valor Alvo (R$)</label>
+       <input type="number" id="modal-goal-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="100000" step="0.01">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Descrição (opcional)</label>
+       <textarea id="modal-goal-description" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 resize-none" rows="2" placeholder="Detalhes sobre o objetivo..."></textarea>
+      </div>
+      <div class="flex gap-3 pt-4">
+       <button onclick="closeAddGoalModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all">
+        Cancelar
+       </button>
+       <button onclick="addNewGoal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary transition-all hover:shadow-lg hover:shadow-emerald-500/20">
+        Adicionar
+       </button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Settings Modal -->
+   <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-lg max-h-[90%] overflow-y-auto animate-fade-in">
+     <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-white">Configurações da Família</h2><button onclick="closeSettings()" class="text-slate-400 hover:text-white transition-colors">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <div id="settings-owner-section">
+      <div class="mb-6">
+       <h3 class="text-lg font-semibold text-white mb-3">Membros da Família</h3>
+       <div id="family-members" class="space-y-2 mb-4 max-h-40 overflow-y-auto scrollbar-thin"><!-- Members will be loaded here -->
+       </div>
+      </div>
+      <div class="mb-6">
+       <h3 class="text-lg font-semibold text-white mb-3">Adicionar Membro</h3>
+       <div class="flex gap-2"><input type="email" id="add-member-email" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@exemplo.com"> <button onclick="addFamilyMember()" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white"> Adicionar </button>
+       </div>
+       <p class="text-slate-500 text-xs mt-2">O usuário precisa ter uma conta no Cash Control</p>
+      </div>
+      <div class="border-t border-slate-700 pt-6">
+       <h3 class="text-lg font-semibold text-red-400 mb-3">Zona de Perigo</h3><button onclick="confirmDeleteFamily()" class="w-full py-3 rounded-xl font-semibold text-red-400 border border-red-500/50 hover:bg-red-500/10 transition-all"> Excluir Família </button>
+      </div>
+     </div>
+     <div id="settings-member-section" class="hidden">
+      <p class="text-slate-400 text-center py-4">Apenas o chefe da família pode gerenciar os membros.</p><button onclick="leaveFamily()" class="w-full py-3 rounded-xl font-semibold text-red-400 border border-red-500/50 hover:bg-red-500/10 transition-all mt-4"> Sair da Família </button>
+     </div>
+    </div>
+   </div><!-- Delete Confirmation Modal -->
+   <div id="delete-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in">
+     <div class="text-center mb-6">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
+       <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+       </svg>
+      </div>
+      <h3 class="text-xl font-bold text-white mb-2">Confirmar Exclusão</h3>
+      <p class="text-slate-400" id="delete-message">Tem certeza que deseja excluir?</p>
+     </div>
+     <div class="flex gap-3"><button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all"> Cancelar </button> <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all"> Excluir </button>
+     </div>
+    </div>
+   </div><!-- Toast Notification -->
+   <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
+    <div class="card-glass rounded-xl px-4 py-3 flex items-center gap-3 animate-fade-in"><span id="toast-icon" class="text-xl">✅</span> <span id="toast-message" class="text-white">Operação realizada com sucesso!</span>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCsuSqpgmrch50wSSuvXe9v52R4Ztd1wkQ",
+      authDomain: "cash-control-ef893.firebaseapp.com",
+      projectId: "cash-control-ef893",
+      storageBucket: "cash-control-ef893.firebasestorage.app",
+      messagingSenderId: "417040011479",
+      appId: "1:417040011479:web:173351e135d28ab1f9e092",
+      measurementId: "G-S27QHKQ6C0"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    // App State
+    let currentUser = null;
+    let currentFamily = null;
+    let currentFamilyData = null;
+    let dashboardView = 'individual';
+    let deleteCallback = null;
+    
+    // Default Config
+    const defaultConfig = {
+      app_title: 'Cash Control'
+    };
+    
+    let config = { ...defaultConfig };
+    
+    // Element SDK Integration
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (newConfig) => {
+          config = { ...defaultConfig, ...newConfig };
+          document.getElementById('app-title').textContent = config.app_title;
+        },
+        mapToCapabilities: (cfg) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (cfg) => new Map([
+          ['app_title', cfg.app_title || defaultConfig.app_title]
+        ])
+      });
+    }
+    
+    // Auth State Observer
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        showFamilySelection();
+      } else {
+        currentUser = null;
+        showLogin();
+      }
+    });
+    
+    // UI Navigation Functions
+    function showLogin() {
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('family-screen').classList.add('hidden');
+      document.getElementById('main-screen').classList.add('hidden');
+      document.getElementById('login-form').classList.remove('hidden');
+      document.getElementById('register-form').classList.add('hidden');
+    }
+    
+    function showRegister() {
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('register-form').classList.remove('hidden');
+    }
+    
+    function showFamilySelection() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('family-screen').classList.remove('hidden');
+      document.getElementById('main-screen').classList.add('hidden');
+      loadUserFamilies();
+    }
+    
+    function showMainApp() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('family-screen').classList.add('hidden');
+      document.getElementById('main-screen').classList.remove('hidden');
+      loadFamilyData();
+    }
+    
+    function goToFamilySelection() {
+      currentFamily = null;
+      currentFamilyData = null;
+      showFamilySelection();
+    }
+    
+    // Auth Functions
+    async function handleLogin() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      
+      try {
+        errorEl.classList.add('hidden');
+        await auth.signInWithEmailAndPassword(email, password);
+        showToast('✅', 'Login realizado com sucesso!');
+      } catch (error) {
+        errorEl.textContent = getErrorMessage(error.code);
+        errorEl.classList.remove('hidden');
+      }
+    }
+    
+    async function handleRegister() {
+      const name = document.getElementById('register-name').value;
+      const email = document.getElementById('register-email').value;
+      const password = document.getElementById('register-password').value;
+      const errorEl = document.getElementById('register-error');
+      
+      if (!name || !email || !password) {
+        errorEl.textContent = 'Preencha todos os campos';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      
+      try {
+        errorEl.classList.add('hidden');
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.updateProfile({ displayName: name });
+        
+        // Create user document
+        await db.collection('users').doc(userCredential.user.uid).set({
+          name: name,
+          email: email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast('✅', 'Conta criada com sucesso!');
+      } catch (error) {
+        errorEl.textContent = getErrorMessage(error.code);
+        errorEl.classList.remove('hidden');
+      }
+    }
+    
+    function handleLogout() {
+      auth.signOut();
+      showToast('👋', 'Até logo!');
+    }
+    
+    function getErrorMessage(code) {
+      const messages = {
+        'auth/invalid-email': 'Email inválido',
+        'auth/user-disabled': 'Usuário desativado',
+        'auth/user-not-found': 'Usuário não encontrado',
+        'auth/wrong-password': 'Senha incorreta',
+        'auth/email-already-in-use': 'Email já está em uso',
+        'auth/weak-password': 'Senha muito fraca (mínimo 6 caracteres)',
+        'auth/invalid-credential': 'Credenciais inválidas'
+      };
+      return messages[code] || 'Erro ao processar. Tente novamente.';
+    }
+    
+    // Family Functions
+    async function loadUserFamilies() {
+      if (!currentUser) return;
+      
+      const familyList = document.getElementById('family-list');
+      familyList.innerHTML = '<p class="text-slate-500 text-center py-4">Carregando...</p>';
+      
+      try {
+        // Get families where user is owner
+        const ownedFamilies = await db.collection('families')
+          .where('ownerId', '==', currentUser.uid)
+          .get();
+        
+        // Get families where user is member
+        const memberFamilies = await db.collection('families')
+          .where('members', 'array-contains', currentUser.email)
+          .get();
+        
+        const families = [];
+        
+        ownedFamilies.forEach(doc => {
+          families.push({ id: doc.id, ...doc.data(), isOwner: true });
+        });
+        
+        memberFamilies.forEach(doc => {
+          if (!families.find(f => f.id === doc.id)) {
+            families.push({ id: doc.id, ...doc.data(), isOwner: false });
+          }
+        });
+        
+        if (families.length === 0) {
+          familyList.innerHTML = '<p class="text-slate-500 text-center py-4">Você ainda não tem famílias. Crie uma abaixo!</p>';
+          return;
+        }
+        
+        familyList.innerHTML = families.map(family => `
+          <button onclick="selectFamily('${family.id}')" class="w-full p-4 bg-slate-800/50 hover:bg-slate-700/50 rounded-xl flex items-center justify-between transition-all group">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${family.isOwner ? '👑' : '👨‍👩‍👧‍👦'}</span>
+              <div class="text-left">
+                <p class="font-medium text-white group-hover:text-emerald-400 transition-colors">${family.name}</p>
+                <p class="text-xs text-slate-500">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        `).join('');
+      } catch (error) {
+        familyList.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar famílias</p>';
+        console.error('Error loading families:', error);
+      }
+    }
+    
+    async function createFamily() {
+      const nameInput = document.getElementById('new-family-name');
+      const name = nameInput.value.trim();
+      
+      if (!name) {
+        showToast('⚠️', 'Digite o nome da família');
+        return;
+      }
+      
+      const collectionName = `Cash Control_${name.toLowerCase().replace(/\s+/g, '_')}`;
+      
+      try {
+        await db.collection('families').add({
+          name: name,
+          collectionName: collectionName,
+          ownerId: currentUser.uid,
+          ownerEmail: currentUser.email,
+          ownerName: currentUser.displayName || 'Usuário',
+          members: [],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        nameInput.value = '';
+        showToast('✅', `Família "${name}" criada!`);
+        loadUserFamilies();
+      } catch (error) {
+        showToast('❌', 'Erro ao criar família');
+        console.error('Error creating family:', error);
+      }
+    }
+    
+    async function selectFamily(familyId) {
+      currentFamily = familyId;
+      
+      try {
+        const doc = await db.collection('families').doc(familyId).get();
+        if (doc.exists) {
+          currentFamilyData = { id: doc.id, ...doc.data() };
+          document.getElementById('current-family-name').textContent = currentFamilyData.name;
+          document.getElementById('current-user-name').textContent = currentUser.displayName || currentUser.email;
+          showMainApp();
+        }
+      } catch (error) {
+        showToast('❌', 'Erro ao selecionar família');
+        console.error('Error selecting family:', error);
+      }
+    }
+    
+    // Data Loading
+    async function loadFamilyData() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      try {
+        // Load commitments
+        const commitDoc = await db.collection('finances')
+          .doc(`${currentFamily}_commitments_${currentUser.uid}`).get();
+        if (commitDoc.exists) {
+          const data = commitDoc.data();
+          document.getElementById('commit-expenses').value = data.expenses || 70;
+          document.getElementById('commit-invest').value = data.invest || 20;
+          document.getElementById('commit-tithe').value = data.tithe || 10;
+          document.getElementById('commit-emergency').value = data.emergency || 0;
+        }
+        
+        // Load and display data
+        await loadSalariesList();
+        await loadIncomeHistory();
+        await loadExpenseHistory();
+        await loadCommitmentNames();
+        await loadGoalsList();
+        updateDashboard();
+        updateCommitmentValues();
+      } catch (error) {
+        console.error('Error loading family data:', error);
+      }
+    }
+    
+    // Salary satisfaction slider
+    document.getElementById('salary-satisfaction').addEventListener('input', function() {
+      document.getElementById('satisfaction-display').textContent = this.value + '%';
+    });
+    
+    // Commitment total calculator
+    ['commit-expenses', 'commit-invest', 'commit-tithe', 'commit-emergency'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateCommitmentTotal);
+    });
+    
+    function updateCommitmentTotal() {
+      const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+      const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+      const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+      const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
+      const total = expenses + invest + tithe + emergency;
+      
+      const totalEl = document.getElementById('commit-total');
+      totalEl.textContent = total + '%';
+      totalEl.className = total === 100 ? 'text-xl font-bold text-emerald-400' : 'text-xl font-bold text-red-400';
+    }
+    
+    // Save Functions
+    async function saveSalary() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const data = {
+        familyId: currentFamily,
+        amount: parseFloat(document.getElementById('salary-amount').value) || 0,
+        frequency: document.getElementById('salary-frequency').value,
+        satisfaction: parseInt(document.getElementById('salary-satisfaction').value) || 50,
+        projection: parseFloat(document.getElementById('salary-projection').value) || 0,
+        userId: currentUser.uid,
+        userName: currentUser.displayName || currentUser.email,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      try {
+        await db.collection('finances').doc(`${currentFamily}_salary_${currentUser.uid}`).set(data);
+        showToast('✅', 'Salário salvo!');
+        updateDashboard();
+        updateCommitmentValues();
+      } catch (error) {
+        showToast('❌', 'Erro ao salvar');
+        console.error('Error saving salary:', error);
+      }
+    }
+
+    // Multiple salaries management
+    function openAddSalaryModal() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('modal-salary-name').value = '';
+      document.getElementById('modal-salary-amount').value = '';
+      document.getElementById('modal-salary-frequency').value = 'monthly';
+      document.getElementById('modal-salary-start').value = today;
+      document.getElementById('modal-salary-end').value = '';
+      document.getElementById('modal-salary-projection').value = '';
+      document.getElementById('add-salary-modal').classList.remove('hidden');
+    }
+
+    function closeAddSalaryModal() {
+      document.getElementById('add-salary-modal').classList.add('hidden');
+    }
+
+    async function addNewSalary() {
+      if (!currentFamily || !currentFamilyData) return;
+
+      const name = document.getElementById('modal-salary-name').value.trim();
+      const amount = parseFloat(document.getElementById('modal-salary-amount').value);
+      const frequency = document.getElementById('modal-salary-frequency').value;
+      const startDate = document.getElementById('modal-salary-start').value;
+      const endDate = document.getElementById('modal-salary-end').value;
+      const projection = parseFloat(document.getElementById('modal-salary-projection').value) || 0;
+
+      if (!name || !amount || !startDate) {
+        showToast('⚠️', 'Preencha os campos obrigatórios');
+        return;
+      }
+
+      try {
+        const salaryId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        await db.collection('transactions').add({
+          familyId: currentFamily,
+          type: 'salary',
+          description: name,
+          amount: amount,
+          frequency: frequency,
+          startDate: startDate,
+          endDate: endDate || null,
+          projection: projection,
+          isActive: true,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          salaryId: salaryId,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast('✅', `Salário "${name}" adicionado!`);
+        closeAddSalaryModal();
+        await loadSalariesList();
+        updateDashboard();
+        updateCommitmentValues();
+      } catch (error) {
+        showToast('❌', 'Erro ao adicionar salário');
+        console.error('Error adding salary:', error);
+      }
+    }
+
+    async function loadSalariesList() {
+      if (!currentFamily || !currentFamilyData) return;
+
+      const listEl = document.getElementById('salaries-list');
+
+      try {
+        const query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'salary')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc');
+
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+          listEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum salário registrado. Adicione seu primeiro salário!</p>';
+          return;
+        }
+
+        listEl.innerHTML = snapshot.docs.map(doc => {
+          const data = doc.data();
+          const freqLabel = {
+            'weekly': 'Semanal',
+            'biweekly': 'Quinzenal',
+            'monthly': 'Mensal'
+          }[data.frequency] || data.frequency;
+
+          const monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
+
+          return `
+            <div class="p-4 bg-slate-800/50 rounded-xl">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex-1">
+                  <h4 class="font-semibold text-white">${data.description}</h4>
+                  <p class="text-sm text-slate-400">${freqLabel} • ${formatCurrency(data.amount)}</p>
+                  <p class="text-xs text-slate-500 mt-1">📅 De ${formatDate(data.startDate)} ${data.endDate ? `até ${formatDate(data.endDate)}` : '(sem término)'}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-sm text-slate-300">Mensal</p>
+                  <p class="text-xl font-bold text-emerald-400">${formatCurrency(monthlySalary)}</p>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editSalary('${doc.id}')" class="flex-1 px-3 py-2 text-sm text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-all">
+                  ✏️ Editar
+                </button>
+                <button onclick="toggleSalaryActive('${doc.id}', ${!data.isActive})" class="flex-1 px-3 py-2 text-sm ${data.isActive ? 'text-yellow-400 border border-yellow-500/30' : 'text-slate-400 border border-slate-600'} rounded-lg hover:opacity-80 transition-all">
+                  ${data.isActive ? '⏸️ Desativar' : '▶️ Ativar'}
+                </button>
+                <button onclick="deleteSalary('${doc.id}')" class="flex-1 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-all">
+                  🗑️ Deletar
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        listEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar salários</p>';
+        console.error('Error loading salaries:', error);
+      }
+    }
+
+    async function toggleSalaryActive(docId, isActive) {
+      try {
+        await db.collection('transactions').doc(docId).update({
+          isActive: isActive
+        });
+
+        showToast('✅', isActive ? 'Salário ativado!' : 'Salário desativado!');
+        await loadSalariesList();
+        updateDashboard();
+        updateCommitmentValues();
+      } catch (error) {
+        showToast('❌', 'Erro ao atualizar salário');
+        console.error('Error toggling salary:', error);
+      }
+    }
+
+    async function deleteSalary(docId) {
+      deleteCallback = async () => {
+        try {
+          await db.collection('transactions').doc(docId).delete();
+          showToast('✅', 'Salário excluído');
+          await loadSalariesList();
+          updateDashboard();
+          updateCommitmentValues();
+        } catch (error) {
+          showToast('❌', 'Erro ao excluir');
+          console.error('Error deleting:', error);
+        }
+      };
+
+      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir este salário?';
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+
+    async function editSalary(docId) {
+      // Implementar edição em modal posterior
+      showToast('ℹ️', 'Edição de salários em breve');
+    }
+
+    async function saveSatisfaction() {
+      if (!currentFamily || !currentFamilyData) return;
+
+      const satisfaction = parseInt(document.getElementById('salary-satisfaction').value) || 50;
+
+      try {
+        await db.collection('finances').doc(`${currentFamily}_satisfaction_${currentUser.uid}`).set({
+          familyId: currentFamily,
+          satisfaction: satisfaction,
+          userId: currentUser.uid,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast('✅', 'Satisfação salva!');
+      } catch (error) {
+        showToast('❌', 'Erro ao salvar');
+        console.error('Error saving satisfaction:', error);
+      }
+    }
+    
+    async function addExtraIncome() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const desc = document.getElementById('extra-income-desc').value.trim();
+      const amount = parseFloat(document.getElementById('extra-income-amount').value);
+      const date = document.getElementById('extra-income-date').value;
+      
+      if (!desc || !amount || !date) {
+        showToast('⚠️', 'Preencha todos os campos');
+        return;
+      }
+      
+      try {
+        await db.collection('transactions').add({
+          familyId: currentFamily,
+          type: 'income',
+          description: desc,
+          amount: amount,
+          date: date,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        document.getElementById('extra-income-desc').value = '';
+        document.getElementById('extra-income-amount').value = '';
+        document.getElementById('extra-income-date').value = '';
+        
+        showToast('✅', 'Ganho adicionado!');
+        await loadIncomeHistory();
+        updateDashboard();
+      } catch (error) {
+        showToast('❌', 'Erro ao adicionar');
+        console.error('Error adding income:', error);
+      }
+    }
+    
+    async function addExpense() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const desc = document.getElementById('expense-desc').value.trim();
+      const amount = parseFloat(document.getElementById('expense-amount').value);
+      const category = document.getElementById('expense-category').value;
+      const date = document.getElementById('expense-date').value;
+      const notes = document.getElementById('expense-notes').value.trim();
+      const recurrence = document.getElementById('expense-recurrence').value;
+      
+      if (!desc || !amount || !date) {
+        showToast('⚠️', 'Preencha os campos obrigatórios');
+        return;
+      }
+      
+      try {
+        const expenseData = {
+          familyId: currentFamily,
+          type: 'expense',
+          description: desc,
+          amount: amount,
+          category: category,
+          date: date,
+          notes: notes,
+          recurrence: recurrence,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        // Se tem recorrência, salvar como gasto recorrente
+        if (recurrence !== 'once') {
+          expenseData.isRecurring = true;
+          expenseData.nextOccurrence = calculateNextOccurrence(date, recurrence);
+        }
+
+        await db.collection('transactions').add(expenseData);
+        
+        document.getElementById('expense-desc').value = '';
+        document.getElementById('expense-amount').value = '';
+        document.getElementById('expense-notes').value = '';
+        document.getElementById('expense-recurrence').value = 'once';
+        
+        showToast('✅', 'Despesa adicionada!');
+        await loadExpenseHistory();
+        updateDashboard();
+      } catch (error) {
+        showToast('❌', 'Erro ao adicionar');
+        console.error('Error adding expense:', error);
+      }
+    }
+    
+    // Commitment names management
+    let isEditingCommitments = false;
+
+    function toggleEditCommitments() {
+      isEditingCommitments = !isEditingCommitments;
+      
+      const editSection = document.getElementById('edit-commitments-section');
+      const btnEdit = document.getElementById('btn-edit-commitments');
+      
+      if (isEditingCommitments) {
+        editSection.classList.remove('hidden');
+        document.getElementById('edit-name-expenses').value = document.getElementById('name-expenses').value;
+        document.getElementById('edit-name-invest').value = document.getElementById('name-invest').value;
+        document.getElementById('edit-name-tithe').value = document.getElementById('name-tithe').value;
+        document.getElementById('edit-name-emergency').value = document.getElementById('name-emergency').value;
+        btnEdit.classList.remove('btn-primary');
+        btnEdit.classList.add('bg-emerald-600/50');
+      } else {
+        editSection.classList.add('hidden');
+        btnEdit.classList.add('btn-primary');
+        btnEdit.classList.remove('bg-emerald-600/50');
+      }
+    }
+
+    async function saveCommitmentNames() {
+      const commitmentNames = {
+        expenses: document.getElementById('edit-name-expenses').value.trim() || 'Gastos Gerais',
+        invest: document.getElementById('edit-name-invest').value.trim() || 'Investimentos',
+        tithe: document.getElementById('edit-name-tithe').value.trim() || 'Dízimo/Doações',
+        emergency: document.getElementById('edit-name-emergency').value.trim() || 'Reserva de Emergência'
+      };
+
+      try {
+        // Salvar no localStorage
+        localStorage.setItem(`commitmentNames_${currentFamily}`, JSON.stringify(commitmentNames));
+        
+        // Atualizar UI
+        document.getElementById('label-expenses').textContent = commitmentNames.expenses;
+        document.getElementById('name-expenses').value = commitmentNames.expenses;
+        
+        document.getElementById('label-invest').textContent = commitmentNames.invest;
+        document.getElementById('name-invest').value = commitmentNames.invest;
+        
+        document.getElementById('label-tithe').textContent = commitmentNames.tithe;
+        document.getElementById('name-tithe').value = commitmentNames.tithe;
+        
+        document.getElementById('label-emergency').textContent = commitmentNames.emergency;
+        document.getElementById('name-emergency').value = commitmentNames.emergency;
+
+        // Salvar no Firestore também
+        if (currentUser) {
+          await db.collection('finances').doc(`${currentFamily}_commitment_names`).set({
+            ...commitmentNames,
+            familyId: currentFamily,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+
+        toggleEditCommitments();
+        showToast('✅', 'Nomes dos compromissos atualizados!');
+      } catch (error) {
+        showToast('❌', 'Erro ao salvar nomes');
+        console.error('Error saving commitment names:', error);
+      }
+    }
+
+    // Load commitment names on startup
+    async function loadCommitmentNames() {
+      if (!currentFamily) return;
+
+      try {
+        // Tentar carregar do Firestore
+        const docSnap = await db.collection('finances').doc(`${currentFamily}_commitment_names`).get();
+        
+        if (docSnap.exists) {
+          const names = docSnap.data();
+          document.getElementById('label-expenses').textContent = names.expenses || 'Gastos Gerais';
+          document.getElementById('name-expenses').value = names.expenses || 'Gastos Gerais';
+          
+          document.getElementById('label-invest').textContent = names.invest || 'Investimentos';
+          document.getElementById('name-invest').value = names.invest || 'Investimentos';
+          
+          document.getElementById('label-tithe').textContent = names.tithe || 'Dízimo/Doações';
+          document.getElementById('name-tithe').value = names.tithe || 'Dízimo/Doações';
+          
+          document.getElementById('label-emergency').textContent = names.emergency || 'Reserva de Emergência';
+          document.getElementById('name-emergency').value = names.emergency || 'Reserva de Emergência';
+        } else {
+          // Tentar carregar do localStorage
+          const saved = localStorage.getItem(`commitmentNames_${currentFamily}`);
+          if (saved) {
+            const names = JSON.parse(saved);
+            document.getElementById('label-expenses').textContent = names.expenses;
+            document.getElementById('name-expenses').value = names.expenses;
+            
+            document.getElementById('label-invest').textContent = names.invest;
+            document.getElementById('name-invest').value = names.invest;
+            
+            document.getElementById('label-tithe').textContent = names.tithe;
+            document.getElementById('name-tithe').value = names.tithe;
+            
+            document.getElementById('label-emergency').textContent = names.emergency;
+            document.getElementById('name-emergency').value = names.emergency;
+          }
+        }
+
+        // Load custom commitments
+        await loadCustomCommitments();
+      } catch (error) {
+        console.log('Could not load commitment names:', error);
+      }
+    }
+
+    // Custom Commitments Management
+    async function loadCustomCommitments() {
+      if (!currentFamily) return;
+
+      try {
+        const docSnap = await db.collection('finances').doc(`${currentFamily}_custom_commitments`).get();
+        const customList = document.getElementById('custom-commitments-list');
+
+        if (docSnap.exists && docSnap.data().commitments) {
+          const commitments = docSnap.data().commitments;
+          
+          customList.innerHTML = commitments.map((com, idx) => `
+            <div class="p-2 bg-slate-800/50 rounded-lg flex items-center justify-between">
+              <div class="flex-1">
+                <input type="text" value="${com.emoji} ${com.name}" disabled class="input-dark w-full px-2 py-1 rounded text-white text-sm opacity-70">
+              </div>
+              <button onclick="deleteCustomCommitment(${idx})" class="ml-2 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10 rounded">
+                🗑️
+              </button>
+            </div>
+          `).join('');
+        } else {
+          customList.innerHTML = '';
+        }
+      } catch (error) {
+        console.log('Could not load custom commitments:', error);
+      }
+    }
+
+    async function addNewCommitment() {
+      if (!currentFamily || !currentFamilyData) return;
+
+      const emoji = document.getElementById('new-commitment-emoji').value.trim();
+      const name = document.getElementById('new-commitment-name').value.trim();
+
+      if (!emoji || !name) {
+        showToast('⚠️', 'Digite o emoji e o nome');
+        return;
+      }
+
+      try {
+        const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
+        const docSnap = await docRef.get();
+
+        let commitments = [];
+        if (docSnap.exists && docSnap.data().commitments) {
+          commitments = docSnap.data().commitments;
+        }
+
+        commitments.push({ emoji, name });
+
+        await docRef.set({
+          familyId: currentFamily,
+          commitments: commitments,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        document.getElementById('new-commitment-emoji').value = '';
+        document.getElementById('new-commitment-name').value = '';
+
+        showToast('✅', `Divisão "${emoji} ${name}" adicionada!`);
+        await loadCustomCommitments();
+      } catch (error) {
+        showToast('❌', 'Erro ao adicionar divisão');
+        console.error('Error adding custom commitment:', error);
+      }
+    }
+
+    async function deleteCustomCommitment(index) {
+      if (!currentFamily || !currentFamilyData) return;
+
+      try {
+        const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
+        const docSnap = await docRef.get();
+
+        if (docSnap.exists && docSnap.data().commitments) {
+          const commitments = docSnap.data().commitments;
+          commitments.splice(index, 1);
+
+          await docRef.set({
+            familyId: currentFamily,
+            commitments: commitments,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          showToast('✅', 'Divisão removida!');
+          await loadCustomCommitments();
+        }
+      } catch (error) {
+        showToast('❌', 'Erro ao remover divisão');
+        console.error('Error deleting custom commitment:', error);
+      }
+    }
+    
+    async function saveCommitments() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+      const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+      const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+      const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
+      
+      if (expenses + invest + tithe + emergency !== 100) {
+        showToast('⚠️', 'O total deve ser 100%');
+        return;
+      }
+      
+      try {
+        await db.collection('finances').doc(`${currentFamily}_commitments_${currentUser.uid}`).set({
+          familyId: currentFamily,
+          expenses,
+          invest,
+          tithe,
+          emergency,
+          userId: currentUser.uid,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast('✅', 'Divisão salva!');
+        updateCommitmentValues();
+      } catch (error) {
+        showToast('❌', 'Erro ao salvar');
+        console.error('Error saving commitments:', error);
+      }
+    }
+    
+    // Load History Functions
+    async function loadIncomeHistory() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const historyEl = document.getElementById('income-history');
+      
+      try {
+        let query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'income')
+          .orderBy('createdAt', 'desc')
+          .limit(20);
+        
+        if (dashboardView === 'individual') {
+          query = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'income')
+            .where('userId', '==', currentUser.uid)
+            .orderBy('createdAt', 'desc')
+            .limit(20);
+        }
+        
+        const snapshot = await query.get();
+        
+        if (snapshot.empty) {
+          historyEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma entrada registrada</p>';
+          return;
+        }
+        
+        historyEl.innerHTML = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return `
+            <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">💰</span>
+                <div>
+                  <p class="font-medium text-white">${data.description}</p>
+                  <p class="text-xs text-slate-500">${data.date} • ${data.userName || 'Usuário'}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-emerald-400">+ ${formatCurrency(data.amount)}</span>
+                <button onclick="deleteTransaction('${doc.id}')" class="text-slate-500 hover:text-red-400 transition-colors p-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        historyEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar</p>';
+        console.error('Error loading income:', error);
+      }
+    }
+    
+    async function loadExpenseHistory() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const historyEl = document.getElementById('expense-history');
+      const filter = document.getElementById('expense-filter').value;
+      
+      try {
+        let query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'expense')
+          .orderBy('createdAt', 'desc')
+          .limit(50);
+        
+        if (dashboardView === 'individual') {
+          query = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'expense')
+            .where('userId', '==', currentUser.uid)
+            .orderBy('createdAt', 'desc')
+            .limit(50);
+        }
+        
+        const snapshot = await query.get();
+        
+        let expenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        if (filter !== 'all') {
+          expenses = expenses.filter(e => e.category === filter);
+        }
+        
+        if (expenses.length === 0) {
+          historyEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma despesa registrada</p>';
+          return;
+        }
+        
+        const categoryIcons = {
+          moradia: '🏠',
+          alimentacao: '🍽️',
+          transporte: '🚗',
+          saude: '🏥',
+          educacao: '📚',
+          lazer: '🎮',
+          vestuario: '👕',
+          servicos: '📱',
+          outros: '📦'
+        };
+        
+        historyEl.innerHTML = expenses.map(data => `
+          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${categoryIcons[data.category] || '📦'}</span>
+              <div>
+                <p class="font-medium text-white">${data.description} ${data.isRecurring ? '<span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded ml-2">🔄 ' + (data.recurrence === 'weekly' ? 'Semanal' : data.recurrence === 'biweekly' ? 'Quinzenal' : data.recurrence === 'monthly' ? 'Mensal' : 'Anual') + '</span>' : ''}</p>
+                <p class="text-xs text-slate-500">${data.date} • ${data.userName || 'Usuário'}</p>
+                ${data.notes ? `<p class="text-xs text-slate-400 mt-1">${data.notes}</p>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-red-400">- ${formatCurrency(data.amount)}</span>
+              <button onclick="deleteTransaction('${data.id}')" class="text-slate-500 hover:text-red-400 transition-colors p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        historyEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar</p>';
+        console.error('Error loading expenses:', error);
+      }
+    }
+    
+    function filterExpenses() {
+      loadExpenseHistory();
+    }
+    
+    async function deleteTransaction(docId) {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      deleteCallback = async () => {
+        try {
+          await db.collection('transactions').doc(docId).delete();
+          showToast('✅', 'Transação excluída');
+          await loadIncomeHistory();
+          await loadExpenseHistory();
+          updateDashboard();
+        } catch (error) {
+          showToast('❌', 'Erro ao excluir');
+          console.error('Error deleting:', error);
+        }
+      };
+      
+      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir esta transação?';
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+    
+    // Dashboard Update
+    async function updateDashboard() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      try {
+        // Get salary
+        let monthlySalary = 0;
+        let satisfaction = 50;
+        
+        if (dashboardView === 'individual') {
+          // Load all active salaries for current user
+          const salariesQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'salary')
+            .where('userId', '==', currentUser.uid)
+            .where('isActive', '==', true);
+          
+          const salariesSnap = await salariesQuery.get();
+          salariesSnap.forEach(doc => {
+            const data = doc.data();
+            const today = new Date().toISOString().split('T')[0];
+            const startOk = data.startDate <= today;
+            const endOk = !data.endDate || data.endDate >= today;
+            
+            if (startOk && endOk) {
+              monthlySalary += calculateMonthlySalary(data.amount, data.frequency);
+            }
+          });
+
+          // Get satisfaction
+          const satisfactionDoc = await db.collection('finances')
+            .doc(`${currentFamily}_satisfaction_${currentUser.uid}`).get();
+          if (satisfactionDoc.exists) {
+            satisfaction = satisfactionDoc.data().satisfaction || 50;
+          }
+        } else {
+          // Get all family salaries
+          const membersEmails = currentFamilyData.members || [];
+          const allUserIds = [currentFamilyData.ownerId];
+          
+          // Get user IDs from emails
+          for (const email of membersEmails) {
+            const userSnap = await db.collection('users').where('email', '==', email).get();
+            userSnap.forEach(doc => allUserIds.push(doc.id));
+          }
+          
+          let totalSatisfaction = 0;
+          let satisfactionCount = 0;
+          
+          for (const userId of allUserIds) {
+            // Load all active salaries
+            const salariesQuery = db.collection('transactions')
+              .where('familyId', '==', currentFamily)
+              .where('type', '==', 'salary')
+              .where('userId', '==', userId)
+              .where('isActive', '==', true);
+            
+            const salariesSnap = await salariesQuery.get();
+            salariesSnap.forEach(doc => {
+              const data = doc.data();
+              const today = new Date().toISOString().split('T')[0];
+              const startOk = data.startDate <= today;
+              const endOk = !data.endDate || data.endDate >= today;
+              
+              if (startOk && endOk) {
+                monthlySalary += calculateMonthlySalary(data.amount, data.frequency);
+              }
+            });
+
+            // Get satisfaction
+            const satisfactionDoc = await db.collection('finances')
+              .doc(`${currentFamily}_satisfaction_${userId}`).get();
+            if (satisfactionDoc.exists) {
+              totalSatisfaction += satisfactionDoc.data().satisfaction || 50;
+              satisfactionCount++;
+            }
+          }
+          
+          if (satisfactionCount > 0) {
+            satisfaction = Math.round(totalSatisfaction / satisfactionCount);
+          }
+        }
+        
+        // Get income and expenses
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+        
+        let incomeQuery, expenseQuery;
+        
+        if (dashboardView === 'individual') {
+          incomeQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'income')
+            .where('userId', '==', currentUser.uid);
+          
+          expenseQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'expense')
+            .where('userId', '==', currentUser.uid);
+        } else {
+          incomeQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'income');
+          expenseQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'expense');
+        }
+        
+        const incomeSnap = await incomeQuery.get();
+        const expenseSnap = await expenseQuery.get();
+        
+        let totalExtraIncome = 0;
+        let totalExpenses = 0;
+        const categoryTotals = {};
+        const recentTransactions = [];
+        
+        incomeSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= firstDay && data.date <= lastDay) {
+            totalExtraIncome += data.amount;
+          }
+          recentTransactions.push({ ...data, id: doc.id, transType: 'income' });
+        });
+        
+        expenseSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= firstDay && data.date <= lastDay) {
+            totalExpenses += data.amount;
+            categoryTotals[data.category] = (categoryTotals[data.category] || 0) + data.amount;
+          }
+          recentTransactions.push({ ...data, id: doc.id, transType: 'expense' });
+        });
+        
+        const totalIncome = monthlySalary + totalExtraIncome;
+        const balance = totalIncome - totalExpenses;
+        
+        // Update UI
+        document.getElementById('dash-total-income').textContent = formatCurrency(totalIncome);
+        document.getElementById('dash-total-expenses').textContent = formatCurrency(totalExpenses);
+        document.getElementById('dash-balance').textContent = formatCurrency(balance);
+        document.getElementById('dash-balance').className = `text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}`;
+        
+        // Update satisfaction ring
+        const ring = document.getElementById('satisfaction-ring');
+        const circumference = 2 * Math.PI * 56;
+        const offset = circumference - (satisfaction / 100) * circumference;
+        ring.style.strokeDashoffset = offset;
+        document.getElementById('satisfaction-value').textContent = satisfaction + '%';
+        
+        // Update category chart
+        updateCategoryChart(categoryTotals, totalExpenses);
+        
+        // Update recent transactions
+        recentTransactions.sort((a, b) => {
+          const dateA = a.createdAt?.toDate?.() || new Date(a.date);
+          const dateB = b.createdAt?.toDate?.() || new Date(b.date);
+          return dateB - dateA;
+        });
+        
+        const recentEl = document.getElementById('recent-transactions');
+        if (recentTransactions.length === 0) {
+          recentEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma transação registrada</p>';
+        } else {
+          const categoryIcons = {
+            moradia: '🏠', alimentacao: '🍽️', transporte: '🚗', saude: '🏥',
+            educacao: '📚', lazer: '🎮', vestuario: '👕', servicos: '📱', outros: '📦'
+          };
+          
+          recentEl.innerHTML = recentTransactions.slice(0, 10).map(t => `
+            <div class="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg">
+              <div class="flex items-center gap-3">
+                <span class="text-xl">${t.transType === 'income' ? '💰' : (categoryIcons[t.category] || '📦')}</span>
+                <div>
+                  <p class="text-sm font-medium text-white">${t.description}</p>
+                  <p class="text-xs text-slate-500">${t.date}</p>
+                </div>
+              </div>
+              <span class="font-semibold ${t.transType === 'income' ? 'text-emerald-400' : 'text-red-400'}">
+                ${t.transType === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
+              </span>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Error updating dashboard:', error);
+      }
+    }
+    
+    function updateCategoryChart(categoryTotals, totalExpenses) {
+      const chartEl = document.getElementById('category-chart');
+      
+      if (Object.keys(categoryTotals).length === 0) {
+        chartEl.innerHTML = '<p class="text-slate-500">Adicione despesas para ver o gráfico</p>';
+        return;
+      }
+      
+      const categoryNames = {
+        moradia: 'Moradia', alimentacao: 'Alimentação', transporte: 'Transporte',
+        saude: 'Saúde', educacao: 'Educação', lazer: 'Lazer',
+        vestuario: 'Vestuário', servicos: 'Serviços', outros: 'Outros'
+      };
+      
+      const colors = {
+        moradia: '#10b981', alimentacao: '#f59e0b', transporte: '#3b82f6',
+        saude: '#ef4444', educacao: '#8b5cf6', lazer: '#ec4899',
+        vestuario: '#14b8a6', servicos: '#f97316', outros: '#6b7280'
+      };
+      
+      const sortedCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      chartEl.innerHTML = `
+        <div class="w-full space-y-3">
+          ${sortedCategories.map(([cat, amount]) => {
+            const percent = totalExpenses > 0 ? (amount / totalExpenses * 100).toFixed(1) : 0;
+            return `
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-slate-300">${categoryNames[cat] || cat}</span>
+                  <span class="text-slate-400">${percent}%</span>
+                </div>
+                <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full" style="width: ${percent}%; background-color: ${colors[cat] || '#6b7280'}"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+    
+    function calculateMonthlySalary(amount, frequency) {
+      if (!amount) return 0;
+      switch (frequency) {
+        case 'weekly': return amount * 4;
+        case 'biweekly': return amount * 2;
+        default: return amount;
+      }
+    }
+    
+    async function updateCommitmentValues() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      try {
+        // Get salary
+        const salaryDoc = await db.collection('finances')
+          .doc(`${currentFamily}_salary_${currentUser.uid}`).get();
+        let monthlySalary = 0;
+        
+        if (salaryDoc.exists) {
+          const data = salaryDoc.data();
+          monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
+        }
+        
+        // Get commitments
+        const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+        const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+        const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+        const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
+        
+        document.getElementById('val-expenses').textContent = formatCurrency(monthlySalary * expenses / 100);
+        document.getElementById('val-invest').textContent = formatCurrency(monthlySalary * invest / 100);
+        document.getElementById('val-tithe').textContent = formatCurrency(monthlySalary * tithe / 100);
+        document.getElementById('val-emergency').textContent = formatCurrency(monthlySalary * emergency / 100);
+      } catch (error) {
+        console.error('Error updating commitment values:', error);
+      }
+    }
+    
+    // Report Generation
+    async function generateReport() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const startDate = document.getElementById('report-start').value;
+      const endDate = document.getElementById('report-end').value;
+      
+      if (!startDate || !endDate) {
+        showToast('⚠️', 'Selecione as datas');
+        return;
+      }
+      
+      const collection = currentFamilyData.collectionName;
+      const reportEl = document.getElementById('report-content');
+      
+      try {
+        reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Gerando relatório...</p>';
+        
+        let incomeQuery, expenseQuery;
+        
+        if (dashboardView === 'individual') {
+          incomeQuery = db.collection(collection)
+            .where('type', '==', 'income')
+            .where('userId', '==', currentUser.uid);
+          
+          expenseQuery = db.collection(collection)
+            .where('type', '==', 'expense')
+            .where('userId', '==', currentUser.uid);
+        } else {
+          incomeQuery = db.collection(collection).where('type', '==', 'income');
+          expenseQuery = db.collection(collection).where('type', '==', 'expense');
+        }
+        
+        const [incomeSnap, expenseSnap] = await Promise.all([
+          incomeQuery.get(),
+          expenseQuery.get()
+        ]);
+        
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        const incomeItems = [];
+        const expenseItems = [];
+        const categoryTotals = {};
+        
+        incomeSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= startDate && data.date <= endDate) {
+            totalIncome += data.amount;
+            incomeItems.push(data);
+          }
+        });
+        
+        expenseSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= startDate && data.date <= endDate) {
+            totalExpenses += data.amount;
+            expenseItems.push(data);
+            categoryTotals[data.category] = (categoryTotals[data.category] || 0) + data.amount;
+          }
+        });
+        
+        const balance = totalIncome - totalExpenses;
+        
+        const categoryNames = {
+          moradia: '🏠 Moradia', alimentacao: '🍽️ Alimentação', transporte: '🚗 Transporte',
+          saude: '🏥 Saúde', educacao: '📚 Educação', lazer: '🎮 Lazer',
+          vestuario: '👕 Vestuário', servicos: '📱 Serviços', outros: '📦 Outros'
+        };
+        
+        reportEl.innerHTML = `
+          <h3 class="text-lg font-semibold text-white mb-4">
+            Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}
+          </h3>
+          
+          <button onclick="exportReportToCSV('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4">
+            📥 Exportar para CSV
+          </button>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+              <p class="text-slate-400 text-sm">Total de Entradas</p>
+              <p class="text-2xl font-bold text-emerald-400">${formatCurrency(totalIncome)}</p>
+              <p class="text-xs text-slate-500">${incomeItems.length} transações</p>
+            </div>
+            <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+              <p class="text-slate-400 text-sm">Total de Despesas</p>
+              <p class="text-2xl font-bold text-red-400">${formatCurrency(totalExpenses)}</p>
+              <p class="text-xs text-slate-500">${expenseItems.length} transações</p>
+            </div>
+            <div class="p-4 ${balance >= 0 ? 'bg-blue-500/10 border-blue-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-xl">
+              <p class="text-slate-400 text-sm">Saldo do Período</p>
+              <p class="text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatCurrency(balance)}</p>
+              <p class="text-xs text-slate-500">${balance >= 0 ? 'Positivo' : 'Negativo'}</p>
+            </div>
+          </div>
+          
+          <h4 class="font-semibold text-white mb-3">Despesas por Categoria</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            ${Object.entries(categoryTotals)
+              .sort((a, b) => b[1] - a[1])
+              .map(([cat, amount]) => `
+                <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                  <span class="text-slate-300">${categoryNames[cat] || cat}</span>
+                  <span class="font-semibold text-white">${formatCurrency(amount)}</span>
+                </div>
+              `).join('')}
+          </div>
+          
+          ${incomeItems.length > 0 ? `
+            <h4 class="font-semibold text-white mb-3">Detalhamento de Entradas</h4>
+            <div class="space-y-2 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
+              ${incomeItems.sort((a, b) => new Date(b.date) - new Date(a.date)).map(item => `
+                <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
+                  <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
+                  <span class="text-emerald-400 font-medium">${formatCurrency(item.amount)}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+          
+          ${expenseItems.length > 0 ? `
+            <h4 class="font-semibold text-white mb-3">Detalhamento de Despesas</h4>
+            <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
+              ${expenseItems.sort((a, b) => new Date(b.date) - new Date(a.date)).map(item => `
+                <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
+                  <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
+                  <span class="text-red-400 font-medium">${formatCurrency(item.amount)}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        `;
+      } catch (error) {
+        reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Erro ao gerar relatório</p>';
+        console.error('Error generating report:', error);
+      }
+    }
+    
+    // Export to CSV
+    async function exportReportToCSV(startDate, endDate) {
+      if (!currentFamily || !currentFamilyData) return;
+
+      try {
+        const collection = currentFamilyData.collectionName;
+        let incomeQuery, expenseQuery;
+        
+        if (dashboardView === 'individual') {
+          incomeQuery = db.collection(collection)
+            .where('type', '==', 'income')
+            .where('userId', '==', currentUser.uid);
+          
+          expenseQuery = db.collection(collection)
+            .where('type', '==', 'expense')
+            .where('userId', '==', currentUser.uid);
+        } else {
+          incomeQuery = db.collection(collection).where('type', '==', 'income');
+          expenseQuery = db.collection(collection).where('type', '==', 'expense');
+        }
+        
+        const [incomeSnap, expenseSnap] = await Promise.all([
+          incomeQuery.get(),
+          expenseQuery.get()
+        ]);
+
+        let csvContent = 'RELATÓRIO FINANCEIRO\n';
+        csvContent += `Período: ${formatDate(startDate)} a ${formatDate(endDate)}\n`;
+        csvContent += `Família: ${currentFamilyData.name}\n`;
+        csvContent += `Usuário: ${currentUser.displayName || currentUser.email}\n`;
+        csvContent += '\n';
+
+        // Seção de Entradas
+        csvContent += 'ENTRADAS\n';
+        csvContent += 'Data,Descrição,Valor (R$),Usuário\n';
+        
+        let totalIncome = 0;
+        incomeSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= startDate && data.date <= endDate) {
+            totalIncome += data.amount;
+            csvContent += `${data.date},"${data.description}",${data.amount.toFixed(2)},${data.userName}\n`;
+          }
+        });
+        
+        csvContent += `TOTAL ENTRADAS,,${totalIncome.toFixed(2)},\n\n`;
+
+        // Seção de Despesas
+        csvContent += 'DESPESAS\n';
+        csvContent += 'Data,Descrição,Categoria,Valor (R$),Notas,Usuário\n';
+        
+        let totalExpenses = 0;
+        const categoryTotals = {};
+        expenseSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= startDate && data.date <= endDate) {
+            totalExpenses += data.amount;
+            categoryTotals[data.category] = (categoryTotals[data.category] || 0) + data.amount;
+            csvContent += `${data.date},"${data.description}","${data.category}",${data.amount.toFixed(2)},"${(data.notes || '').replace(/"/g, '""')}",${data.userName}\n`;
+          }
+        });
+        
+        csvContent += `TOTAL DESPESAS,,,${totalExpenses.toFixed(2)},,\n\n`;
+
+        // Seção de Resumo por Categoria
+        csvContent += 'DESPESAS POR CATEGORIA\n';
+        csvContent += 'Categoria,Valor (R$),Percentual (%)\n';
+        
+        Object.entries(categoryTotals)
+          .sort((a, b) => b[1] - a[1])
+          .forEach(([cat, amount]) => {
+            const percent = totalExpenses > 0 ? (amount / totalExpenses * 100).toFixed(2) : 0;
+            csvContent += `"${cat}",${amount.toFixed(2)},${percent}%\n`;
+          });
+
+        csvContent += '\n';
+        csvContent += 'RESUMO\n';
+        csvContent += `Total Entradas (R$),${totalIncome.toFixed(2)}\n`;
+        csvContent += `Total Despesas (R$),${totalExpenses.toFixed(2)}\n`;
+        csvContent += `Saldo (R$),${(totalIncome - totalExpenses).toFixed(2)}\n`;
+
+        // Criar arquivo e fazer download
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
+        element.setAttribute('download', `relatorio_${currentFamilyData.name.toLowerCase().replace(/\s+/g, '_')}_${startDate}_a_${endDate}.csv`);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+
+        showToast('✅', 'Relatório exportado com sucesso!');
+      } catch (error) {
+        showToast('❌', 'Erro ao exportar relatório');
+        console.error('Error exporting CSV:', error);
+      }
+    }
+
+    // Calculate next occurrence for recurring expenses
+    function calculateNextOccurrence(dateStr, recurrence) {
+      const date = new Date(dateStr);
+      const nextDate = new Date(date);
+
+      switch (recurrence) {
+        case 'weekly':
+          nextDate.setDate(nextDate.getDate() + 7);
+          break;
+        case 'biweekly':
+          nextDate.setDate(nextDate.getDate() + 14);
+          break;
+        case 'monthly':
+          nextDate.setMonth(nextDate.getMonth() + 1);
+          break;
+        case 'yearly':
+          nextDate.setFullYear(nextDate.getFullYear() + 1);
+          break;
+        default:
+          return null;
+      }
+
+      return nextDate.toISOString().split('T')[0];
+    }
+
+    // Goals Management
+    function openAddGoalModal() {
+      document.getElementById('modal-goal-name').value = '';
+      document.getElementById('modal-goal-amount').value = '';
+      document.getElementById('modal-goal-description').value = '';
+      document.getElementById('add-goal-modal').classList.remove('hidden');
+    }
+
+    function closeAddGoalModal() {
+      document.getElementById('add-goal-modal').classList.add('hidden');
+    }
+
+    async function addNewGoal() {
+      if (!currentFamily || !currentFamilyData) return;
+
+      const name = document.getElementById('modal-goal-name').value.trim();
+      const amount = parseFloat(document.getElementById('modal-goal-amount').value);
+      const description = document.getElementById('modal-goal-description').value.trim();
+
+      if (!name || !amount) {
+        showToast('⚠️', 'Preencha o nome e o valor');
+        return;
+      }
+
+      try {
+        await db.collection('transactions').add({
+          familyId: currentFamily,
+          type: 'goal',
+          name: name,
+          amount: amount,
+          description: description,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast('✅', `Objetivo "${name}" adicionado!`);
+        closeAddGoalModal();
+        await loadGoalsList();
+      } catch (error) {
+        showToast('❌', 'Erro ao adicionar objetivo');
+        console.error('Error adding goal:', error);
+      }
+    }
+
+    async function loadGoalsList() {
+      if (!currentFamily || !currentFamilyData) return;
+
+      const listEl = document.getElementById('goals-list');
+
+      try {
+        const query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'goal')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('createdAt', 'desc');
+
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+          listEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum objetivo registrado. Adicione seu primeiro objetivo!</p>';
+          return;
+        }
+
+        listEl.innerHTML = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return `
+            <div class="p-4 bg-slate-800/50 rounded-xl">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <h4 class="font-semibold text-white">${data.name}</h4>
+                  <p class="text-sm text-emerald-400 font-bold mt-1">💰 ${formatCurrency(data.amount)}</p>
+                  ${data.description ? `<p class="text-xs text-slate-400 mt-2">${data.description}</p>` : ''}
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="calculateGoalProjection('${doc.id}', ${data.amount})" class="px-3 py-2 text-sm text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-all">
+                    📊 Calcular
+                  </button>
+                  <button onclick="deleteGoal('${doc.id}')" class="px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-all">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        listEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar objetivos</p>';
+        console.error('Error loading goals:', error);
+      }
+    }
+
+    async function calculateGoalProjection(goalId, goalAmount) {
+      if (!currentFamily || !currentFamilyData) return;
+
+      try {
+        // Get salary data
+        const salariesQuery = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'salary')
+          .where('userId', '==', currentUser.uid)
+          .where('isActive', '==', true);
+
+        const salariesSnap = await salariesQuery.get();
+        let monthlyInvestment = 0;
+
+        // Calculate total monthly investment from active salaries
+        salariesSnap.forEach(doc => {
+          const data = doc.data();
+          const today = new Date().toISOString().split('T')[0];
+          const startOk = data.startDate <= today;
+          const endOk = !data.endDate || data.endDate >= today;
+          
+          if (startOk && endOk) {
+            const monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
+            // Get commitment percentage for investments (default 20%)
+            monthlyInvestment += monthlySalary * 0.20; // 20% for investments
+          }
+        });
+
+        if (monthlyInvestment <= 0) {
+          showToast('⚠️', 'Configure seus salários primeiro');
+          return;
+        }
+
+        // Display projections
+        const projContent = document.getElementById('projections-content');
+        
+        const investments = [
+          { name: 'SELIC', rate: 0.1075, color: 'emerald' },
+          { name: 'Tesouro IPCA+', rate: 0.10, color: 'blue' },
+          { name: 'Tesouro Prefixado', rate: 0.125, color: 'purple' },
+          { name: 'CDB 110% CDI', rate: 0.118, color: 'yellow' },
+          { name: 'LCI/LCA', rate: 0.102, color: 'pink' },
+          { name: 'Fundos Multimercado', rate: 0.1375, color: 'orange' }
+        ];
+
+        let html = `
+          <div class="card-glass rounded-xl p-5 mb-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Projeções para Atingir o Objetivo</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+                <p class="text-slate-400 text-sm">Objetivo</p>
+                <p class="text-2xl font-bold text-emerald-400">${formatCurrency(goalAmount)}</p>
+              </div>
+              <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                <p class="text-slate-400 text-sm">Investimento Mensal</p>
+                <p class="text-2xl font-bold text-blue-400">${formatCurrency(monthlyInvestment)}</p>
+              </div>
+            </div>
+            
+            <h4 class="font-semibold text-white mb-3">⏱️ Tempo para Atingir o Objetivo</h4>
+            <div class="space-y-2">
+        `;
+
+        investments.forEach(inv => {
+          const result = calculateInvestmentTime(monthlyInvestment, goalAmount, inv.rate);
+          const timeStr = result.years > 0 
+            ? `${result.years} ano${result.years > 1 ? 's' : ''} e ${result.months} mês${result.months !== 1 ? 'es' : ''}`
+            : `${result.months} mês${result.months !== 1 ? 'es' : ''}`;
+          
+          html += `
+            <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div class="flex items-center gap-3">
+                <span class="font-medium text-white">${inv.name}</span>
+                <span class="text-xs text-slate-400">${(inv.rate * 100).toFixed(2)}% a.a.</span>
+              </div>
+              <span class="font-bold text-${inv.color}-400">${timeStr}</span>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+
+        projContent.innerHTML = html;
+
+      } catch (error) {
+        showToast('❌', 'Erro ao calcular projeções');
+        console.error('Error calculating goal projection:', error);
+      }
+    }
+
+    async function deleteGoal(docId) {
+      deleteCallback = async () => {
+        try {
+          await db.collection('transactions').doc(docId).delete();
+          showToast('✅', 'Objetivo excluído');
+          await loadGoalsList();
+          document.getElementById('projections-content').innerHTML = '';
+        } catch (error) {
+          showToast('❌', 'Erro ao excluir');
+          console.error('Error deleting:', error);
+        }
+      };
+
+      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir este objetivo?';
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+    
+    // Projections
+    async function calculateProjections() {
+      if (!currentFamily || !currentFamilyData) return;
+      
+      const goalName = document.getElementById('goal-name').value.trim();
+      const goalAmount = parseFloat(document.getElementById('goal-amount').value);
+      
+      if (!goalName || !goalAmount) {
+        showToast('⚠️', 'Preencha o objetivo e valor');
+        return;
+      }
+      
+      const collection = currentFamilyData.collectionName;
+      
+      try {
+        // Get salary data
+        const salaryDoc = await db.collection(collection).doc(`salary_${currentUser.uid}`).get();
+        let monthlySalary = 0;
+        let projectionRate = 0;
+        
+        if (salaryDoc.exists) {
+          const data = salaryDoc.data();
+          monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
+          projectionRate = (data.projection || 0) / 100;
+        }
+        
+        // Get investment percentage
+        const commitDoc = await db.collection(collection).doc(`commitments_${currentUser.uid}`).get();
+        let investPercent = 20;
+        
+        if (commitDoc.exists) {
+          investPercent = commitDoc.data().invest || 20;
+        }
+        
+        const monthlyInvestment = monthlySalary * investPercent / 100;
+        
+        // Investment options
+        const investments = [
+          { name: 'SELIC', rate: 0.1075, color: 'emerald' },
+          { name: 'Tesouro IPCA+', rate: 0.10, color: 'blue' },
+          { name: 'Tesouro Prefixado', rate: 0.125, color: 'purple' },
+          { name: 'CDB 110% CDI', rate: 0.118, color: 'yellow' },
+          { name: 'LCI/LCA', rate: 0.102, color: 'pink' },
+          { name: 'Fundos Multimercado', rate: 0.1375, color: 'orange' }
+        ];
+        
+        // Current salary projection (without raises)
+        const currentProjectionEl = document.getElementById('current-salary-projection');
+        currentProjectionEl.innerHTML = investments.map(inv => {
+          const result = calculateInvestmentTime(monthlyInvestment, goalAmount, inv.rate);
+          return `
+            <div class="p-3 bg-slate-800/50 rounded-lg">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="w-2 h-2 bg-${inv.color}-500 rounded-full"></span>
+                <span class="font-medium text-white">${inv.name}</span>
+              </div>
+              <p class="text-sm text-slate-400">
+                Tempo: <span class="text-white font-semibold">${result.years} anos e ${result.months} meses</span>
+              </p>
+              <p class="text-xs text-slate-500">
+                Aportando ${formatCurrency(monthlyInvestment)}/mês
+              </p>
+            </div>
+          `;
+        }).join('');
+        
+        // Projected salary projection (with raises)
+        const projectedProjectionEl = document.getElementById('projected-salary-projection');
+        
+        if (projectionRate > 0) {
+          projectedProjectionEl.innerHTML = investments.map(inv => {
+            const result = calculateInvestmentTimeWithRaises(monthlyInvestment, goalAmount, inv.rate, projectionRate, investPercent);
+            return `
+              <div class="p-3 bg-slate-800/50 rounded-lg">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-2 h-2 bg-${inv.color}-500 rounded-full"></span>
+                  <span class="font-medium text-white">${inv.name}</span>
+                </div>
+                <p class="text-sm text-slate-400">
+                  Tempo: <span class="text-white font-semibold">${result.years} anos e ${result.months} meses</span>
+                </p>
+                <p class="text-xs text-slate-500">
+                  Com aumento de ${(projectionRate * 100).toFixed(1)}%/ano
+                </p>
+              </div>
+            `;
+          }).join('');
+        } else {
+          projectedProjectionEl.innerHTML = '<p class="text-slate-500 text-center py-4">Configure uma projeção de aumento salarial na aba Finanças</p>';
+        }
+        
+        showToast('✅', 'Projeções calculadas!');
+      } catch (error) {
+        showToast('❌', 'Erro ao calcular projeções');
+        console.error('Error calculating projections:', error);
+      }
+    }
+    
+    function calculateInvestmentTime(monthlyAmount, goalAmount, yearlyRate) {
+      if (monthlyAmount <= 0) return { years: 0, months: 0 };
+      
+      const monthlyRate = yearlyRate / 12;
+      let total = 0;
+      let months = 0;
+      
+      while (total < goalAmount && months < 1200) {
+        total = total * (1 + monthlyRate) + monthlyAmount;
+        months++;
+      }
+      
+      return {
+        years: Math.floor(months / 12),
+        months: months % 12
+      };
+    }
+    
+    function calculateInvestmentTimeWithRaises(initialMonthly, goalAmount, yearlyRate, raiseRate, investPercent) {
+      if (initialMonthly <= 0) return { years: 0, months: 0 };
+      
+      const monthlyRate = yearlyRate / 12;
+      let total = 0;
+      let months = 0;
+      let currentMonthly = initialMonthly;
+      
+      while (total < goalAmount && months < 1200) {
+        if (months > 0 && months % 12 === 0) {
+          currentMonthly *= (1 + raiseRate);
+        }
+        total = total * (1 + monthlyRate) + currentMonthly;
+        months++;
+      }
+      
+      return {
+        years: Math.floor(months / 12),
+        months: months % 12
+      };
+    }
+    
+    // Tab Navigation
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('tab-active');
+        el.classList.add('text-slate-400');
+      });
+      
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-active');
+      document.querySelector(`[data-tab="${tabName}"]`).classList.remove('text-slate-400');
+      
+      if (tabName === 'dashboard') {
+        updateDashboard();
+      } else if (tabName === 'commitments') {
+        updateCommitmentValues();
+      }
+    }
+    
+    function setDashboardView(view) {
+      dashboardView = view;
+      
+      document.querySelectorAll('.dashboard-view-btn').forEach(btn => {
+        if (btn.dataset.view === view) {
+          btn.classList.add('bg-emerald-600', 'text-white');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('bg-emerald-600', 'text-white');
+          btn.classList.add('text-slate-400');
+        }
+      });
+      
+      updateDashboard();
+    }
+    
+    function setFinanceView(view) {
+      document.querySelectorAll('.finance-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.finance-view-btn').forEach(btn => {
+        if (btn.dataset.view === view) {
+          btn.classList.add('bg-emerald-600', 'text-white');
+          btn.classList.remove('text-slate-400');
+        } else {
+          btn.classList.remove('bg-emerald-600', 'text-white');
+          btn.classList.add('text-slate-400');
+        }
+      });
+      
+      document.getElementById(`finance-${view}`).classList.remove('hidden');
+      
+      if (view === 'income') loadIncomeHistory();
+      if (view === 'expenses') loadExpenseHistory();
+    }
+    
+    // Settings
+    function openSettings() {
+      if (!currentFamilyData) return;
+      
+      const isOwner = currentFamilyData.ownerId === currentUser.uid;
+      
+      document.getElementById('settings-owner-section').classList.toggle('hidden', !isOwner);
+      document.getElementById('settings-member-section').classList.toggle('hidden', isOwner);
+      
+      if (isOwner) {
+        loadFamilyMembers();
+      }
+      
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+    
+    function closeSettings() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+    
+    async function loadFamilyMembers() {
+      if (!currentFamilyData) return;
+      
+      const membersEl = document.getElementById('family-members');
+      const members = currentFamilyData.members || [];
+      
+      membersEl.innerHTML = `
+        <div class="flex items-center justify-between p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+          <div class="flex items-center gap-2">
+            <span>👑</span>
+            <span class="text-white">${currentFamilyData.ownerName || currentFamilyData.ownerEmail}</span>
+          </div>
+          <span class="text-xs text-emerald-400">Chefe</span>
+        </div>
+        ${members.map(email => `
+          <div class="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
+            <div class="flex items-center gap-2">
+              <span>👤</span>
+              <span class="text-white">${email}</span>
+            </div>
+            <button onclick="removeFamilyMember('${email}')" class="text-slate-400 hover:text-red-400 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        `).join('')}
+      `;
+    }
+    
+    async function addFamilyMember() {
+      const email = document.getElementById('add-member-email').value.trim().toLowerCase();
+      
+      if (!email) {
+        showToast('⚠️', 'Digite um email');
+        return;
+      }
+      
+      try {
+        // Check if user exists
+        const userSnap = await db.collection('users').where('email', '==', email).get();
+        
+        if (userSnap.empty) {
+          showToast('❌', 'Usuário não encontrado');
+          return;
+        }
+        
+        if (email === currentUser.email.toLowerCase()) {
+          showToast('⚠️', 'Você já é o chefe');
+          return;
+        }
+        
+        const members = currentFamilyData.members || [];
+        if (members.includes(email)) {
+          showToast('⚠️', 'Membro já adicionado');
+          return;
+        }
+        
+        await db.collection('families').doc(currentFamily).update({
+          members: firebase.firestore.FieldValue.arrayUnion(email)
+        });
+        
+        currentFamilyData.members = [...members, email];
+        document.getElementById('add-member-email').value = '';
+        
+        showToast('✅', 'Membro adicionado!');
+        loadFamilyMembers();
+      } catch (error) {
+        showToast('❌', 'Erro ao adicionar membro');
+        console.error('Error adding member:', error);
+      }
+    }
+    
+    async function removeFamilyMember(email) {
+      try {
+        await db.collection('families').doc(currentFamily).update({
+          members: firebase.firestore.FieldValue.arrayRemove(email)
+        });
+        
+        currentFamilyData.members = currentFamilyData.members.filter(m => m !== email);
+        
+        showToast('✅', 'Membro removido');
+        loadFamilyMembers();
+      } catch (error) {
+        showToast('❌', 'Erro ao remover membro');
+        console.error('Error removing member:', error);
+      }
+    }
+    
+    function confirmDeleteFamily() {
+      deleteCallback = async () => {
+        try {
+          // Delete family collection documents
+          const collection = currentFamilyData.collectionName;
+          const docs = await db.collection(collection).get();
+          
+          const batch = db.batch();
+          docs.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+          
+          // Delete family document
+          await db.collection('families').doc(currentFamily).delete();
+          
+          closeSettings();
+          showToast('✅', 'Família excluída');
+          goToFamilySelection();
+        } catch (error) {
+          showToast('❌', 'Erro ao excluir família');
+          console.error('Error deleting family:', error);
+        }
+      };
+      
+      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir esta família? Todos os dados serão perdidos permanentemente.';
+      document.getElementById('delete-modal').classList.remove('hidden');
+    }
+    
+    async function leaveFamily() {
+      try {
+        await db.collection('families').doc(currentFamily).update({
+          members: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
+        });
+        
+        closeSettings();
+        showToast('👋', 'Você saiu da família');
+        goToFamilySelection();
+      } catch (error) {
+        showToast('❌', 'Erro ao sair da família');
+        console.error('Error leaving family:', error);
+      }
+    }
+    
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.add('hidden');
+      deleteCallback = null;
+    }
+    
+    function confirmDelete() {
+      if (deleteCallback) {
+        deleteCallback();
+      }
+      closeDeleteModal();
+    }
+    
+    // Utility Functions
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(value || 0);
+    }
+    
+    function formatDate(dateStr) {
+      return new Date(dateStr + 'T00:00:00').toLocaleDateString('pt-BR');
+    }
+    
+    function showToast(icon, message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-icon').textContent = icon;
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+    
+    // Set default dates
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+      
+      document.getElementById('extra-income-date').value = today;
+      document.getElementById('expense-date').value = today;
+      document.getElementById('report-start').value = firstDay;
+      document.getElementById('report-end').value = today;
+    });
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // Only register service worker on HTTPS or localhost
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const isSecure = window.location.protocol === 'https:';
+        
+        if (isLocalhost || isSecure) {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('Service Worker registrado com sucesso:', registration);
+            })
+            .catch(error => {
+              console.log('Erro ao registrar Service Worker:', error);
+            });
+        } else {
+          console.log('Service Worker requer HTTPS ou localhost. Ambiente atual:', window.location.protocol);
+        }
+      });
+    }
+
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6dc2a81525df55',t:'MTc2OTkxMDIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
