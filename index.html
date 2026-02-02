@@ -196,6 +196,10 @@
           <p class="text-slate-500 text-center py-4">Nenhuma transação registrada</p>
          </div>
         </div>
+        <!-- container para divisões custom aparecendo na área principal -->
+        <div id="custom-commitments-main" class="space-y-4 mt-3">
+          <!-- custom commitments serão renderizadas aqui -->
+        </div>
        </div>
       </div><!-- Finances Tab -->
       <div id="tab-finances" class="tab-content hidden">
@@ -293,9 +297,6 @@
             <h3 class="text-lg font-semibold text-white mb-2">Divisão Percentual</h3>
             <p class="text-slate-400 text-sm">Defina como você quer dividir sua renda entre seus compromissos. O total deve ser 100%.</p>
           </div>
-          <button onclick="toggleEditCommitments()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium" id="btn-edit-commitments">
-            ✏️ Editar Nomes
-          </button>
         </div>
         <div id="commitment-categories" class="space-y-4">
          <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-expenses">💳</span>
@@ -399,7 +400,7 @@
           <p class="text-2xl font-bold text-emerald-400" id="val-invest">R$ 0,00</p>
          </div>
          <div class="p-4 bg-slate-800/50 rounded-xl">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">⛪</span> <span class="text-slate-300">D��zimo/Doações</span>
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">⛪</span> <span class="text-slate-300">Dízimo/Doações</span>
           </div>
           <p class="text-2xl font-bold text-purple-400" id="val-tithe">R$ 0,00</p>
          </div>
@@ -422,24 +423,16 @@
         <div id="goals-list" class="space-y-3">
           <!-- Goals will be loaded here -->
         </div>
+
+        <div id="completed-goals" class="mt-4">
+          <h4 class="text-sm font-semibold text-white mb-2">Histórico de objetivos concluídos</h4>
+          <div id="completed-goals-list" class="space-y-2 text-slate-300">
+            <p class="text-slate-500">Nenhum objetivo concluído</p>
+          </div>
+        </div>
        </div>
        <div id="projections-content">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"><!-- Current Salary Projection -->
-         <div class="card-glass rounded-xl p-5">
-          <h4 class="text-lg font-semibold text-white mb-2">📊 Projeção com Salário Atual</h4>
-          <p class="text-slate-400 text-sm mb-4">Considerando seu salário atual sem aumentos</p>
-          <div id="current-salary-projection" class="space-y-3">
-           <p class="text-slate-500 text-center py-4">Configure um objetivo para ver as projeções</p>
-          </div>
-         </div><!-- Projected Salary Projection -->
-         <div class="card-glass rounded-xl p-5">
-          <h4 class="text-lg font-semibold text-white mb-2">📈 Projeção com Aumentos</h4>
-          <p class="text-slate-400 text-sm mb-4">Considerando sua projeção de aumento salarial</p>
-          <div id="projected-salary-projection" class="space-y-3">
-           <p class="text-slate-500 text-center py-4">Configure um objetivo para ver as projeções</p>
-          </div>
-         </div>
-        </div><!-- Investment Options -->
+<!-- Investment Options -->
         <div class="card-glass rounded-xl p-5">
          <h3 class="text-lg font-semibold text-white mb-4">Opções de Investimento</h3>
          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="investment-options">
@@ -483,7 +476,6 @@
         </div>
        </div>
       </div>
-     </div>
     </main>
    </div><!-- Add Salary Modal -->
    <div id="add-salary-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -531,7 +523,6 @@
         Adicionar
        </button>
       </div>
-     </div>
     </div>
    </div><!-- Add Goal Modal -->
    <div id="add-goal-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -550,6 +541,14 @@
       <div>
        <label class="block text-sm font-medium text-slate-300 mb-2">Valor Alvo (R$)</label>
        <input type="number" id="modal-goal-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="100000" step="0.01">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Data de Início (opcional)</label>
+       <input type="date" id="modal-goal-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+      </div>
+      <div>
+       <label class="block text-sm font-medium text-slate-300 mb-2">Data Limite (opcional)</label>
+       <input type="date" id="modal-goal-deadline" class="input-dark w-full px-4 py-3 rounded-xl text-white">
       </div>
       <div>
        <label class="block text-sm font-medium text-slate-300 mb-2">Descrição (opcional)</label>
@@ -759,7 +758,554 @@
       auth.signOut();
       showToast('👋', 'Até logo!');
     }
-    
+
+    // UI Navigation: Dashboard View
+    function setDashboardView(view) {
+      window.dashboardView = view;
+      document.querySelectorAll('.dashboard-view-btn').forEach(b => b.classList.remove('bg-emerald-600', 'text-white'));
+      const btn = document.querySelector(`.dashboard-view-btn[data-view="${view}"]`);
+      if (btn) btn.classList.add('bg-emerald-600', 'text-white');
+      if (typeof updateDashboard === 'function') updateDashboard();
+    }
+
+    // UI Navigation: Finance View
+    function setFinanceView(view) {
+      document.querySelectorAll('.finance-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(`finance-${view}`);
+      if (target) target.classList.remove('hidden');
+      
+      document.querySelectorAll('.finance-view-btn').forEach(b => b.classList.remove('bg-emerald-600', 'text-white'));
+      const btn = document.querySelector(`.finance-view-btn[data-view="${view}"]`);
+      if (btn) btn.classList.add('bg-emerald-600', 'text-white');
+
+      if (view === 'income' && typeof loadSalariesList === 'function') loadSalariesList();
+      else if (view === 'expenses') {
+        // load expenses if needed
+      }
+    }
+
+    // Commitment Edit Toggle
+    function toggleEditCommitments() {
+      const editPanel = document.getElementById('edit-commitments-section');
+      if (!editPanel) return;
+      editPanel.classList.toggle('hidden');
+    }
+
+    // Income/Expense/Commitment loaders
+    async function loadIncomeHistory() {
+      if (!currentFamily || !currentUser) return;
+      try {
+        const query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'income')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('date', 'desc')
+          .limit(50);
+        const snap = await query.get();
+        const container = document.getElementById('income-history');
+        if (!container) return;
+        
+        if (snap.empty) {
+          container.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum ganho extra registrado</p>';
+          return;
+        }
+        
+        container.innerHTML = snap.docs.map(doc => {
+          const inc = doc.data();
+          return `
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-income-id="${doc.id}">
+              <div>
+                <p class="text-white font-medium">${inc.description}</p>
+                <p class="text-slate-400 text-xs">${inc.date || ''}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <p class="font-semibold text-green-400">+ ${(typeof formatCurrency === 'function') ? formatCurrency(inc.amount) : 'R$ '+inc.amount.toFixed(2)}</p>
+                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading income history:', error);
+      }
+    }
+
+    async function loadExpenseHistory() {
+      if (!currentFamily || !currentUser) return;
+      try {
+        const query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'expense')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('date', 'desc')
+          .limit(50);
+        const snap = await query.get();
+        const container = document.getElementById('expense-history');
+        if (!container) return;
+        
+        if (snap.empty) {
+          container.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma despesa registrada</p>';
+          return;
+        }
+        
+        container.innerHTML = snap.docs.map(doc => {
+          const exp = doc.data();
+          return `
+            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-category="${exp.category || 'outros'}">
+              <div>
+                <p class="text-white font-medium">${exp.description}</p>
+                <p class="text-slate-400 text-xs">${exp.date || ''}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <p class="font-semibold text-red-400">- ${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ '+exp.amount.toFixed(2)}</p>
+                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading expense history:', error);
+      }
+    }
+
+    // Delete transaction (income or expense)
+    async function deleteTransaction(docId) {
+      if (!confirm('Deseja remover esta transação?')) return;
+      try {
+        await db.collection('transactions').doc(docId).delete();
+        if (typeof showToast === 'function') showToast('✅', 'Transação removida');
+        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+        if (typeof updateDashboard === 'function') updateDashboard();
+      } catch (error) {
+        console.error('Error deleting transaction:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao remover');
+      }
+    }
+
+    // Filter expenses by category
+    function filterExpenses() {
+      const filter = document.getElementById('expense-filter').value;
+      const container = document.getElementById('expense-history');
+      if (!container) return;
+      
+      const items = container.querySelectorAll('[data-category]');
+      items.forEach(item => {
+        if (filter === 'all' || item.getAttribute('data-category') === filter) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    async function loadCommitmentNames() {
+      if (!currentFamily) return;
+      try {
+        const docRef = db.collection('finances').doc(`${currentFamily}_commitment_names`);
+        const docSnap = await docRef.get();
+        if (docSnap.exists && docSnap.data().names) {
+          const names = docSnap.data().names;
+          // aplicar nomes customizados (ex: document.getElementById('label-expenses').textContent = names.expenses || 'Despesas')
+        }
+      } catch (error) {
+        console.log('Could not load commitment names:', error);
+      }
+    }
+
+    async function loadGoalsList() {
+      if (!currentFamily || !currentUser) return;
+      try {
+        const query = db.collection('goals')
+          .where('familyId', '==', currentFamily)
+          .where('userId', '==', currentUser.uid);
+        const snap = await query.get();
+        const goalsContainer = document.getElementById('goals-list');
+        // cache goals for client calculations
+        window._goalsCache = window._goalsCache || {};
+
+        if (goalsContainer) {
+          if (snap.empty) {
+            goalsContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma meta cadastrada</p>';
+          } else {
+            const html = [];
+            snap.forEach(doc => {
+              const g = doc.data();
+              // skip goals already concluded (filter on client side to avoid index creation)
+              if (g.completed) return;
+              const id = doc.id;
+              window._goalsCache[id] = { progress: Number(g.progress || 0), target: Number(g.targetAmount || 0) };
+              const progress = ((g.progress || 0) / (g.targetAmount || 1)) * 100;
+
+              html.push(`
+                <div class="p-4 bg-slate-800/40 rounded-lg" id="goal-${id}">
+                  <div class="flex items-center justify-between mb-2">
+                    <strong class="text-white">${g.name}</strong>
+                    <span class="text-xs text-slate-400">${Math.min(progress, 100).toFixed(0)}%</span>
+                  </div>
+                  <div class="w-full bg-slate-700 rounded-full h-2 mb-2">
+                    <div class="bg-emerald-500 h-2 rounded-full" style="width: ${Math.min(progress, 100)}%"></div>
+                  </div>
+                  <p class="text-sm text-slate-300">${(typeof formatCurrency === 'function') ? formatCurrency(g.progress || 0) : 'R$ '+(g.progress || 0).toFixed(2)} / ${(typeof formatCurrency === 'function') ? formatCurrency(g.targetAmount) : 'R$ '+(g.targetAmount || 0).toFixed(2)}</p>
+                  ${g.deadline ? `<p class="text-xs text-slate-500 mt-1">Até ${g.deadline}</p>` : ''}
+
+                  <div class="mt-3 p-3 bg-slate-800/30 rounded-lg">
+                    <h5 class="text-sm font-semibold text-slate-200 mb-2">Estimativa com Aportes Mensais</h5>
+                    <div class="flex gap-2 mb-2 items-center">
+                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-44 goal-monthly" placeholder="Aporte mensal (R$)">
+                      <button onclick="computeEstimatesForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white">Calcular</button>
+                      <button onclick="useAllInvestmentForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-slate-600 text-white">Usar todo investimento</button>
+                    </div>
+                    <div id="goal-estimates-${id}" class="space-y-2 text-sm text-slate-300">
+                      <!-- estimates will render here -->
+                      <p class="text-slate-500">Insira um aporte mensal e clique em Calcular</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 flex items-center gap-2">
+                    <input type="number" min="0" step="0.01" id="goal-add-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-44" placeholder="Adicionar valor"/>
+                    <button onclick="addToGoalProgress('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white">Adicionar</button>
+                  </div>
+
+                  <div class="mt-3 flex gap-2">
+                    <button onclick="completeGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-blue-600 text-white">Concluir</button>
+                    <button onclick="deleteGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-red-600 text-white">Excluir</button>
+                  </div>
+                </div>
+              `);
+            });
+
+            goalsContainer.innerHTML = html.join('');
+
+            // attach listeners to monthly inputs (enter key also triggers)
+            document.querySelectorAll('.goal-monthly').forEach(input => {
+              input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                  const id = input.id.replace('goal-monthly-', '');
+                  computeEstimatesForGoal(id);
+                }
+              });
+              // mark user-edited so automatic distribution won't overwrite
+              input.addEventListener('input', () => {
+                input.dataset.userEdited = '1';
+                const id = input.id.replace('goal-monthly-', '');
+                // live update estimates while typing
+                computeEstimatesForGoal(id);
+              });
+            });
+
+            // load concluded goals history (if any)
+            if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
+          }
+        }
+      } catch (error) {
+        console.error('Error loading goals:', error);
+      }
+    }
+
+    // Income Functions
+    async function saveSatisfaction() {
+      if (!currentFamily || !currentUser) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      const satisfaction = document.getElementById('salary-satisfaction').value || 50;
+      try {
+        await db.collection('finances').doc(`${currentFamily}_satisfaction_${currentUser.uid}`).set({
+          familyId: currentFamily,
+          userId: currentUser.uid,
+          satisfaction: Number(satisfaction),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        if (typeof showToast === 'function') showToast('✅', 'Satisfação salva!');
+      } catch (error) {
+        console.error('Error saving satisfaction:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar');
+      }
+    }
+
+    async function addExtraIncome() {
+      if (!currentFamily || !currentUser) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      const desc = document.getElementById('extra-income-desc').value.trim();
+      const amount = Number(document.getElementById('extra-income-amount').value) || 0;
+      const date = document.getElementById('extra-income-date').value;
+
+      if (!desc || amount <= 0 || !date) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos');
+        return;
+      }
+
+      try {
+        await db.collection('transactions').add({
+          familyId: currentFamily,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          type: 'income',
+          description: desc,
+          amount: amount,
+          date: date,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('extra-income-desc').value = '';
+        document.getElementById('extra-income-amount').value = '';
+        document.getElementById('extra-income-date').value = '';
+        if (typeof showToast === 'function') showToast('✅', 'Ganho extra adicionado!');
+        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+        if (typeof updateDashboard === 'function') updateDashboard();
+      } catch (error) {
+        console.error('Error adding extra income:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar');
+      }
+    }
+
+    // Expense Functions
+    async function addExpense() {
+      if (!currentFamily || !currentUser) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      const desc = document.getElementById('expense-desc').value.trim();
+      const category = document.getElementById('expense-category').value;
+      const amount = Number(document.getElementById('expense-amount').value) || 0;
+      const date = document.getElementById('expense-date').value;
+
+      if (!desc || !category || amount <= 0 || !date) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos');
+        return;
+      }
+
+      try {
+        await db.collection('transactions').add({
+          familyId: currentFamily,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          type: 'expense',
+          description: desc,
+          category: category,
+          amount: amount,
+          date: date,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        document.getElementById('expense-desc').value = '';
+        document.getElementById('expense-category').value = '';
+        document.getElementById('expense-amount').value = '';
+        document.getElementById('expense-date').value = '';
+        if (typeof showToast === 'function') showToast('✅', 'Despesa adicionada!');
+        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+        if (typeof updateDashboard === 'function') updateDashboard();
+      } catch (error) {
+        console.error('Error adding expense:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar');
+      }
+    }
+
+    // Commitment Names Edit
+    async function saveCommitmentNames() {
+      if (!currentFamily) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      try {
+        const names = {
+          expenses: document.getElementById('edit-name-expenses')?.value || 'Gastos Gerais',
+          invest: document.getElementById('edit-name-invest')?.value || 'Investimentos',
+          tithe: document.getElementById('edit-name-tithe')?.value || 'Dízimo/Doações',
+          emergency: document.getElementById('edit-name-emergency')?.value || 'Reserva de Emergência'
+        };
+        
+        await db.collection('finances').doc(`${currentFamily}_commitment_names`).set({
+          familyId: currentFamily,
+          names: names,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+        
+        if (typeof toggleEditCommitments === 'function') toggleEditCommitments();
+        if (typeof showToast === 'function') showToast('✅', 'Nomes salvos!');
+      } catch (error) {
+        console.error('Error saving commitment names:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar');
+      }
+    }
+
+    // Goal Modal & Functions
+    function openAddGoalModal() {
+      const modal = document.getElementById('add-goal-modal');
+      if (!modal) return;
+
+      // If modal is inside a hidden container, move it to body so it's always visible
+      if (modal.parentNode !== document.body) document.body.appendChild(modal);
+
+      // ensure salary modal is fully hidden (inline style to avoid stacking issues)
+      const salaryModal = document.getElementById('add-salary-modal');
+      if (salaryModal) {
+        salaryModal.style.display = 'none';
+        salaryModal.classList.add('hidden');
+      }
+
+      // reset fields
+      const nameInput = document.getElementById('modal-goal-name');
+      if (nameInput) nameInput.value = '';
+      const amountInput = document.getElementById('modal-goal-amount');
+      if (amountInput) amountInput.value = '';
+      const deadlineInput = document.getElementById('modal-goal-deadline');
+      if (deadlineInput) deadlineInput.value = '';
+
+      // show modal with inline styles to ensure visibility
+      modal.style.display = 'flex';
+      modal.classList.remove('hidden');
+      modal.style.zIndex = 10000;
+      modal.style.pointerEvents = 'auto';
+
+      // focus first input for accessibility
+      setTimeout(() => { try { nameInput && nameInput.focus(); } catch (e) {} }, 50);
+    }
+
+    function closeAddGoalModal() {
+      const modal = document.getElementById('add-goal-modal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+      }
+    }
+
+    async function addNewGoal() {
+      if (!currentFamily || !currentUser) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      const name = document.getElementById('modal-goal-name').value.trim();
+      const amount = Number(document.getElementById('modal-goal-amount').value) || 0;
+      const start = document.getElementById('modal-goal-start').value;
+      const deadline = document.getElementById('modal-goal-deadline').value;
+
+      if (!name || amount <= 0) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Preencha nome e valor');
+        return;
+      }
+
+      try {
+        await db.collection('goals').add({
+          familyId: currentFamily,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          name: name,
+          targetAmount: amount,
+          startDate: start || null,
+          deadline: deadline || null,
+          progress: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeAddGoalModal();
+        if (typeof showToast === 'function') showToast('✅', 'Meta adicionada!');
+        if (typeof loadGoalsList === 'function') await loadGoalsList();
+      } catch (error) {
+        console.error('Error adding goal:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar meta');
+      }
+    }
+
+    // Settings & Family Management
+    function openSettings() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeSettings() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function addFamilyMember() {
+      if (!currentFamily || !currentFamilyData) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      if (currentFamilyData.ownerId !== currentUser.uid) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode adicionar membros');
+        return;
+      }
+      const email = document.getElementById('add-member-email').value.trim();
+      if (!email) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Digite um email');
+        return;
+      }
+      try {
+        const usersQuery = await db.collection('users').where('email', '==', email).get();
+        if (usersQuery.empty) {
+          if (typeof showToast === 'function') showToast('⚠️', 'Usuário não encontrado');
+          return;
+        }
+        const userId = usersQuery.docs[0].id;
+        const familyRef = db.collection('families').doc(currentFamily);
+        await familyRef.update({
+          members: firebase.firestore.FieldValue.arrayUnion(userId)
+        });
+        document.getElementById('add-member-email').value = '';
+        if (typeof showToast === 'function') showToast('✅', 'Membro adicionado!');
+      } catch (error) {
+        console.error('Error adding member:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar membro');
+      }
+    }
+
+    function confirmDeleteFamily() {
+      if (currentFamilyData && currentFamilyData.ownerId !== currentUser.uid) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode excluir');
+        return;
+      }
+      const modal = document.getElementById('delete-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function leaveFamily() {
+      if (!currentFamily) return;
+      if (confirm('Tem certeza que deseja sair desta família?')) {
+        db.collection('families').doc(currentFamily).update({
+          members: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+        }).then(() => {
+          if (typeof showToast === 'function') showToast('✅', 'Você saiu da família');
+          goToFamilySelection();
+        }).catch(error => {
+          console.error('Error leaving family:', error);
+          if (typeof showToast === 'function') showToast('❌', 'Erro ao sair');
+        });
+      }
+    }
+
+    function closeDeleteModal() {
+      const modal = document.getElementById('delete-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function confirmDelete() {
+      if (!currentFamily || !currentFamilyData) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Nenhuma família selecionada');
+        return;
+      }
+      if (currentFamilyData.ownerId !== currentUser.uid) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode excluir');
+        return;
+      }
+      try {
+        await db.collection('families').doc(currentFamily).delete();
+        closeDeleteModal();
+        if (typeof showToast === 'function') showToast('✅', 'Família excluída!');
+        goToFamilySelection();
+      } catch (error) {
+        console.error('Error deleting family:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao excluir');
+      }
+    }
+
+    // Report Export (placeholder)
+    function exportReportToCSV(startDate, endDate) {
+      if (typeof showToast === 'function') showToast('ℹ️', 'Exportação em desenvolvimento');
+      console.log('Export report:', startDate, endDate);
+    }
+
     function getErrorMessage(code) {
       const messages = {
         'auth/invalid-email': 'Email inválido',
@@ -876,6 +1422,197 @@
       }
     }
     
+    // Toast Notification
+    function showToast(icon, message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 right-4 bg-slate-900 border border-slate-700 rounded-lg px-6 py-3 text-white max-w-sm animate-fade-in z-50';
+      toast.textContent = `${icon} ${message}`;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s ease-out forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Dashboard Update
+    async function updateDashboard() {
+      if (!currentFamily || !currentUser) return;
+      try {
+        const isFamily = (window.dashboardView === 'family');
+        let incomeQuery, expenseQuery;
+        
+        if (isFamily) {
+          incomeQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', 'in', ['income', 'salary']);
+          expenseQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'expense');
+        } else {
+          incomeQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', 'in', ['income', 'salary'])
+            .where('userId', '==', currentUser.uid);
+          expenseQuery = db.collection('transactions')
+            .where('familyId', '==', currentFamily)
+            .where('type', '==', 'expense')
+            .where('userId', '==', currentUser.uid);
+        }
+
+        const incomeSnap = await incomeQuery.get();
+        const expenseSnap = await expenseQuery.get();
+        
+        // Load satisfaction
+        let satisfaction = 50;
+        if (!isFamily) {
+          const satSnap = await db.collection('finances')
+            .doc(`${currentFamily}_satisfaction_${currentUser.uid}`).get();
+          if (satSnap.exists && satSnap.data().satisfaction !== undefined) {
+            satisfaction = satSnap.data().satisfaction;
+          }
+        }
+        
+        let totalIncome = 0, totalExpenses = 0;
+        const txList = [];
+
+        incomeSnap.forEach(doc => {
+          const data = doc.data();
+          totalIncome += Number(data.amount || 0);
+          txList.push({ ...data, id: doc.id });
+        });
+
+        expenseSnap.forEach(doc => {
+          const data = doc.data();
+          totalExpenses += Number(data.amount || 0);
+          txList.push({ ...data, id: doc.id });
+        });
+
+        const balance = totalIncome - totalExpenses;
+
+        // Update summary cards
+        const incomeEl = document.getElementById('dash-total-income');
+        const expenseEl = document.getElementById('dash-total-expenses');
+        const balanceEl = document.getElementById('dash-balance');
+
+        if (incomeEl) incomeEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(totalIncome) : 'R$ '+totalIncome.toFixed(2);
+        if (expenseEl) expenseEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(totalExpenses) : 'R$ '+totalExpenses.toFixed(2);
+        if (balanceEl) {
+          balanceEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(balance) : 'R$ '+balance.toFixed(2);
+          balanceEl.className = 'text-2xl font-bold ' + (balance >= 0 ? 'text-blue-400' : 'text-red-400');
+        }
+
+        // Update recent transactions
+        const txContainer = document.getElementById('recent-transactions');
+        if (txContainer) {
+          if (txList.length === 0) {
+            txContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma transação</p>';
+          } else {
+            txContainer.innerHTML = txList.sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 5).map(tx => `
+              <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
+                <div>
+                  <p class="text-white font-medium">${tx.description || tx.type}</p>
+                  <p class="text-slate-400 text-xs">${tx.date || ''}</p>
+                </div>
+                <p class="font-semibold ${tx.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
+                  ${tx.type === 'expense' ? '- ' : '+ '}${(typeof formatCurrency === 'function') ? formatCurrency(tx.amount) : 'R$ '+tx.amount.toFixed(2)}
+                </p>
+              </div>
+            `).join('');
+          }
+        }
+        
+        // Update category chart (use commitment-calculated values first, fallback to expense transactions)
+        const categoryChart = document.getElementById('category-chart');
+        if (categoryChart) {
+          const categoryTotals = {};
+
+          // helper to parse currency text from elements like 'R$ 1.234,56'
+          function parseCurrencyText(id) {
+            const el = document.getElementById(id);
+            if (!el) return 0;
+            const txt = (el.textContent || '').trim();
+            // remove currency symbols and spaces, replace comma with dot
+            const numeric = txt.replace(/[R$\s\.]/g, '').replace(',', '.');
+            const v = Number(numeric) || 0;
+            return v;
+          }
+
+          // Primary: read values from commitments summary
+          const mainItems = [
+            {key: 'despesas', label: 'Despesas', icon: '🍽️', value: parseCurrencyText('val-expenses')},
+            {key: 'investimentos', label: 'Investimentos', icon: '💰', value: parseCurrencyText('val-invest')},
+            {key: 'dizimo', label: 'Dízimo/Doações', icon: '⛪', value: parseCurrencyText('val-tithe')},
+            {key: 'emergencia', label: 'Reserva de Emergência', icon: '🎯', value: parseCurrencyText('val-emergency')}
+          ];
+
+          mainItems.forEach(it => { if (it.value > 0) categoryTotals[it.key] = { label: it.label, icon: it.icon, value: it.value }; });
+
+          // include custom commitments (rendered as elements with id starting with val-custom-)
+          document.querySelectorAll('[id^="val-custom-"]').forEach(el => {
+            try {
+              const key = el.id.replace('val-custom-', '');
+              const value = parseCurrencyText(el.id);
+              const parent = el.closest('[data-custom-name]');
+              const name = parent ? parent.getAttribute('data-custom-name') : key;
+              if (value > 0) categoryTotals[key] = { label: name, icon: '📦', value };
+            } catch (e) {}
+          });
+
+          // If no commitments values found, fallback to expense transactions distribution
+          const totalFromCommitments = Object.values(categoryTotals).reduce((s, c) => s + Number(c.value || 0), 0);
+          if (totalFromCommitments === 0 && expenseSnap) {
+            expenseSnap.forEach(doc => {
+              const data = doc.data();
+              const category = data.category || 'outros';
+              categoryTotals[category] = (categoryTotals[category] && categoryTotals[category].value ? categoryTotals[category].value : 0) + Number(data.amount || 0);
+            });
+          }
+
+          if (Object.keys(categoryTotals).length === 0) {
+            categoryChart.innerHTML = '<p class="text-slate-500 text-center">Nenhuma despesa registrada</p>';
+          } else {
+            // convert to array and sort
+            const arr = Object.keys(categoryTotals).map(k => {
+              const v = categoryTotals[k];
+              if (typeof v === 'number') return { key: k, label: k, icon: '📦', value: v };
+              return { key: k, label: v.label || k, icon: v.icon || '📦', value: v.value || 0 };
+            }).sort((a, b) => b.value - a.value);
+
+            const total = arr.reduce((s, it) => s + Number(it.value || 0), 0);
+
+            categoryChart.innerHTML = arr.map(it => `
+              <div class="flex items-center gap-4 mr-6">
+                <div class="text-sm text-slate-400">${it.icon}</div>
+                <div>
+                  <div class="text-sm text-slate-200 font-medium">${it.label} <span class="text-slate-400 text-xs">${(typeof formatCurrency === 'function') ? formatCurrency(it.value) : 'R$ '+it.value.toFixed(2)}</span></div>
+                  <div class="text-xs text-slate-400">${total > 0 ? Math.round((it.value/total)*1000)/10 : 0}%</div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+
+        
+        // Update satisfaction display
+        const satisfactionEl = document.getElementById('satisfaction-value');
+        const satisfactionRing = document.getElementById('satisfaction-ring');
+        if (satisfactionEl) satisfactionEl.textContent = satisfaction + '%';
+        if (satisfactionRing) {
+          const circumference = 2 * Math.PI * 56;
+          const offset = circumference - (satisfaction / 100) * circumference;
+          satisfactionRing.style.strokeDashoffset = offset;
+        }
+        
+        // Also update the slider if visible
+        const slider = document.getElementById('salary-satisfaction');
+        if (slider) slider.value = satisfaction;
+        const display = document.getElementById('satisfaction-display');
+        if (display) display.textContent = satisfaction + '%';
+      } catch (error) {
+        console.error('Error updating dashboard:', error);
+      }
+    }
+    
     // Data Loading
     async function loadFamilyData() {
       if (!currentFamily || !currentFamilyData) return;
@@ -897,6 +1634,7 @@
         await loadIncomeHistory();
         await loadExpenseHistory();
         await loadCommitmentNames();
+        await loadCustomCommitments();
         await loadGoalsList();
         updateDashboard();
         updateCommitmentValues();
@@ -913,1852 +1651,977 @@
     // Commitment total calculator
     ['commit-expenses', 'commit-invest', 'commit-tithe', 'commit-emergency'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateCommitmentTotal);
+      document.getElementById(id).addEventListener('input', updateCommitmentValues); // ADD THIS
     });
+
+    // modal observer removed (debug code) ---------------------------------------------
     
-    function updateCommitmentTotal() {
-      const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
-      const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
-      const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
-      const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
-      const total = expenses + invest + tithe + emergency;
-      
-      const totalEl = document.getElementById('commit-total');
-      totalEl.textContent = total + '%';
-      totalEl.className = total === 100 ? 'text-xl font-bold text-emerald-400' : 'text-xl font-bold text-red-400';
+    // helper para gerar ids seguros
+function sanitizeKey(name) {
+  return name.replace(/\s+/g, '-').replace(/[^a-z0-9\-]/gi, '').toLowerCase();
+}
+
+// UI: trocar abas (tab navigation)
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  const target = document.getElementById(`tab-${tabName}`);
+  if (target) target.classList.remove('hidden');
+
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+  const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+  if (btn) btn.classList.add('tab-active');
+
+  // carregar dados específicos da aba quando necessário
+  if (tabName === 'finances') {
+    if (typeof loadSalariesList === 'function') loadSalariesList();
+    if (typeof loadIncomeHistory === 'function') loadIncomeHistory();
+    if (typeof loadExpenseHistory === 'function') loadExpenseHistory();
+  } else if (tabName === 'dashboard') {
+    if (typeof updateDashboard === 'function') updateDashboard();
+  }
+}
+
+// Estado para edição de salário
+let _editingSalaryId = null;
+
+// Lista de salários: busca e renderiza na área `#salaries-list`
+async function loadSalariesList() {
+  const el = document.getElementById('salaries-list');
+  if (!el) return;
+  if (!currentFamily) {
+    el.innerHTML = '<p class="text-slate-500 text-center py-4">Selecione uma família</p>';
+    return;
+  }
+
+  el.innerHTML = '<p class="text-slate-500 text-center py-4">Carregando salários...</p>';
+
+  try {
+    const query = db.collection('transactions')
+      .where('familyId', '==', currentFamily)
+      .where('type', '==', 'salary');
+
+    const snap = await query.get();
+    if (snap.empty) {
+      el.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum salário cadastrado</p>';
+      return;
     }
-    
-    // Save Functions
-    async function saveSalary() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const data = {
-        familyId: currentFamily,
-        amount: parseFloat(document.getElementById('salary-amount').value) || 0,
-        frequency: document.getElementById('salary-frequency').value,
-        satisfaction: parseInt(document.getElementById('salary-satisfaction').value) || 50,
-        projection: parseFloat(document.getElementById('salary-projection').value) || 0,
-        userId: currentUser.uid,
-        userName: currentUser.displayName || currentUser.email,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-      
-      try {
-        await db.collection('finances').doc(`${currentFamily}_salary_${currentUser.uid}`).set(data);
-        showToast('✅', 'Salário salvo!');
-        updateDashboard();
-        updateCommitmentValues();
-      } catch (error) {
-        showToast('❌', 'Erro ao salvar');
-        console.error('Error saving salary:', error);
+
+    const html = [];
+    snap.forEach(doc => {
+      const s = doc.data();
+      const monthly = (typeof calculateMonthlySalary === 'function') ? calculateMonthlySalary(s.amount, s.frequency) : (Number(s.amount) || 0);
+      html.push(`
+        <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
+          <div>
+            <div class="flex items-center gap-2"><strong class="text-white">${s.description || 'Salário'}</strong> <span class="text-slate-400 text-sm">(${s.frequency || 'mensal'})</span></div>
+            <div class="text-slate-400 text-sm">${s.startDate || ''}${s.endDate ? ' → '+s.endDate : ''}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold text-white">${(typeof formatCurrency === 'function') ? formatCurrency(monthly) : 'R$ '+monthly.toFixed(2)}</div>
+            <div class="text-slate-400 text-sm mt-1"><button onclick="editSalary('${doc.id}')" class="text-emerald-400 mr-2">Editar</button><button onclick="deleteSalary('${doc.id}')" class="text-red-400">Remover</button></div>
+          </div>
+        </div>
+      `);
+    });
+
+    el.innerHTML = html.join('');
+  } catch (error) {
+    console.error('Error loading salaries list:', error);
+    el.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar salários</p>';
+  }
+}
+
+function openAddSalaryModal() {
+  _editingSalaryId = null;
+
+  // ensure goal modal is fully hidden to avoid stacking issues
+  const goalModal = document.getElementById('add-goal-modal');
+  if (goalModal) {
+    goalModal.style.display = 'none';
+    goalModal.classList.add('hidden');
+  }
+
+  // reset salary fields
+  document.getElementById('modal-salary-name').value = '';
+  document.getElementById('modal-salary-amount').value = '';
+  document.getElementById('modal-salary-frequency').value = 'monthly';
+  document.getElementById('modal-salary-start').value = '';
+  document.getElementById('modal-salary-end').value = '';
+  document.getElementById('modal-salary-projection').value = '';
+
+  // show salary modal (inline style ensures it's on top)
+  const salaryModal = document.getElementById('add-salary-modal');
+  salaryModal.style.display = 'flex';
+  salaryModal.classList.remove('hidden');
+  salaryModal.style.zIndex = 10000;
+
+  setTimeout(() => { try { document.getElementById('modal-salary-name').focus(); } catch (e) {} }, 50);
+}
+
+function closeAddSalaryModal() {
+  const modal = document.getElementById('add-salary-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+  }
+  _editingSalaryId = null;
+}
+
+async function addNewSalary() {
+  if (!currentFamily || !currentUser) {
+    if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família e faça login');
+    return;
+  }
+
+  const description = document.getElementById('modal-salary-name').value.trim();
+  const amount = Number(document.getElementById('modal-salary-amount').value) || 0;
+  const frequency = document.getElementById('modal-salary-frequency').value;
+  const startDate = document.getElementById('modal-salary-start').value || '';
+  const endDate = document.getElementById('modal-salary-end').value || '';
+  const projection = Number(document.getElementById('modal-salary-projection').value) || 0;
+
+  if (!description || amount <= 0) {
+    if (typeof showToast === 'function') showToast('⚠️', 'Preencha nome e valor');
+    return;
+  }
+
+  const payload = {
+    familyId: currentFamily,
+    userId: currentUser.uid,
+    userName: currentUser.displayName || currentUser.email,
+    type: 'salary',
+    description,
+    amount,
+    frequency,
+    startDate,
+    endDate: endDate || null,
+    projection,
+    isActive: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try {
+    if (_editingSalaryId) {
+      await db.collection('transactions').doc(_editingSalaryId).set({ ...payload, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      if (typeof showToast === 'function') showToast('✅', 'Salário atualizado');
+    } else {
+      await db.collection('transactions').add(payload);
+      if (typeof showToast === 'function') showToast('✅', 'Salário adicionado');
+    }
+    closeAddSalaryModal();
+    await loadSalariesList();
+    if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
+  } catch (error) {
+    console.error('Error saving salary:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar salário');
+  }
+}
+
+async function editSalary(id) {
+  try {
+    const doc = await db.collection('transactions').doc(id).get();
+    if (!doc.exists) return;
+    const s = doc.data();
+    _editingSalaryId = id;
+    document.getElementById('modal-salary-name').value = s.description || '';
+    document.getElementById('modal-salary-amount').value = s.amount || '';
+    document.getElementById('modal-salary-frequency').value = s.frequency || 'monthly';
+    document.getElementById('modal-salary-start').value = s.startDate || '';
+    document.getElementById('modal-salary-end').value = s.endDate || '';
+    document.getElementById('modal-salary-projection').value = s.projection || '';
+    document.getElementById('add-salary-modal').classList.remove('hidden');
+  } catch (error) {
+    console.error('Error editing salary:', error);
+  }
+}
+
+async function deleteSalary(id) {
+  if (!confirm('Deseja remover este salário?')) return;
+  try {
+    await db.collection('transactions').doc(id).delete();
+    if (typeof showToast === 'function') showToast('✅', 'Salário removido');
+    await loadSalariesList();
+    if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
+  } catch (error) {
+    console.error('Error deleting salary:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao remover salário');
+  }
+}
+
+// Fallback helpers (somente se não existirem)
+if (typeof calculateMonthlySalary !== 'function') {
+  function calculateMonthlySalary(amount, frequency) {
+    const a = Number(amount) || 0;
+    switch ((frequency || '').toLowerCase()) {
+      case 'weekly': return a * 52 / 12;
+      case 'biweekly': return a * 26 / 12;
+      case 'monthly':
+      default: return a;
+    }
+  }
+}
+
+if (typeof formatCurrency !== 'function') {
+  function formatCurrency(value) {
+    const n = Number(value) || 0;
+    return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+}
+
+if (typeof formatDate !== 'function') {
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+}
+
+// Somar percentuais incluindo extras com classe .commit-custom-percent
+function updateCommitmentTotal() {
+  const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+  const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+  const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+  const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
+
+  // incluir custom percent inputs
+  let customSum = 0;
+  document.querySelectorAll('.commit-custom-percent').forEach(el => {
+    customSum += parseFloat(el.value) || 0;
+  });
+
+  const total = expenses + invest + tithe + emergency + customSum;
+
+  const totalEl = document.getElementById('commit-total');
+  totalEl.textContent = total + '%';
+  totalEl.className = total === 100 ? 'text-xl font-bold text-emerald-400' : 'text-xl font-bold text-red-400';
+}
+
+// Investment options used for goal projections
+const investmentOptions = [
+  { key: 'selic', label: 'SELIC', rate: 0.1075 },
+  { key: 'ipca', label: 'Tesouro IPCA+', rate: 0.055 },
+  { key: 'prefixado', label: 'Tesouro Prefixado', rate: 0.125 },
+  { key: 'cdb', label: 'CDB', rate: 0.118 },
+  { key: 'lci', label: 'LCI/LCA', rate: 0.102 },
+  { key: 'fundos', label: 'Fundos Multimercado', rate: 0.1375 }
+];
+
+// calcula meses necessários por simulação mensal com aporte e juros compostos
+function estimateMonthsToTarget(current, monthly, annualRate, target, maxMonths = 1200) {
+  current = Number(current) || 0;
+  monthly = Number(monthly) || 0;
+  target = Number(target) || 0;
+  if (current >= target) return 0;
+  if (monthly <= 0 && (!annualRate || annualRate === 0)) return null; // impossível
+
+  const r = Math.pow(1 + annualRate, 1 / 12) - 1; // monthly rate
+
+  if (r === 0) {
+    const months = Math.ceil((target - current) / monthly);
+    return months > maxMonths ? null : months;
+  }
+
+  let balance = current;
+  for (let m = 1; m <= maxMonths; m++) {
+    // apply interest
+    balance = balance * (1 + r);
+    // add monthly contribution at end of period
+    balance += monthly;
+    if (balance >= target) return m;
+  }
+  return null; // didn't reach within maxMonths
+}
+
+function formatMonths(m) {
+  if (m === 0) return 'Já alcançado';
+  if (m === null) return 'N/A';
+  const years = Math.floor(m / 12);
+  const months = m % 12;
+  let parts = [];
+  if (years > 0) parts.push(years + (years === 1 ? ' ano' : ' anos'));
+  if (months > 0) parts.push(months + (months === 1 ? ' mês' : ' meses'));
+  return parts.join(' e ');
+}
+
+// Calcula e atualiza estimativas na UI para um objetivo
+function computeEstimatesForGoal(id) {
+  const monthlyEl = document.getElementById(`goal-monthly-${id}`);
+  const container = document.getElementById(`goal-estimates-${id}`);
+  if (!container || !window._goalsCache || !window._goalsCache[id]) return;
+  const monthly = Number(monthlyEl?.value) || 0;
+  const { progress, target } = window._goalsCache[id];
+
+  const rows = investmentOptions.map(opt => {
+    const months = estimateMonthsToTarget(progress, monthly, opt.rate, target);
+    return `
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2"><span class="text-sm">${opt.label}</span></div>
+        <div class="text-right"><div class="font-semibold">${formatMonths(months)}</div><div class="text-xs text-slate-500">${months ? months + ' meses' : ''}</div></div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = rows;
+}
+
+// adiciona um valor ao progresso do objetivo
+async function addToGoalProgress(id) {
+  if (!currentFamily || !currentUser) return;
+  const input = document.getElementById(`goal-add-${id}`);
+  if (!input) return;
+  const amount = Number(input.value) || 0;
+  if (amount <= 0) {
+    if (typeof showToast === 'function') showToast('⚠️', 'Digite um valor válido');
+    return;
+  }
+
+  try {
+    await db.collection('goals').doc(id).update({
+      progress: firebase.firestore.FieldValue.increment(amount)
+    });
+    input.value = '';
+    if (typeof showToast === 'function') showToast('✅', 'Valor adicionado à meta');
+    await loadGoalsList();
+  } catch (error) {
+    console.error('Error adding to goal progress:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao atualizar meta');
+  }
+}
+
+// Apaga uma meta
+async function deleteGoal(id) {
+  if (!id || !currentFamily || !currentUser) return;
+  if (!confirm('Deseja realmente excluir essa meta? Esta ação não pode ser desfeita.')) return;
+  try {
+    await db.collection('goals').doc(id).delete();
+    if (typeof showToast === 'function') showToast('✅', 'Meta excluída');
+    await loadGoalsList();
+    if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
+  } catch (error) {
+    console.error('Error deleting goal:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao excluir meta');
+  }
+}
+
+// Concluir uma meta: cria entrada em goals_history e marca meta como concluída
+async function completeGoal(id) {
+  if (!id || !currentFamily || !currentUser) return;
+  if (!confirm('Marcar meta como concluída?')) return;
+  try {
+    const doc = await db.collection('goals').doc(id).get();
+    if (!doc.exists) {
+      if (typeof showToast === 'function') showToast('⚠️', 'Meta não encontrada');
+      return;
+    }
+    const data = doc.data();
+    const completedAt = new Date().toISOString();
+    // create history record
+    await db.collection('goals_history').add({
+      goalId: id,
+      familyId: data.familyId || currentFamily,
+      userId: data.userId || currentUser.uid,
+      name: data.name || '',
+      startDate: data.startDate || null,
+      progress: Number(data.progress || 0),
+      targetAmount: Number(data.targetAmount || 0),
+      completedAt
+    });
+    // mark the original goal as completed
+    await db.collection('goals').doc(id).update({ completed: true, completedAt });
+
+    if (typeof showToast === 'function') showToast('✅', 'Meta marcada como concluída');
+    await loadGoalsList();
+    if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
+  } catch (error) {
+    console.error('Error completing goal:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao concluir meta');
+  }
+}
+
+// Carrega histórico de metas concluídas (da coleção goals_history e metas já marcadas)
+async function loadCompletedGoals() {
+  if (!currentFamily || !currentUser) return;
+  try {
+    const histQuery = db.collection('goals_history')
+      .where('familyId', '==', currentFamily)
+      .where('userId', '==', currentUser.uid)
+      .orderBy('completedAt', 'desc')
+      .limit(50);
+    const histSnap = await histQuery.get();
+    const container = document.getElementById('completed-goals-list');
+    const items = [];
+
+    histSnap.forEach(doc => {
+      const d = doc.data();
+      const startText = d.startDate ? formatDate((d.startDate || '').split('T')[0]) : '—';
+      const endText = d.completedAt ? formatDate((d.completedAt || '').split('T')[0]) : '—';
+      items.push(`<div class="p-3 bg-slate-800/30 rounded-lg flex items-center justify-between">
+        <div>
+          <div class="font-medium text-white">${d.name}</div>
+          <div class="text-xs text-slate-400">Início: ${startText} — Conclusão: ${endText} — ${d.progress ? (typeof formatCurrency === 'function' ? formatCurrency(d.progress) : d.progress) : ''} / ${typeof formatCurrency === 'function' ? formatCurrency(d.targetAmount) : d.targetAmount}</div>
+        </div>
+        <div class="text-right"><button class="text-xs text-emerald-400" onclick="reopenGoalFromHistory('${doc.id}')">Reabrir</button> <button class="text-xs text-red-400 ml-2" onclick="deleteCompletedGoal('${doc.id}')">Excluir</button></div>
+      </div>`);
+    });
+
+    if (items.length === 0) {
+      if (container) container.innerHTML = '<p class="text-slate-500">Nenhum objetivo concluído</p>';
+    } else {
+      if (container) container.innerHTML = items.join('');
+    }
+  } catch (error) {
+    console.error('Error loading completed goals:', error);
+  }
+}
+
+// Reabre uma meta a partir do histórico (restaura a meta original se existir)
+async function reopenGoalFromHistory(historyId) {
+  if (!historyId) return;
+  if (!confirm('Reabrir esta meta? Ela voltará à sua forma ativa.')) return;
+  try {
+    const hdoc = await db.collection('goals_history').doc(historyId).get();
+    if (!hdoc.exists) return;
+    const data = hdoc.data();
+    // try to find original goal
+    if (data.goalId) {
+      await db.collection('goals').doc(data.goalId).update({ completed: false, completedAt: firebase.firestore.FieldValue.delete() });
+    }
+    // remove history entry
+    await db.collection('goals_history').doc(historyId).delete();
+    if (typeof showToast === 'function') showToast('✅', 'Meta reaberta');
+    await loadGoalsList();
+    if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
+  } catch (error) {
+    console.error('Error reopening goal from history:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao reabrir meta');
+  }
+}
+
+// Deleta um objetivo do histórico completamente
+async function deleteCompletedGoal(historyId) {
+  if (!historyId) return;
+  if (!confirm('Deseja remover este objetivo do histórico? Esta ação não pode ser desfeita.')) return;
+  try {
+    await db.collection('goals_history').doc(historyId).delete();
+    if (typeof showToast === 'function') showToast('✅', 'Objetivo removido do histórico');
+    if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
+  } catch (error) {
+    console.error('Error deleting completed goal:', error);
+    if (typeof showToast === 'function') showToast('❌', 'Erro ao remover objetivo');
+  }
+}
+
+// Allow using the entire investment amount on one goal
+function useAllInvestmentForGoal(id) {
+  const investAmount = Number(window._lastInvestAmount || 0);
+  if (investAmount <= 0) {
+    if (typeof showToast === 'function') showToast('⚠️', 'Nenhum valor alocado para investimentos');
+    return;
+  }
+  const goalsContainer = document.getElementById('goals-list');
+  if (!goalsContainer) return;
+  const goalItems = goalsContainer.querySelectorAll('[id^="goal-"]');
+  goalItems.forEach(item => {
+    const gid = item.id.replace('goal-', '');
+    const input = document.getElementById(`goal-monthly-${gid}`);
+    if (!input) return;
+    if (gid === id) {
+      input.value = investAmount.toFixed(2);
+      input.dataset.userEdited = '1';
+      try { computeEstimatesForGoal(gid); } catch (e) {}
+    } else {
+      input.value = (0).toFixed(2);
+      input.dataset.userEdited = '1';
+      try { computeEstimatesForGoal(gid); } catch (e) {}
+    }
+  });
+}
+
+// Atualiza valores, agora também preenche os valores das divisões custom (ids gerados por sanitizeKey)
+async function updateCommitmentValues() {
+  if (!currentFamily || !currentFamilyData) return;
+
+  try {
+    const salariesQuery = db.collection('transactions')
+      .where('familyId', '==', currentFamily)
+      .where('type', '==', 'salary')
+      .where('userId', '==', currentUser.uid)
+      .where('isActive', '==', true);
+
+    const salariesSnap = await salariesQuery.get();
+    let totalMonthlySalary = 0;
+
+    const today = new Date().toISOString().split('T')[0];
+
+    salariesSnap.forEach(doc => {
+      const data = doc.data();
+      const startOk = data.startDate <= today;
+      const endOk = !data.endDate || data.endDate >= today;
+
+      if (startOk && endOk) {
+        totalMonthlySalary += calculateMonthlySalary(data.amount, data.frequency);
       }
-    }
+    });
 
-    // Multiple salaries management
-    function openAddSalaryModal() {
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('modal-salary-name').value = '';
-      document.getElementById('modal-salary-amount').value = '';
-      document.getElementById('modal-salary-frequency').value = 'monthly';
-      document.getElementById('modal-salary-start').value = today;
-      document.getElementById('modal-salary-end').value = '';
-      document.getElementById('modal-salary-projection').value = '';
-      document.getElementById('add-salary-modal').classList.remove('hidden');
-    }
+    const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+    const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+    const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+    const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
 
-    function closeAddSalaryModal() {
-      document.getElementById('add-salary-modal').classList.add('hidden');
-    }
+    document.getElementById('val-expenses').textContent = formatCurrency(totalMonthlySalary * expenses / 100);
+    const investAmount = totalMonthlySalary * invest / 100;
+    // cache last computed invest amount for use by goals
+    window._lastInvestAmount = investAmount;
+    document.getElementById('val-invest').textContent = formatCurrency(investAmount);
+    document.getElementById('val-tithe').textContent = formatCurrency(totalMonthlySalary * tithe / 100);
+    document.getElementById('val-emergency').textContent = formatCurrency(totalMonthlySalary * emergency / 100);
 
-    async function addNewSalary() {
-      if (!currentFamily || !currentFamilyData) return;
-
-      const name = document.getElementById('modal-salary-name').value.trim();
-      const amount = parseFloat(document.getElementById('modal-salary-amount').value);
-      const frequency = document.getElementById('modal-salary-frequency').value;
-      const startDate = document.getElementById('modal-salary-start').value;
-      const endDate = document.getElementById('modal-salary-end').value;
-      const projection = parseFloat(document.getElementById('modal-salary-projection').value) || 0;
-
-      if (!name || !amount || !startDate) {
-        showToast('⚠️', 'Preencha os campos obrigatórios');
-        return;
-      }
-
-      try {
-        const salaryId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        await db.collection('transactions').add({
-          familyId: currentFamily,
-          type: 'salary',
-          description: name,
-          amount: amount,
-          frequency: frequency,
-          startDate: startDate,
-          endDate: endDate || null,
-          projection: projection,
-          isActive: true,
-          userId: currentUser.uid,
-          userName: currentUser.displayName || currentUser.email,
-          salaryId: salaryId,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        showToast('✅', `Salário "${name}" adicionado!`);
-        closeAddSalaryModal();
-        await loadSalariesList();
-        updateDashboard();
-        updateCommitmentValues();
-      } catch (error) {
-        showToast('❌', 'Erro ao adicionar salário');
-        console.error('Error adding salary:', error);
-      }
-    }
-
-    async function loadSalariesList() {
-      if (!currentFamily || !currentFamilyData) return;
-
-      const listEl = document.getElementById('salaries-list');
-
-      try {
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'salary')
-          .where('userId', '==', currentUser.uid)
-          .orderBy('createdAt', 'desc');
-
-        const snapshot = await query.get();
-
-        if (snapshot.empty) {
-          listEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum salário registrado. Adicione seu primeiro salário!</p>';
-          return;
-        }
-
-        listEl.innerHTML = snapshot.docs.map(doc => {
-          const data = doc.data();
-          const freqLabel = {
-            'weekly': 'Semanal',
-            'biweekly': 'Quinzenal',
-            'monthly': 'Mensal'
-          }[data.frequency] || data.frequency;
-
-          const monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
-
-          return `
-            <div class="p-4 bg-slate-800/50 rounded-xl">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex-1">
-                  <h4 class="font-semibold text-white">${data.description}</h4>
-                  <p class="text-sm text-slate-400">${freqLabel} • ${formatCurrency(data.amount)}</p>
-                  <p class="text-xs text-slate-500 mt-1">📅 De ${formatDate(data.startDate)} ${data.endDate ? `até ${formatDate(data.endDate)}` : '(sem término)'}</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-sm text-slate-300">Mensal</p>
-                  <p class="text-xl font-bold text-emerald-400">${formatCurrency(monthlySalary)}</p>
-                </div>
-              </div>
-              <div class="flex gap-2">
-                <button onclick="editSalary('${doc.id}')" class="flex-1 px-3 py-2 text-sm text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-all">
-                  ✏️ Editar
-                </button>
-                <button onclick="toggleSalaryActive('${doc.id}', ${!data.isActive})" class="flex-1 px-3 py-2 text-sm ${data.isActive ? 'text-yellow-400 border border-yellow-500/30' : 'text-slate-400 border border-slate-600'} rounded-lg hover:opacity-80 transition-all">
-                  ${data.isActive ? '⏸️ Desativar' : '▶️ Ativar'}
-                </button>
-                <button onclick="deleteSalary('${doc.id}')" class="flex-1 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-all">
-                  🗑️ Deletar
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (error) {
-        listEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar salários</p>';
-        console.error('Error loading salaries:', error);
-      }
-    }
-
-    async function toggleSalaryActive(docId, isActive) {
-      try {
-        await db.collection('transactions').doc(docId).update({
-          isActive: isActive
-        });
-
-        showToast('✅', isActive ? 'Salário ativado!' : 'Salário desativado!');
-        await loadSalariesList();
-        updateDashboard();
-        updateCommitmentValues();
-      } catch (error) {
-        showToast('❌', 'Erro ao atualizar salário');
-        console.error('Error toggling salary:', error);
-      }
-    }
-
-    async function deleteSalary(docId) {
-      deleteCallback = async () => {
-        try {
-          await db.collection('transactions').doc(docId).delete();
-          showToast('✅', 'Salário excluído');
-          await loadSalariesList();
-          updateDashboard();
-          updateCommitmentValues();
-        } catch (error) {
-          showToast('❌', 'Erro ao excluir');
-          console.error('Error deleting:', error);
-        }
-      };
-
-      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir este salário?';
-      document.getElementById('delete-modal').classList.remove('hidden');
-    }
-
-    async function editSalary(docId) {
-      // Implementar edição em modal posterior
-      showToast('ℹ️', 'Edição de salários em breve');
-    }
-
-    async function saveSatisfaction() {
-      if (!currentFamily || !currentFamilyData) return;
-
-      const satisfaction = parseInt(document.getElementById('salary-satisfaction').value) || 50;
-
-      try {
-        await db.collection('finances').doc(`${currentFamily}_satisfaction_${currentUser.uid}`).set({
-          familyId: currentFamily,
-          satisfaction: satisfaction,
-          userId: currentUser.uid,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        showToast('✅', 'Satisfação salva!');
-      } catch (error) {
-        showToast('❌', 'Erro ao salvar');
-        console.error('Error saving satisfaction:', error);
-      }
-    }
-    
-    async function addExtraIncome() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const desc = document.getElementById('extra-income-desc').value.trim();
-      const amount = parseFloat(document.getElementById('extra-income-amount').value);
-      const date = document.getElementById('extra-income-date').value;
-      
-      if (!desc || !amount || !date) {
-        showToast('⚠️', 'Preencha todos os campos');
-        return;
-      }
-      
-      try {
-        await db.collection('transactions').add({
-          familyId: currentFamily,
-          type: 'income',
-          description: desc,
-          amount: amount,
-          date: date,
-          userId: currentUser.uid,
-          userName: currentUser.displayName || currentUser.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        document.getElementById('extra-income-desc').value = '';
-        document.getElementById('extra-income-amount').value = '';
-        document.getElementById('extra-income-date').value = '';
-        
-        showToast('✅', 'Ganho adicionado!');
-        await loadIncomeHistory();
-        updateDashboard();
-      } catch (error) {
-        showToast('❌', 'Erro ao adicionar');
-        console.error('Error adding income:', error);
-      }
-    }
-    
-    async function addExpense() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const desc = document.getElementById('expense-desc').value.trim();
-      const amount = parseFloat(document.getElementById('expense-amount').value);
-      const category = document.getElementById('expense-category').value;
-      const date = document.getElementById('expense-date').value;
-      const notes = document.getElementById('expense-notes').value.trim();
-      const recurrence = document.getElementById('expense-recurrence').value;
-      
-      if (!desc || !amount || !date) {
-        showToast('⚠️', 'Preencha os campos obrigatórios');
-        return;
-      }
-      
-      try {
-        const expenseData = {
-          familyId: currentFamily,
-          type: 'expense',
-          description: desc,
-          amount: amount,
-          category: category,
-          date: date,
-          notes: notes,
-          recurrence: recurrence,
-          userId: currentUser.uid,
-          userName: currentUser.displayName || currentUser.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        // Se tem recorrência, salvar como gasto recorrente
-        if (recurrence !== 'once') {
-          expenseData.isRecurring = true;
-          expenseData.nextOccurrence = calculateNextOccurrence(date, recurrence);
-        }
-
-        await db.collection('transactions').add(expenseData);
-        
-        document.getElementById('expense-desc').value = '';
-        document.getElementById('expense-amount').value = '';
-        document.getElementById('expense-notes').value = '';
-        document.getElementById('expense-recurrence').value = 'once';
-        
-        showToast('✅', 'Despesa adicionada!');
-        await loadExpenseHistory();
-        updateDashboard();
-      } catch (error) {
-        showToast('❌', 'Erro ao adicionar');
-        console.error('Error adding expense:', error);
-      }
-    }
-    
-    // Commitment names management
-    let isEditingCommitments = false;
-
-    function toggleEditCommitments() {
-      isEditingCommitments = !isEditingCommitments;
-      
-      const editSection = document.getElementById('edit-commitments-section');
-      const btnEdit = document.getElementById('btn-edit-commitments');
-      
-      if (isEditingCommitments) {
-        editSection.classList.remove('hidden');
-        document.getElementById('edit-name-expenses').value = document.getElementById('name-expenses').value;
-        document.getElementById('edit-name-invest').value = document.getElementById('name-invest').value;
-        document.getElementById('edit-name-tithe').value = document.getElementById('name-tithe').value;
-        document.getElementById('edit-name-emergency').value = document.getElementById('name-emergency').value;
-        btnEdit.classList.remove('btn-primary');
-        btnEdit.classList.add('bg-emerald-600/50');
-      } else {
-        editSection.classList.add('hidden');
-        btnEdit.classList.add('btn-primary');
-        btnEdit.classList.remove('bg-emerald-600/50');
-      }
-    }
-
-    async function saveCommitmentNames() {
-      const commitmentNames = {
-        expenses: document.getElementById('edit-name-expenses').value.trim() || 'Gastos Gerais',
-        invest: document.getElementById('edit-name-invest').value.trim() || 'Investimentos',
-        tithe: document.getElementById('edit-name-tithe').value.trim() || 'Dízimo/Doações',
-        emergency: document.getElementById('edit-name-emergency').value.trim() || 'Reserva de Emergência'
-      };
-
-      try {
-        // Salvar no localStorage
-        localStorage.setItem(`commitmentNames_${currentFamily}`, JSON.stringify(commitmentNames));
-        
-        // Atualizar UI
-        document.getElementById('label-expenses').textContent = commitmentNames.expenses;
-        document.getElementById('name-expenses').value = commitmentNames.expenses;
-        
-        document.getElementById('label-invest').textContent = commitmentNames.invest;
-        document.getElementById('name-invest').value = commitmentNames.invest;
-        
-        document.getElementById('label-tithe').textContent = commitmentNames.tithe;
-        document.getElementById('name-tithe').value = commitmentNames.tithe;
-        
-        document.getElementById('label-emergency').textContent = commitmentNames.emergency;
-        document.getElementById('name-emergency').value = commitmentNames.emergency;
-
-        // Salvar no Firestore também
-        if (currentUser) {
-          await db.collection('finances').doc(`${currentFamily}_commitment_names`).set({
-            ...commitmentNames,
-            familyId: currentFamily,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        }
-
-        toggleEditCommitments();
-        showToast('✅', 'Nomes dos compromissos atualizados!');
-      } catch (error) {
-        showToast('❌', 'Erro ao salvar nomes');
-        console.error('Error saving commitment names:', error);
-      }
-    }
-
-    // Load commitment names on startup
-    async function loadCommitmentNames() {
-      if (!currentFamily) return;
-
-      try {
-        // Tentar carregar do Firestore
-        const docSnap = await db.collection('finances').doc(`${currentFamily}_commitment_names`).get();
-        
-        if (docSnap.exists) {
-          const names = docSnap.data();
-          document.getElementById('label-expenses').textContent = names.expenses || 'Gastos Gerais';
-          document.getElementById('name-expenses').value = names.expenses || 'Gastos Gerais';
-          
-          document.getElementById('label-invest').textContent = names.invest || 'Investimentos';
-          document.getElementById('name-invest').value = names.invest || 'Investimentos';
-          
-          document.getElementById('label-tithe').textContent = names.tithe || 'Dízimo/Doações';
-          document.getElementById('name-tithe').value = names.tithe || 'Dízimo/Doações';
-          
-          document.getElementById('label-emergency').textContent = names.emergency || 'Reserva de Emergência';
-          document.getElementById('name-emergency').value = names.emergency || 'Reserva de Emergência';
-        } else {
-          // Tentar carregar do localStorage
-          const saved = localStorage.getItem(`commitmentNames_${currentFamily}`);
-          if (saved) {
-            const names = JSON.parse(saved);
-            document.getElementById('label-expenses').textContent = names.expenses;
-            document.getElementById('name-expenses').value = names.expenses;
-            
-            document.getElementById('label-invest').textContent = names.invest;
-            document.getElementById('name-invest').value = names.invest;
-            
-            document.getElementById('label-tithe').textContent = names.tithe;
-            document.getElementById('name-tithe').value = names.tithe;
-            
-            document.getElementById('label-emergency').textContent = names.emergency;
-            document.getElementById('name-emergency').value = names.emergency;
+    // If goals are rendered, distribute investAmount as default monthly contribution
+    const goalsContainer = document.getElementById('goals-list');
+    if (goalsContainer) {
+      const goalItems = goalsContainer.querySelectorAll('[id^="goal-"]');
+      const count = goalItems.length;
+      if (count > 0) {
+        const perGoal = investAmount / count;
+        goalItems.forEach(item => {
+          const id = item.id.replace('goal-', '');
+          const monthlyInput = document.getElementById(`goal-monthly-${id}`);
+          if (monthlyInput) {
+            // if there's only one goal, put the whole investAmount as default
+            if (count === 1) {
+              monthlyInput.value = investAmount.toFixed(2);
+              monthlyInput.dataset.userEdited = '';
+            } else {
+              // only set if user didn't manually edit
+              if (!monthlyInput.dataset.userEdited) {
+                monthlyInput.value = perGoal.toFixed(2);
+              }
+            }
+            // refresh estimates to reflect new default
+            try { computeEstimatesForGoal(id); } catch (e) {}
           }
-        }
-
-        // Load custom commitments
-        await loadCustomCommitments();
-      } catch (error) {
-        console.log('Could not load commitment names:', error);
-      }
-    }
-
-    // Custom Commitments Management
-    async function loadCustomCommitments() {
-      if (!currentFamily) return;
-
-      try {
-        const docSnap = await db.collection('finances').doc(`${currentFamily}_custom_commitments`).get();
-        const customList = document.getElementById('custom-commitments-list');
-
-        if (docSnap.exists && docSnap.data().commitments) {
-          const commitments = docSnap.data().commitments;
-          
-          customList.innerHTML = commitments.map((com, idx) => `
-            <div class="p-2 bg-slate-800/50 rounded-lg flex items-center justify-between">
-              <div class="flex-1">
-                <input type="text" value="${com.emoji} ${com.name}" disabled class="input-dark w-full px-2 py-1 rounded text-white text-sm opacity-70">
-              </div>
-              <button onclick="deleteCustomCommitment(${idx})" class="ml-2 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10 rounded">
-                🗑️
-              </button>
-            </div>
-          `).join('');
-        } else {
-          customList.innerHTML = '';
-        }
-      } catch (error) {
-        console.log('Could not load custom commitments:', error);
-      }
-    }
-
-    async function addNewCommitment() {
-      if (!currentFamily || !currentFamilyData) return;
-
-      const emoji = document.getElementById('new-commitment-emoji').value.trim();
-      const name = document.getElementById('new-commitment-name').value.trim();
-
-      if (!emoji || !name) {
-        showToast('⚠️', 'Digite o emoji e o nome');
-        return;
-      }
-
-      try {
-        const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
-        const docSnap = await docRef.get();
-
-        let commitments = [];
-        if (docSnap.exists && docSnap.data().commitments) {
-          commitments = docSnap.data().commitments;
-        }
-
-        commitments.push({ emoji, name });
-
-        await docRef.set({
-          familyId: currentFamily,
-          commitments: commitments,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        document.getElementById('new-commitment-emoji').value = '';
-        document.getElementById('new-commitment-name').value = '';
-
-        showToast('✅', `Divisão "${emoji} ${name}" adicionada!`);
-        await loadCustomCommitments();
-      } catch (error) {
-        showToast('❌', 'Erro ao adicionar divisão');
-        console.error('Error adding custom commitment:', error);
       }
     }
 
-    async function deleteCustomCommitment(index) {
-      if (!currentFamily || !currentFamilyData) return;
-
-      try {
-        const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
-        const docSnap = await docRef.get();
-
-        if (docSnap.exists && docSnap.data().commitments) {
-          const commitments = docSnap.data().commitments;
-          commitments.splice(index, 1);
-
-          await docRef.set({
-            familyId: currentFamily,
-            commitments: commitments,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-
-          showToast('✅', 'Divisão removida!');
-          await loadCustomCommitments();
-        }
-      } catch (error) {
-        showToast('❌', 'Erro ao remover divisão');
-        console.error('Error deleting custom commitment:', error);
-      }
+    // Atualiza valores custom
+    const docSnap = await db.collection('finances').doc(`${currentFamily}_custom_commitments`).get();
+    let percentages = [];
+    if (docSnap.exists && Array.isArray(docSnap.data().percentages)) {
+      percentages = docSnap.data().percentages;
+    } else {
+      // fallback: ler inputs na tela
+      document.querySelectorAll('.commit-custom-percent').forEach((el, idx) => {
+        percentages[idx] = parseFloat(el.value) || 0;
+      });
     }
-    
-    async function saveCommitments() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
-      const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
-      const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
-      const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
-      
-      if (expenses + invest + tithe + emergency !== 100) {
-        showToast('⚠️', 'O total deve ser 100%');
-        return;
-      }
-      
-      try {
-        await db.collection('finances').doc(`${currentFamily}_commitments_${currentUser.uid}`).set({
-          familyId: currentFamily,
-          expenses,
-          invest,
-          tithe,
-          emergency,
-          userId: currentUser.uid,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        showToast('✅', 'Divisão salva!');
-        updateCommitmentValues();
-      } catch (error) {
-        showToast('❌', 'Erro ao salvar');
-        console.error('Error saving commitments:', error);
-      }
+
+    const commitMain = document.getElementById('custom-commitments-main');
+    if (commitMain) {
+      const items = commitMain.querySelectorAll('[data-custom-index]');
+      items.forEach(item => {
+        const idx = parseInt(item.getAttribute('data-custom-index'), 10);
+        const name = item.getAttribute('data-custom-name') || '';
+        const key = sanitizeKey(name);
+        const valEl = document.getElementById(`val-custom-${key}`);
+        const pct = percentages[idx] || 0;
+        if (valEl) {
+          valEl.textContent = formatCurrency(totalMonthlySalary * pct / 100);
+        }
+      });
     }
-    
-    // Load History Functions
-    async function loadIncomeHistory() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const historyEl = document.getElementById('income-history');
-      
-      try {
-        let query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'income')
-          .orderBy('createdAt', 'desc')
-          .limit(20);
-        
-        if (dashboardView === 'individual') {
-          query = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'income')
-            .where('userId', '==', currentUser.uid)
-            .orderBy('createdAt', 'desc')
-            .limit(20);
-        }
-        
-        const snapshot = await query.get();
-        
-        if (snapshot.empty) {
-          historyEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma entrada registrada</p>';
-          return;
-        }
-        
-        historyEl.innerHTML = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return `
-            <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-              <div class="flex items-center gap-3">
-                <span class="text-2xl">💰</span>
-                <div>
-                  <p class="font-medium text-white">${data.description}</p>
-                  <p class="text-xs text-slate-500">${data.date} • ${data.userName || 'Usuário'}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-emerald-400">+ ${formatCurrency(data.amount)}</span>
-                <button onclick="deleteTransaction('${doc.id}')" class="text-slate-500 hover:text-red-400 transition-colors p-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (error) {
-        historyEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar</p>';
-        console.error('Error loading income:', error);
-      }
+
+    // notify dashboard to re-render category distribution using latest commitment values
+    if (typeof updateDashboard === 'function') updateDashboard();
+  } catch (error) {
+    console.error('Error updating commitment values:', error);
+  }
+}
+
+// Carregar divisões extras e renderizar tanto na área de edição quanto na área principal
+async function loadCustomCommitments() {
+  if (!currentFamily) return;
+
+  try {
+    const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
+    const docSnap = await docRef.get();
+
+    const customList = document.getElementById('custom-commitments-list');
+    const customMain = document.getElementById('custom-commitments-main');
+    // limpar existentes
+    customList.innerHTML = '';
+    // remover custom values existentes do painel de valores
+    document.querySelectorAll('[data-custom-value="true"]').forEach(el => el.remove());
+    // remover custom inputs do painel principal
+    customMain.querySelectorAll('[data-custom-index]').forEach(el => el.remove());
+
+    let commitments = [];
+    let percentages = [];
+
+    if (docSnap.exists) {
+      commitments = docSnap.data().commitments || [];
+      percentages = docSnap.data().percentages || [];
     }
-    
-    async function loadExpenseHistory() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const historyEl = document.getElementById('expense-history');
-      const filter = document.getElementById('expense-filter').value;
-      
-      try {
-        let query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'expense')
-          .orderBy('createdAt', 'desc')
-          .limit(50);
-        
-        if (dashboardView === 'individual') {
-          query = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'expense')
-            .where('userId', '==', currentUser.uid)
-            .orderBy('createdAt', 'desc')
-            .limit(50);
-        }
-        
-        const snapshot = await query.get();
-        
-        let expenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        if (filter !== 'all') {
-          expenses = expenses.filter(e => e.category === filter);
-        }
-        
-        if (expenses.length === 0) {
-          historyEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma despesa registrada</p>';
-          return;
-        }
-        
-        const categoryIcons = {
-          moradia: '🏠',
-          alimentacao: '🍽️',
-          transporte: '🚗',
-          saude: '🏥',
-          educacao: '📚',
-          lazer: '🎮',
-          vestuario: '👕',
-          servicos: '📱',
-          outros: '📦'
-        };
-        
-        historyEl.innerHTML = expenses.map(data => `
-          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">${categoryIcons[data.category] || '📦'}</span>
-              <div>
-                <p class="font-medium text-white">${data.description} ${data.isRecurring ? '<span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded ml-2">🔄 ' + (data.recurrence === 'weekly' ? 'Semanal' : data.recurrence === 'biweekly' ? 'Quinzenal' : data.recurrence === 'monthly' ? 'Mensal' : 'Anual') + '</span>' : ''}</p>
-                <p class="text-xs text-slate-500">${data.date} • ${data.userName || 'Usuário'}</p>
-                ${data.notes ? `<p class="text-xs text-slate-400 mt-1">${data.notes}</p>` : ''}
-              </div>
-            </div>
+
+    // render na área de edição (com botão remover)
+    customList.innerHTML = commitments.map((com, idx) => `
+      <div class="flex items-center gap-2">
+        <input type="text" value="${com.emoji} ${com.name}" disabled class="input-dark w-full px-2 py-1 rounded text-white text-sm opacity-70">
+        <input type="number" min="0" max="100" step="1" class="input-dark px-2 py-1 rounded text-white text-sm commit-custom-percent" data-custom-input-index="${idx}" value="${percentages[idx] || 0}">
+        <button onclick="deleteCustomCommitment(${idx})" class="ml-2 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10 rounded">🗑️</button>
+      </div>
+    `).join('');
+
+    // render na área principal (percent input + display removed handled above)
+    commitments.forEach((com, idx) => {
+      const key = sanitizeKey(com.name);
+      const pct = percentages[idx] || 0;
+
+      const mainHtml = document.createElement('div');
+      mainHtml.className = 'flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl';
+      mainHtml.setAttribute('data-custom-index', idx);
+      mainHtml.setAttribute('data-custom-name', com.name);
+      mainHtml.innerHTML = `
+        <div class="flex items-center gap-3 flex-1">
+          <span class="text-2xl">${com.emoji}</span>
+          <div class="flex-1">
             <div class="flex items-center gap-2">
-              <span class="font-bold text-red-400">- ${formatCurrency(data.amount)}</span>
-              <button onclick="deleteTransaction('${data.id}')" class="text-slate-500 hover:text-red-400 transition-colors p-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-              </button>
+              <span class="text-slate-300">${com.name}</span>
+              <input type="number" min="0" max="100" step="1" value="${pct}" class="input-dark ml-3 px-2 py-1 rounded commit-custom-percent" data-custom-input-index="${idx}">
+              <span class="text-slate-400 ml-1">%</span>
             </div>
           </div>
-        `).join('');
-      } catch (error) {
-        historyEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar</p>';
-        console.error('Error loading expenses:', error);
-      }
-    }
-    
-    function filterExpenses() {
-      loadExpenseHistory();
-    }
-    
-    async function deleteTransaction(docId) {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      deleteCallback = async () => {
-        try {
-          await db.collection('transactions').doc(docId).delete();
-          showToast('✅', 'Transação excluída');
-          await loadIncomeHistory();
-          await loadExpenseHistory();
-          updateDashboard();
-        } catch (error) {
-          showToast('❌', 'Erro ao excluir');
-          console.error('Error deleting:', error);
-        }
-      };
-      
-      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir esta transação?';
-      document.getElementById('delete-modal').classList.remove('hidden');
-    }
-    
-    // Dashboard Update
-    async function updateDashboard() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      try {
-        // Get salary
-        let monthlySalary = 0;
-        let satisfaction = 50;
-        
-        if (dashboardView === 'individual') {
-          // Load all active salaries for current user
-          const salariesQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'salary')
-            .where('userId', '==', currentUser.uid)
-            .where('isActive', '==', true);
-          
-          const salariesSnap = await salariesQuery.get();
-          salariesSnap.forEach(doc => {
-            const data = doc.data();
-            const today = new Date().toISOString().split('T')[0];
-            const startOk = data.startDate <= today;
-            const endOk = !data.endDate || data.endDate >= today;
-            
-            if (startOk && endOk) {
-              monthlySalary += calculateMonthlySalary(data.amount, data.frequency);
-            }
-          });
-
-          // Get satisfaction
-          const satisfactionDoc = await db.collection('finances')
-            .doc(`${currentFamily}_satisfaction_${currentUser.uid}`).get();
-          if (satisfactionDoc.exists) {
-            satisfaction = satisfactionDoc.data().satisfaction || 50;
-          }
-        } else {
-          // Get all family salaries
-          const membersEmails = currentFamilyData.members || [];
-          const allUserIds = [currentFamilyData.ownerId];
-          
-          // Get user IDs from emails
-          for (const email of membersEmails) {
-            const userSnap = await db.collection('users').where('email', '==', email).get();
-            userSnap.forEach(doc => allUserIds.push(doc.id));
-          }
-          
-          let totalSatisfaction = 0;
-          let satisfactionCount = 0;
-          
-          for (const userId of allUserIds) {
-            // Load all active salaries
-            const salariesQuery = db.collection('transactions')
-              .where('familyId', '==', currentFamily)
-              .where('type', '==', 'salary')
-              .where('userId', '==', userId)
-              .where('isActive', '==', true);
-            
-            const salariesSnap = await salariesQuery.get();
-            salariesSnap.forEach(doc => {
-              const data = doc.data();
-              const today = new Date().toISOString().split('T')[0];
-              const startOk = data.startDate <= today;
-              const endOk = !data.endDate || data.endDate >= today;
-              
-              if (startOk && endOk) {
-                monthlySalary += calculateMonthlySalary(data.amount, data.frequency);
-              }
-            });
-
-            // Get satisfaction
-            const satisfactionDoc = await db.collection('finances')
-              .doc(`${currentFamily}_satisfaction_${userId}`).get();
-            if (satisfactionDoc.exists) {
-              totalSatisfaction += satisfactionDoc.data().satisfaction || 50;
-              satisfactionCount++;
-            }
-          }
-          
-          if (satisfactionCount > 0) {
-            satisfaction = Math.round(totalSatisfaction / satisfactionCount);
-          }
-        }
-        
-        // Get income and expenses
-        const now = new Date();
-        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-        
-        let incomeQuery, expenseQuery;
-        
-        if (dashboardView === 'individual') {
-          incomeQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'income')
-            .where('userId', '==', currentUser.uid);
-          
-          expenseQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'expense')
-            .where('userId', '==', currentUser.uid);
-        } else {
-          incomeQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'income');
-          expenseQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'expense');
-        }
-        
-        const incomeSnap = await incomeQuery.get();
-        const expenseSnap = await expenseQuery.get();
-        
-        let totalExtraIncome = 0;
-        let totalExpenses = 0;
-        const categoryTotals = {};
-        const recentTransactions = [];
-        
-        incomeSnap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= firstDay && data.date <= lastDay) {
-            totalExtraIncome += data.amount;
-          }
-          recentTransactions.push({ ...data, id: doc.id, transType: 'income' });
-        });
-        
-        expenseSnap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= firstDay && data.date <= lastDay) {
-            totalExpenses += data.amount;
-            categoryTotals[data.category] = (categoryTotals[data.category] || 0) + data.amount;
-          }
-          recentTransactions.push({ ...data, id: doc.id, transType: 'expense' });
-        });
-        
-        const totalIncome = monthlySalary + totalExtraIncome;
-        const balance = totalIncome - totalExpenses;
-        
-        // Update UI
-        document.getElementById('dash-total-income').textContent = formatCurrency(totalIncome);
-        document.getElementById('dash-total-expenses').textContent = formatCurrency(totalExpenses);
-        document.getElementById('dash-balance').textContent = formatCurrency(balance);
-        document.getElementById('dash-balance').className = `text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}`;
-        
-        // Update satisfaction ring
-        const ring = document.getElementById('satisfaction-ring');
-        const circumference = 2 * Math.PI * 56;
-        const offset = circumference - (satisfaction / 100) * circumference;
-        ring.style.strokeDashoffset = offset;
-        document.getElementById('satisfaction-value').textContent = satisfaction + '%';
-        
-        // Update category chart
-        updateCategoryChart(categoryTotals, totalExpenses);
-        
-        // Update recent transactions
-        recentTransactions.sort((a, b) => {
-          const dateA = a.createdAt?.toDate?.() || new Date(a.date);
-          const dateB = b.createdAt?.toDate?.() || new Date(b.date);
-          return dateB - dateA;
-        });
-        
-        const recentEl = document.getElementById('recent-transactions');
-        if (recentTransactions.length === 0) {
-          recentEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhuma transação registrada</p>';
-        } else {
-          const categoryIcons = {
-            moradia: '🏠', alimentacao: '🍽️', transporte: '🚗', saude: '🏥',
-            educacao: '📚', lazer: '🎮', vestuario: '👕', servicos: '📱', outros: '📦'
-          };
-          
-          recentEl.innerHTML = recentTransactions.slice(0, 10).map(t => `
-            <div class="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg">
-              <div class="flex items-center gap-3">
-                <span class="text-xl">${t.transType === 'income' ? '💰' : (categoryIcons[t.category] || '📦')}</span>
-                <div>
-                  <p class="text-sm font-medium text-white">${t.description}</p>
-                  <p class="text-xs text-slate-500">${t.date}</p>
-                </div>
-              </div>
-              <span class="font-semibold ${t.transType === 'income' ? 'text-emerald-400' : 'text-red-400'}">
-                ${t.transType === 'income' ? '+' : '-'} ${formatCurrency(t.amount)}
-              </span>
-            </div>
-          `).join('');
-        }
-      } catch (error) {
-        console.error('Error updating dashboard:', error);
-      }
-    }
-    
-    function updateCategoryChart(categoryTotals, totalExpenses) {
-      const chartEl = document.getElementById('category-chart');
-      
-      if (Object.keys(categoryTotals).length === 0) {
-        chartEl.innerHTML = '<p class="text-slate-500">Adicione despesas para ver o gráfico</p>';
-        return;
-      }
-      
-      const categoryNames = {
-        moradia: 'Moradia', alimentacao: 'Alimentação', transporte: 'Transporte',
-        saude: 'Saúde', educacao: 'Educação', lazer: 'Lazer',
-        vestuario: 'Vestuário', servicos: 'Serviços', outros: 'Outros'
-      };
-      
-      const colors = {
-        moradia: '#10b981', alimentacao: '#f59e0b', transporte: '#3b82f6',
-        saude: '#ef4444', educacao: '#8b5cf6', lazer: '#ec4899',
-        vestuario: '#14b8a6', servicos: '#f97316', outros: '#6b7280'
-      };
-      
-      const sortedCategories = Object.entries(categoryTotals)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-      
-      chartEl.innerHTML = `
-        <div class="w-full space-y-3">
-          ${sortedCategories.map(([cat, amount]) => {
-            const percent = totalExpenses > 0 ? (amount / totalExpenses * 100).toFixed(1) : 0;
-            return `
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span class="text-slate-300">${categoryNames[cat] || cat}</span>
-                  <span class="text-slate-400">${percent}%</span>
-                </div>
-                <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div class="h-full rounded-full" style="width: ${percent}%; background-color: ${colors[cat] || '#6b7280'}"></div>
-                </div>
-              </div>
-            `;
-          }).join('')}
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-bold text-slate-400" id="val-custom-${key}" data-custom-value="true">R$ 0,00</p>
         </div>
       `;
-    }
-    
-    function calculateMonthlySalary(amount, frequency) {
-      if (!amount) return 0;
-      switch (frequency) {
-        case 'weekly': return amount * 4;
-        case 'biweekly': return amount * 2;
-        default: return amount;
-      }
-    }
-    
-    async function updateCommitmentValues() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      try {
-        // Get salary
-        const salaryDoc = await db.collection('finances')
-          .doc(`${currentFamily}_salary_${currentUser.uid}`).get();
-        let monthlySalary = 0;
-        
-        if (salaryDoc.exists) {
-          const data = salaryDoc.data();
-          monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
-        }
-        
-        // Get commitments
-        const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
-        const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
-        const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
-        const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
-        
-        document.getElementById('val-expenses').textContent = formatCurrency(monthlySalary * expenses / 100);
-        document.getElementById('val-invest').textContent = formatCurrency(monthlySalary * invest / 100);
-        document.getElementById('val-tithe').textContent = formatCurrency(monthlySalary * tithe / 100);
-        document.getElementById('val-emergency').textContent = formatCurrency(monthlySalary * emergency / 100);
-      } catch (error) {
-        console.error('Error updating commitment values:', error);
-      }
-    }
-    
-    // Report Generation
-    async function generateReport() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const startDate = document.getElementById('report-start').value;
-      const endDate = document.getElementById('report-end').value;
-      
-      if (!startDate || !endDate) {
-        showToast('⚠️', 'Selecione as datas');
-        return;
-      }
-      
-      const collection = currentFamilyData.collectionName;
-      const reportEl = document.getElementById('report-content');
-      
-      try {
-        reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Gerando relatório...</p>';
-        
-        let incomeQuery, expenseQuery;
-        
-        if (dashboardView === 'individual') {
-          incomeQuery = db.collection(collection)
-            .where('type', '==', 'income')
-            .where('userId', '==', currentUser.uid);
-          
-          expenseQuery = db.collection(collection)
-            .where('type', '==', 'expense')
-            .where('userId', '==', currentUser.uid);
-        } else {
-          incomeQuery = db.collection(collection).where('type', '==', 'income');
-          expenseQuery = db.collection(collection).where('type', '==', 'expense');
-        }
-        
-        const [incomeSnap, expenseSnap] = await Promise.all([
-          incomeQuery.get(),
-          expenseQuery.get()
-        ]);
-        
-        let totalIncome = 0;
-        let totalExpenses = 0;
-        const incomeItems = [];
-        const expenseItems = [];
-        const categoryTotals = {};
-        
-        incomeSnap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= startDate && data.date <= endDate) {
-            totalIncome += data.amount;
-            incomeItems.push(data);
-          }
-        });
-        
-        expenseSnap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= startDate && data.date <= endDate) {
-            totalExpenses += data.amount;
-            expenseItems.push(data);
-            categoryTotals[data.category] = (categoryTotals[data.category] || 0) + data.amount;
-          }
-        });
-        
-        const balance = totalIncome - totalExpenses;
-        
-        const categoryNames = {
-          moradia: '🏠 Moradia', alimentacao: '🍽️ Alimentação', transporte: '🚗 Transporte',
-          saude: '🏥 Saúde', educacao: '📚 Educação', lazer: '🎮 Lazer',
-          vestuario: '👕 Vestuário', servicos: '📱 Serviços', outros: '📦 Outros'
-        };
-        
-        reportEl.innerHTML = `
-          <h3 class="text-lg font-semibold text-white mb-4">
-            Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}
-          </h3>
-          
-          <button onclick="exportReportToCSV('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4">
-            📥 Exportar para CSV
-          </button>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-              <p class="text-slate-400 text-sm">Total de Entradas</p>
-              <p class="text-2xl font-bold text-emerald-400">${formatCurrency(totalIncome)}</p>
-              <p class="text-xs text-slate-500">${incomeItems.length} transações</p>
-            </div>
-            <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
-              <p class="text-slate-400 text-sm">Total de Despesas</p>
-              <p class="text-2xl font-bold text-red-400">${formatCurrency(totalExpenses)}</p>
-              <p class="text-xs text-slate-500">${expenseItems.length} transações</p>
-            </div>
-            <div class="p-4 ${balance >= 0 ? 'bg-blue-500/10 border-blue-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-xl">
-              <p class="text-slate-400 text-sm">Saldo do Período</p>
-              <p class="text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatCurrency(balance)}</p>
-              <p class="text-xs text-slate-500">${balance >= 0 ? 'Positivo' : 'Negativo'}</p>
-            </div>
-          </div>
-          
-          <h4 class="font-semibold text-white mb-3">Despesas por Categoria</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-            ${Object.entries(categoryTotals)
-              .sort((a, b) => b[1] - a[1])
-              .map(([cat, amount]) => `
-                <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                  <span class="text-slate-300">${categoryNames[cat] || cat}</span>
-                  <span class="font-semibold text-white">${formatCurrency(amount)}</span>
-                </div>
-              `).join('')}
-          </div>
-          
-          ${incomeItems.length > 0 ? `
-            <h4 class="font-semibold text-white mb-3">Detalhamento de Entradas</h4>
-            <div class="space-y-2 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
-              ${incomeItems.sort((a, b) => new Date(b.date) - new Date(a.date)).map(item => `
-                <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
-                  <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
-                  <span class="text-emerald-400 font-medium">${formatCurrency(item.amount)}</span>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-          
-          ${expenseItems.length > 0 ? `
-            <h4 class="font-semibold text-white mb-3">Detalhamento de Despesas</h4>
-            <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
-              ${expenseItems.sort((a, b) => new Date(b.date) - new Date(a.date)).map(item => `
-                <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
-                  <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
-                  <span class="text-red-400 font-medium">${formatCurrency(item.amount)}</span>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-        `;
-      } catch (error) {
-        reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Erro ao gerar relatório</p>';
-        console.error('Error generating report:', error);
-      }
-    }
-    
-    // Export to CSV
-    async function exportReportToCSV(startDate, endDate) {
-      if (!currentFamily || !currentFamilyData) return;
+      customMain.appendChild(mainHtml);
+    });
 
-      try {
-        const collection = currentFamilyData.collectionName;
-        let incomeQuery, expenseQuery;
-        
-        if (dashboardView === 'individual') {
-          incomeQuery = db.collection(collection)
-            .where('type', '==', 'income')
-            .where('userId', '==', currentUser.uid);
-          
-          expenseQuery = db.collection(collection)
-            .where('type', '==', 'expense')
-            .where('userId', '==', currentUser.uid);
-        } else {
-          incomeQuery = db.collection(collection).where('type', '==', 'income');
-          expenseQuery = db.collection(collection).where('type', '==', 'expense');
-        }
-        
-        const [incomeSnap, expenseSnap] = await Promise.all([
-          incomeQuery.get(),
-          expenseQuery.get()
-        ]);
+    // adicionar listeners aos inputs recém-criados
+    document.querySelectorAll('.commit-custom-percent').forEach(input => {
+      input.removeEventListener('input', _onCustomPercentInput);
+      input.addEventListener('input', _onCustomPercentInput);
+    });
 
-        let csvContent = 'RELATÓRIO FINANCEIRO\n';
-        csvContent += `Período: ${formatDate(startDate)} a ${formatDate(endDate)}\n`;
-        csvContent += `Família: ${currentFamilyData.name}\n`;
-        csvContent += `Usuário: ${currentUser.displayName || currentUser.email}\n`;
-        csvContent += '\n';
+    // atualizar valores (chama updateCommitmentValues internamente)
+    updateCommitmentTotal();
+    updateCommitmentValues();
+  } catch (error) {
+    console.log('Could not load custom commitments:', error);
+  }
+}
 
-        // Seção de Entradas
-        csvContent += 'ENTRADAS\n';
-        csvContent += 'Data,Descrição,Valor (R$),Usuário\n';
-        
-        let totalIncome = 0;
-        incomeSnap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= startDate && data.date <= endDate) {
-            totalIncome += data.amount;
-            csvContent += `${data.date},"${data.description}",${data.amount.toFixed(2)},${data.userName}\n`;
-          }
-        });
-        
-        csvContent += `TOTAL ENTRADAS,,${totalIncome.toFixed(2)},\n\n`;
+function _onCustomPercentInput() {
+  // salva valores temporariamente na tela e atualiza cálculos
+  updateCommitmentTotal();
+  updateCommitmentValues();
+}
 
-        // Seção de Despesas
-        csvContent += 'DESPESAS\n';
-        csvContent += 'Data,Descrição,Categoria,Valor (R$),Notas,Usuário\n';
-        
-        let totalExpenses = 0;
-        const categoryTotals = {};
-        expenseSnap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= startDate && data.date <= endDate) {
-            totalExpenses += data.amount;
-            categoryTotals[data.category] = (categoryTotals[data.category] || 0) + data.amount;
-            csvContent += `${data.date},"${data.description}","${data.category}",${data.amount.toFixed(2)},"${(data.notes || '').replace(/"/g, '""')}",${data.userName}\n`;
-          }
-        });
-        
-        csvContent += `TOTAL DESPESAS,,,${totalExpenses.toFixed(2)},,\n\n`;
+// Ao adicionar uma nova divisão, salvar também porcentagem inicial 0
+async function addNewCommitment() {
+  if (!currentFamily || !currentFamilyData) return;
 
-        // Seção de Resumo por Categoria
-        csvContent += 'DESPESAS POR CATEGORIA\n';
-        csvContent += 'Categoria,Valor (R$),Percentual (%)\n';
-        
-        Object.entries(categoryTotals)
-          .sort((a, b) => b[1] - a[1])
-          .forEach(([cat, amount]) => {
-            const percent = totalExpenses > 0 ? (amount / totalExpenses * 100).toFixed(2) : 0;
-            csvContent += `"${cat}",${amount.toFixed(2)},${percent}%\n`;
-          });
+  const emoji = document.getElementById('new-commitment-emoji').value.trim();
+  const name = document.getElementById('new-commitment-name').value.trim();
 
-        csvContent += '\n';
-        csvContent += 'RESUMO\n';
-        csvContent += `Total Entradas (R$),${totalIncome.toFixed(2)}\n`;
-        csvContent += `Total Despesas (R$),${totalExpenses.toFixed(2)}\n`;
-        csvContent += `Saldo (R$),${(totalIncome - totalExpenses).toFixed(2)}\n`;
+  if (!emoji || !name) {
+    showToast('⚠️', 'Digite o emoji e o nome');
+    return;
+  }
 
-        // Criar arquivo e fazer download
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
-        element.setAttribute('download', `relatorio_${currentFamilyData.name.toLowerCase().replace(/\s+/g, '_')}_${startDate}_a_${endDate}.csv`);
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+  try {
+    const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
+    const docSnap = await docRef.get();
 
-        showToast('✅', 'Relatório exportado com sucesso!');
-      } catch (error) {
-        showToast('❌', 'Erro ao exportar relatório');
-        console.error('Error exporting CSV:', error);
-      }
+    let commitments = [];
+    let percentages = [];
+    if (docSnap.exists) {
+      commitments = docSnap.data().commitments || [];
+      percentages = docSnap.data().percentages || [];
     }
 
-    // Calculate next occurrence for recurring expenses
-    function calculateNextOccurrence(dateStr, recurrence) {
-      const date = new Date(dateStr);
-      const nextDate = new Date(date);
+    commitments.push({ emoji, name });
+    percentages.push(0); // default 0%
 
-      switch (recurrence) {
-        case 'weekly':
-          nextDate.setDate(nextDate.getDate() + 7);
-          break;
-        case 'biweekly':
-          nextDate.setDate(nextDate.getDate() + 14);
-          break;
-        case 'monthly':
-          nextDate.setMonth(nextDate.getMonth() + 1);
-          break;
-        case 'yearly':
-          nextDate.setFullYear(nextDate.getFullYear() + 1);
-          break;
-        default:
-          return null;
-      }
+    await docRef.set({
+      familyId: currentFamily,
+      commitments: commitments,
+      percentages: percentages,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
 
-      return nextDate.toISOString().split('T')[0];
-    }
+    document.getElementById('new-commitment-emoji').value = '';
+    document.getElementById('new-commitment-name').value = '';
 
-    // Goals Management
-    function openAddGoalModal() {
-      document.getElementById('modal-goal-name').value = '';
-      document.getElementById('modal-goal-amount').value = '';
-      document.getElementById('modal-goal-description').value = '';
-      document.getElementById('add-goal-modal').classList.remove('hidden');
-    }
+    showToast('✅', `Divisão "${emoji} ${name}" adicionada!`);
+    await loadCustomCommitments();
+  } catch (error) {
+    showToast('❌', 'Erro ao adicionar divisão');
+    console.error('Error adding custom commitment:', error);
+  }
+}
 
-    function closeAddGoalModal() {
-      document.getElementById('add-goal-modal').classList.add('hidden');
-    }
+// Ao deletar, também atualizar o array de percentages no documento
+async function deleteCustomCommitment(index) {
+  if (!currentFamily || !currentFamilyData) return;
 
-    async function addNewGoal() {
-      if (!currentFamily || !currentFamilyData) return;
+  try {
+    const docRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
+    const docSnap = await docRef.get();
 
-      const name = document.getElementById('modal-goal-name').value.trim();
-      const amount = parseFloat(document.getElementById('modal-goal-amount').value);
-      const description = document.getElementById('modal-goal-description').value.trim();
+    if (docSnap.exists && docSnap.data().commitments) {
+      const commitments = docSnap.data().commitments;
+      const percentages = docSnap.data().percentages || [];
+      commitments.splice(index, 1);
+      percentages.splice(index, 1);
 
-      if (!name || !amount) {
-        showToast('⚠️', 'Preencha o nome e o valor');
-        return;
-      }
-
-      try {
-        await db.collection('transactions').add({
-          familyId: currentFamily,
-          type: 'goal',
-          name: name,
-          amount: amount,
-          description: description,
-          userId: currentUser.uid,
-          userName: currentUser.displayName || currentUser.email,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        showToast('✅', `Objetivo "${name}" adicionado!`);
-        closeAddGoalModal();
-        await loadGoalsList();
-      } catch (error) {
-        showToast('❌', 'Erro ao adicionar objetivo');
-        console.error('Error adding goal:', error);
-      }
-    }
-
-    async function loadGoalsList() {
-      if (!currentFamily || !currentFamilyData) return;
-
-      const listEl = document.getElementById('goals-list');
-
-      try {
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'goal')
-          .where('userId', '==', currentUser.uid)
-          .orderBy('createdAt', 'desc');
-
-        const snapshot = await query.get();
-
-        if (snapshot.empty) {
-          listEl.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum objetivo registrado. Adicione seu primeiro objetivo!</p>';
-          return;
-        }
-
-        listEl.innerHTML = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return `
-            <div class="p-4 bg-slate-800/50 rounded-xl">
-              <div class="flex items-center justify-between">
-                <div class="flex-1">
-                  <h4 class="font-semibold text-white">${data.name}</h4>
-                  <p class="text-sm text-emerald-400 font-bold mt-1">💰 ${formatCurrency(data.amount)}</p>
-                  ${data.description ? `<p class="text-xs text-slate-400 mt-2">${data.description}</p>` : ''}
-                </div>
-                <div class="flex gap-2">
-                  <button onclick="calculateGoalProjection('${doc.id}', ${data.amount})" class="px-3 py-2 text-sm text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-all">
-                    📊 Calcular
-                  </button>
-                  <button onclick="deleteGoal('${doc.id}')" class="px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-all">
-                    🗑️
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (error) {
-        listEl.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar objetivos</p>';
-        console.error('Error loading goals:', error);
-      }
-    }
-
-    async function calculateGoalProjection(goalId, goalAmount) {
-      if (!currentFamily || !currentFamilyData) return;
-
-      try {
-        // Get salary data
-        const salariesQuery = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'salary')
-          .where('userId', '==', currentUser.uid)
-          .where('isActive', '==', true);
-
-        const salariesSnap = await salariesQuery.get();
-        let monthlyInvestment = 0;
-
-        // Calculate total monthly investment from active salaries
-        salariesSnap.forEach(doc => {
-          const data = doc.data();
-          const today = new Date().toISOString().split('T')[0];
-          const startOk = data.startDate <= today;
-          const endOk = !data.endDate || data.endDate >= today;
-          
-          if (startOk && endOk) {
-            const monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
-            // Get commitment percentage for investments (default 20%)
-            monthlyInvestment += monthlySalary * 0.20; // 20% for investments
-          }
-        });
-
-        if (monthlyInvestment <= 0) {
-          showToast('⚠️', 'Configure seus salários primeiro');
-          return;
-        }
-
-        // Display projections
-        const projContent = document.getElementById('projections-content');
-        
-        const investments = [
-          { name: 'SELIC', rate: 0.1075, color: 'emerald' },
-          { name: 'Tesouro IPCA+', rate: 0.10, color: 'blue' },
-          { name: 'Tesouro Prefixado', rate: 0.125, color: 'purple' },
-          { name: 'CDB 110% CDI', rate: 0.118, color: 'yellow' },
-          { name: 'LCI/LCA', rate: 0.102, color: 'pink' },
-          { name: 'Fundos Multimercado', rate: 0.1375, color: 'orange' }
-        ];
-
-        let html = `
-          <div class="card-glass rounded-xl p-5 mb-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Projeções para Atingir o Objetivo</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-                <p class="text-slate-400 text-sm">Objetivo</p>
-                <p class="text-2xl font-bold text-emerald-400">${formatCurrency(goalAmount)}</p>
-              </div>
-              <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-                <p class="text-slate-400 text-sm">Investimento Mensal</p>
-                <p class="text-2xl font-bold text-blue-400">${formatCurrency(monthlyInvestment)}</p>
-              </div>
-            </div>
-            
-            <h4 class="font-semibold text-white mb-3">⏱️ Tempo para Atingir o Objetivo</h4>
-            <div class="space-y-2">
-        `;
-
-        investments.forEach(inv => {
-          const result = calculateInvestmentTime(monthlyInvestment, goalAmount, inv.rate);
-          const timeStr = result.years > 0 
-            ? `${result.years} ano${result.years > 1 ? 's' : ''} e ${result.months} mês${result.months !== 1 ? 'es' : ''}`
-            : `${result.months} mês${result.months !== 1 ? 'es' : ''}`;
-          
-          html += `
-            <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
-              <div class="flex items-center gap-3">
-                <span class="font-medium text-white">${inv.name}</span>
-                <span class="text-xs text-slate-400">${(inv.rate * 100).toFixed(2)}% a.a.</span>
-              </div>
-              <span class="font-bold text-${inv.color}-400">${timeStr}</span>
-            </div>
-          `;
-        });
-
-        html += `
-            </div>
-          </div>
-        `;
-
-        projContent.innerHTML = html;
-
-      } catch (error) {
-        showToast('❌', 'Erro ao calcular projeções');
-        console.error('Error calculating goal projection:', error);
-      }
-    }
-
-    async function deleteGoal(docId) {
-      deleteCallback = async () => {
-        try {
-          await db.collection('transactions').doc(docId).delete();
-          showToast('✅', 'Objetivo excluído');
-          await loadGoalsList();
-          document.getElementById('projections-content').innerHTML = '';
-        } catch (error) {
-          showToast('❌', 'Erro ao excluir');
-          console.error('Error deleting:', error);
-        }
-      };
-
-      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir este objetivo?';
-      document.getElementById('delete-modal').classList.remove('hidden');
-    }
-    
-    // Projections
-    async function calculateProjections() {
-      if (!currentFamily || !currentFamilyData) return;
-      
-      const goalName = document.getElementById('goal-name').value.trim();
-      const goalAmount = parseFloat(document.getElementById('goal-amount').value);
-      
-      if (!goalName || !goalAmount) {
-        showToast('⚠️', 'Preencha o objetivo e valor');
-        return;
-      }
-      
-      const collection = currentFamilyData.collectionName;
-      
-      try {
-        // Get salary data
-        const salaryDoc = await db.collection(collection).doc(`salary_${currentUser.uid}`).get();
-        let monthlySalary = 0;
-        let projectionRate = 0;
-        
-        if (salaryDoc.exists) {
-          const data = salaryDoc.data();
-          monthlySalary = calculateMonthlySalary(data.amount, data.frequency);
-          projectionRate = (data.projection || 0) / 100;
-        }
-        
-        // Get investment percentage
-        const commitDoc = await db.collection(collection).doc(`commitments_${currentUser.uid}`).get();
-        let investPercent = 20;
-        
-        if (commitDoc.exists) {
-          investPercent = commitDoc.data().invest || 20;
-        }
-        
-        const monthlyInvestment = monthlySalary * investPercent / 100;
-        
-        // Investment options
-        const investments = [
-          { name: 'SELIC', rate: 0.1075, color: 'emerald' },
-          { name: 'Tesouro IPCA+', rate: 0.10, color: 'blue' },
-          { name: 'Tesouro Prefixado', rate: 0.125, color: 'purple' },
-          { name: 'CDB 110% CDI', rate: 0.118, color: 'yellow' },
-          { name: 'LCI/LCA', rate: 0.102, color: 'pink' },
-          { name: 'Fundos Multimercado', rate: 0.1375, color: 'orange' }
-        ];
-        
-        // Current salary projection (without raises)
-        const currentProjectionEl = document.getElementById('current-salary-projection');
-        currentProjectionEl.innerHTML = investments.map(inv => {
-          const result = calculateInvestmentTime(monthlyInvestment, goalAmount, inv.rate);
-          return `
-            <div class="p-3 bg-slate-800/50 rounded-lg">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="w-2 h-2 bg-${inv.color}-500 rounded-full"></span>
-                <span class="font-medium text-white">${inv.name}</span>
-              </div>
-              <p class="text-sm text-slate-400">
-                Tempo: <span class="text-white font-semibold">${result.years} anos e ${result.months} meses</span>
-              </p>
-              <p class="text-xs text-slate-500">
-                Aportando ${formatCurrency(monthlyInvestment)}/mês
-              </p>
-            </div>
-          `;
-        }).join('');
-        
-        // Projected salary projection (with raises)
-        const projectedProjectionEl = document.getElementById('projected-salary-projection');
-        
-        if (projectionRate > 0) {
-          projectedProjectionEl.innerHTML = investments.map(inv => {
-            const result = calculateInvestmentTimeWithRaises(monthlyInvestment, goalAmount, inv.rate, projectionRate, investPercent);
-            return `
-              <div class="p-3 bg-slate-800/50 rounded-lg">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="w-2 h-2 bg-${inv.color}-500 rounded-full"></span>
-                  <span class="font-medium text-white">${inv.name}</span>
-                </div>
-                <p class="text-sm text-slate-400">
-                  Tempo: <span class="text-white font-semibold">${result.years} anos e ${result.months} meses</span>
-                </p>
-                <p class="text-xs text-slate-500">
-                  Com aumento de ${(projectionRate * 100).toFixed(1)}%/ano
-                </p>
-              </div>
-            `;
-          }).join('');
-        } else {
-          projectedProjectionEl.innerHTML = '<p class="text-slate-500 text-center py-4">Configure uma projeção de aumento salarial na aba Finanças</p>';
-        }
-        
-        showToast('✅', 'Projeções calculadas!');
-      } catch (error) {
-        showToast('❌', 'Erro ao calcular projeções');
-        console.error('Error calculating projections:', error);
-      }
-    }
-    
-    function calculateInvestmentTime(monthlyAmount, goalAmount, yearlyRate) {
-      if (monthlyAmount <= 0) return { years: 0, months: 0 };
-      
-      const monthlyRate = yearlyRate / 12;
-      let total = 0;
-      let months = 0;
-      
-      while (total < goalAmount && months < 1200) {
-        total = total * (1 + monthlyRate) + monthlyAmount;
-        months++;
-      }
-      
-      return {
-        years: Math.floor(months / 12),
-        months: months % 12
-      };
-    }
-    
-    function calculateInvestmentTimeWithRaises(initialMonthly, goalAmount, yearlyRate, raiseRate, investPercent) {
-      if (initialMonthly <= 0) return { years: 0, months: 0 };
-      
-      const monthlyRate = yearlyRate / 12;
-      let total = 0;
-      let months = 0;
-      let currentMonthly = initialMonthly;
-      
-      while (total < goalAmount && months < 1200) {
-        if (months > 0 && months % 12 === 0) {
-          currentMonthly *= (1 + raiseRate);
-        }
-        total = total * (1 + monthlyRate) + currentMonthly;
-        months++;
-      }
-      
-      return {
-        years: Math.floor(months / 12),
-        months: months % 12
-      };
-    }
-    
-    // Tab Navigation
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(el => {
-        el.classList.remove('tab-active');
-        el.classList.add('text-slate-400');
+      await docRef.set({
+        familyId: currentFamily,
+        commitments: commitments,
+        percentages: percentages,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      
-      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-      document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-active');
-      document.querySelector(`[data-tab="${tabName}"]`).classList.remove('text-slate-400');
-      
-      if (tabName === 'dashboard') {
-        updateDashboard();
-      } else if (tabName === 'commitments') {
-        updateCommitmentValues();
-      }
+
+      showToast('✅', 'Divisão removida!');
+      await loadCustomCommitments();
+      updateCommitmentTotal();
+      updateCommitmentValues();
     }
-    
-    function setDashboardView(view) {
-      dashboardView = view;
-      
-      document.querySelectorAll('.dashboard-view-btn').forEach(btn => {
-        if (btn.dataset.view === view) {
-          btn.classList.add('bg-emerald-600', 'text-white');
-          btn.classList.remove('text-slate-400');
-        } else {
-          btn.classList.remove('bg-emerald-600', 'text-white');
-          btn.classList.add('text-slate-400');
-        }
+  } catch (error) {
+    showToast('❌', 'Erro ao remover divisão');
+    console.error('Error deleting custom commitment:', error);
+  }
+}
+
+// Salvar porcentagens custom quando salvar divisão principal
+async function saveCommitments() {
+  if (!currentFamily || !currentFamilyData) return;
+
+  const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+  const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+  const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+  const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
+
+  // coletar custom percentuais atuais da tela (mantém a ordem)
+  const customPercents = [];
+  document.querySelectorAll('.commit-custom-percent').forEach(el => {
+    customPercents.push(parseFloat(el.value) || 0);
+  });
+
+  const total = expenses + invest + tithe + emergency + customPercents.reduce((a, b) => a + b, 0);
+  if (Math.round(total) !== 100) {
+    showToast('⚠️', 'O total deve ser 100%');
+    return;
+  }
+
+  try {
+    await db.collection('finances').doc(`${currentFamily}_commitments_${currentUser.uid}`).set({
+      familyId: currentFamily,
+      expenses,
+      invest,
+      tithe,
+      emergency,
+      userId: currentUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // também salva porcentagens custom no próprio documento de custom commitments
+    const customRef = db.collection('finances').doc(`${currentFamily}_custom_commitments`);
+    const customDoc = await customRef.get();
+    if (customDoc.exists) {
+      const data = customDoc.data();
+      await customRef.set({
+        ...data,
+        percentages: customPercents,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      
-      updateDashboard();
-    }
-    
-    function setFinanceView(view) {
-      document.querySelectorAll('.finance-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.finance-view-btn').forEach(btn => {
-        if (btn.dataset.view === view) {
-          btn.classList.add('bg-emerald-600', 'text-white');
-          btn.classList.remove('text-slate-400');
-        } else {
-          btn.classList.remove('bg-emerald-600', 'text-white');
-          btn.classList.add('text-slate-400');
-        }
+    } else if (customPercents.length > 0) {
+      // criar doc se houver custom
+      await customRef.set({
+        familyId: currentFamily,
+        commitments: [], // já deve ter sido criado ao adicionar
+        percentages: customPercents,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      
-      document.getElementById(`finance-${view}`).classList.remove('hidden');
-      
-      if (view === 'income') loadIncomeHistory();
-      if (view === 'expenses') loadExpenseHistory();
     }
-    
-    // Settings
-    function openSettings() {
-      if (!currentFamilyData) return;
-      
-      const isOwner = currentFamilyData.ownerId === currentUser.uid;
-      
-      document.getElementById('settings-owner-section').classList.toggle('hidden', !isOwner);
-      document.getElementById('settings-member-section').classList.toggle('hidden', isOwner);
-      
-      if (isOwner) {
-        loadFamilyMembers();
+
+    showToast('✅', 'Divisão salva!');
+    await loadCustomCommitments();
+    updateCommitmentValues();
+  } catch (error) {
+    showToast('❌', 'Erro ao salvar');
+    console.error('Error saving commitments:', error);
+  }
+}
+
+// Ajuste: ao salvar nomes, preserva porcentagens e recarrega tudo (já feito anteriormente)
+
+// RELATÓRIO: incluir salários pro rata no período selecionado
+function monthsBetweenInclusive(start, end) {
+  const s = new Date(start + 'T00:00:00');
+  const e = new Date(end + 'T00:00:00');
+  let months = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth()) + 1;
+  return months > 0 ? months : 0;
+}
+
+async function generateReport() {
+  if (!currentFamily || !currentFamilyData) return;
+
+  const startDate = document.getElementById('report-start').value;
+  const endDate = document.getElementById('report-end').value;
+
+  if (!startDate || !endDate) {
+    showToast('⚠️', 'Selecione as datas');
+    return;
+  }
+
+  const reportEl = document.getElementById('report-content');
+
+  try {
+    reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Gerando relatório...</p>';
+
+    // queries de entradas e despesas (como antes)
+    let incomeQuery, expenseQuery;
+
+    if (dashboardView === 'individual') {
+      incomeQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'income')
+        .where('userId', '==', currentUser.uid);
+
+      expenseQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'expense')
+        .where('userId', '==', currentUser.uid);
+    } else {
+      incomeQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'income');
+      expenseQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'expense');
+    }
+
+    const [incomeSnap, expenseSnap, salarySnap] = await Promise.all([
+      incomeQuery.get(),
+      expenseQuery.get(),
+      db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'salary').get()
+    ]);
+
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    const incomeItems = [];
+    const expenseItems = [];
+    const categoryTotals = {};
+
+    // incluir salários como entradas proporcionais ao período
+    const months = monthsBetweenInclusive(startDate, endDate);
+
+    salarySnap.forEach(doc => {
+      const s = doc.data();
+      // verificar se o salário está ativo dentro do período
+      const startOk = s.startDate <= endDate;
+      const endOk = !s.endDate || s.endDate >= startDate;
+      if (startOk && endOk) {
+        const monthly = calculateMonthlySalary(s.amount, s.frequency);
+        const totalForPeriod = monthly * months;
+        totalIncome += totalForPeriod;
+        incomeItems.push({
+          date: `${startDate} → ${endDate}`,
+          description: `Salário: ${s.description} (${months} mês${months>1?'es':''})`,
+          amount: totalForPeriod,
+          userName: s.userName || s.userId
+        });
       }
-      
-      document.getElementById('settings-modal').classList.remove('hidden');
-    }
-    
-    function closeSettings() {
-      document.getElementById('settings-modal').classList.add('hidden');
-    }
-    
-    async function loadFamilyMembers() {
-      if (!currentFamilyData) return;
-      
-      const membersEl = document.getElementById('family-members');
-      const members = currentFamilyData.members || [];
-      
-      membersEl.innerHTML = `
-        <div class="flex items-center justify-between p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-          <div class="flex items-center gap-2">
-            <span>👑</span>
-            <span class="text-white">${currentFamilyData.ownerName || currentFamilyData.ownerEmail}</span>
-          </div>
-          <span class="text-xs text-emerald-400">Chefe</span>
+    });
+
+    incomeSnap.forEach(doc => {
+      const data = doc.data();
+      if (data.date >= startDate && data.date <= endDate) {
+        totalIncome += Number(data.amount);
+        incomeItems.push(data);
+      }
+    });
+
+    expenseSnap.forEach(doc => {
+      const data = doc.data();
+      if (data.date >= startDate && data.date <= endDate) {
+        totalExpenses += Number(data.amount);
+        expenseItems.push(data);
+        categoryTotals[data.category] = (categoryTotals[data.category] || 0) + Number(data.amount);
+      }
+    });
+
+    const balance = totalIncome - totalExpenses;
+
+    // Monta HTML do relatório (manter exportação separada)
+    reportEl.innerHTML = `
+      <h3 class="text-lg font-semibold text-white mb-4">Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}</h3>
+      <button onclick="exportReportToCSV('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4">📥 Exportar para CSV</button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+          <p class="text-slate-400 text-sm">Total de Entradas</p>
+          <p class="text-2xl font-bold text-emerald-400">${formatCurrency(totalIncome)}</p>
+          <p class="text-xs text-slate-500">${incomeItems.length} transações</p>
         </div>
-        ${members.map(email => `
-          <div class="flex items-center justify-between p-2 bg-slate-800/50 rounded-lg">
-            <div class="flex items-center gap-2">
-              <span>👤</span>
-              <span class="text-white">${email}</span>
-            </div>
-            <button onclick="removeFamilyMember('${email}')" class="text-slate-400 hover:text-red-400 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
+        <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+          <p class="text-slate-400 text-sm">Total de Despesas</p>
+          <p class="text-2xl font-bold text-red-400">${formatCurrency(totalExpenses)}</p>
+          <p class="text-xs text-slate-500">${expenseItems.length} transações</p>
+        </div>
+        <div class="p-4 ${balance >= 0 ? 'bg-blue-500/10 border-blue-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-xl">
+          <p class="text-slate-400 text-sm">Saldo do Período</p>
+          <p class="text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatCurrency(balance)}</p>
+          <p class="text-xs text-slate-500">${balance >= 0 ? 'Positivo' : 'Negativo'}</p>
+        </div>
+      </div>
+
+      <h4 class="font-semibold text-white mb-3">Despesas por Categoria</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        ${Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]).map(([cat, amount]) => `
+          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+            <span class="text-slate-300">${cat}</span>
+            <span class="font-semibold text-white">${formatCurrency(amount)}</span>
           </div>
         `).join('')}
-      `;
-    }
-    
-    async function addFamilyMember() {
-      const email = document.getElementById('add-member-email').value.trim().toLowerCase();
-      
-      if (!email) {
-        showToast('⚠️', 'Digite um email');
-        return;
-      }
-      
-      try {
-        // Check if user exists
-        const userSnap = await db.collection('users').where('email', '==', email).get();
-        
-        if (userSnap.empty) {
-          showToast('❌', 'Usuário não encontrado');
-          return;
-        }
-        
-        if (email === currentUser.email.toLowerCase()) {
-          showToast('⚠️', 'Você já é o chefe');
-          return;
-        }
-        
-        const members = currentFamilyData.members || [];
-        if (members.includes(email)) {
-          showToast('⚠️', 'Membro já adicionado');
-          return;
-        }
-        
-        await db.collection('families').doc(currentFamily).update({
-          members: firebase.firestore.FieldValue.arrayUnion(email)
-        });
-        
-        currentFamilyData.members = [...members, email];
-        document.getElementById('add-member-email').value = '';
-        
-        showToast('✅', 'Membro adicionado!');
-        loadFamilyMembers();
-      } catch (error) {
-        showToast('❌', 'Erro ao adicionar membro');
-        console.error('Error adding member:', error);
-      }
-    }
-    
-    async function removeFamilyMember(email) {
-      try {
-        await db.collection('families').doc(currentFamily).update({
-          members: firebase.firestore.FieldValue.arrayRemove(email)
-        });
-        
-        currentFamilyData.members = currentFamilyData.members.filter(m => m !== email);
-        
-        showToast('✅', 'Membro removido');
-        loadFamilyMembers();
-      } catch (error) {
-        showToast('❌', 'Erro ao remover membro');
-        console.error('Error removing member:', error);
-      }
-    }
-    
-    function confirmDeleteFamily() {
-      deleteCallback = async () => {
-        try {
-          // Delete family collection documents
-          const collection = currentFamilyData.collectionName;
-          const docs = await db.collection(collection).get();
-          
-          const batch = db.batch();
-          docs.forEach(doc => batch.delete(doc.ref));
-          await batch.commit();
-          
-          // Delete family document
-          await db.collection('families').doc(currentFamily).delete();
-          
-          closeSettings();
-          showToast('✅', 'Família excluída');
-          goToFamilySelection();
-        } catch (error) {
-          showToast('❌', 'Erro ao excluir família');
-          console.error('Error deleting family:', error);
-        }
-      };
-      
-      document.getElementById('delete-message').textContent = 'Tem certeza que deseja excluir esta família? Todos os dados serão perdidos permanentemente.';
-      document.getElementById('delete-modal').classList.remove('hidden');
-    }
-    
-    async function leaveFamily() {
-      try {
-        await db.collection('families').doc(currentFamily).update({
-          members: firebase.firestore.FieldValue.arrayRemove(currentUser.email)
-        });
-        
-        closeSettings();
-        showToast('👋', 'Você saiu da família');
-        goToFamilySelection();
-      } catch (error) {
-        showToast('❌', 'Erro ao sair da família');
-        console.error('Error leaving family:', error);
-      }
-    }
-    
-    function closeDeleteModal() {
-      document.getElementById('delete-modal').classList.add('hidden');
-      deleteCallback = null;
-    }
-    
-    function confirmDelete() {
-      if (deleteCallback) {
-        deleteCallback();
-      }
-      closeDeleteModal();
-    }
-    
-    // Utility Functions
-    function formatCurrency(value) {
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(value || 0);
-    }
-    
-    function formatDate(dateStr) {
-      return new Date(dateStr + 'T00:00:00').toLocaleDateString('pt-BR');
-    }
-    
-    function showToast(icon, message) {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-icon').textContent = icon;
-      document.getElementById('toast-message').textContent = message;
-      toast.classList.remove('hidden');
-      
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 3000);
-    }
-    
-    // Set default dates
-    document.addEventListener('DOMContentLoaded', () => {
-      const today = new Date().toISOString().split('T')[0];
-      const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-      
-      document.getElementById('extra-income-date').value = today;
-      document.getElementById('expense-date').value = today;
-      document.getElementById('report-start').value = firstDay;
-      document.getElementById('report-end').value = today;
-    });
+      </div>
 
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        // Only register service worker on HTTPS or localhost
-        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const isSecure = window.location.protocol === 'https:';
-        
-        if (isLocalhost || isSecure) {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-              console.log('Service Worker registrado com sucesso:', registration);
-            })
-            .catch(error => {
-              console.log('Erro ao registrar Service Worker:', error);
-            });
-        } else {
-          console.log('Service Worker requer HTTPS ou localhost. Ambiente atual:', window.location.protocol);
-        }
-      });
-    }
+      ${incomeItems.length > 0 ? `
+        <h4 class="font-semibold text-white mb-3">Detalhamento de Entradas</h4>
+        <div class="space-y-2 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
+          ${incomeItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
+            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
+              <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
+              <span class="text-emerald-400 font-medium">+ ${formatCurrency(item.amount)}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
 
+      ${expenseItems.length > 0 ? `
+        <h4 class="font-semibold text-white mb-3">Detalhamento de Despesas</h4>
+        <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
+          ${expenseItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
+            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
+              <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
+              <span class="text-red-400 font-medium">- ${formatCurrency(item.amount)}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+    `;
+
+  } catch (error) {
+    reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Erro ao gerar relatório</p>';
+    console.error('Error generating report:', error);
+  }
+}
+
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6dc2a81525df55',t:'MTc2OTkxMDIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6dc2a81525df55',t:'MTc2OTkxMDIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
