@@ -86,13 +86,22 @@
     }
     /* Melhorias para mobile */
     @media (max-width: 640px) {
+      body, html, #app, #main-screen {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+      }
       .card-glass {
         padding: 1rem !important;
+        overflow: hidden;
       }
       .grid-cols-1 {
         grid-template-columns: 1fr !important;
       }
       .md\:grid-cols-2, .md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+      }
+      .lg\:grid-cols-2 {
         grid-template-columns: 1fr !important;
       }
       .text-3xl {
@@ -122,16 +131,36 @@
       }
       input, select, textarea {
         font-size: 16px !important; /* Evita zoom no iOS */
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      button {
+        min-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .whitespace-nowrap {
+        white-space: normal !important;
+      }
+      main {
+        padding: 0.5rem !important;
+      }
+      header {
+        padding: 0.5rem !important;
+      }
+      nav {
+        padding: 0.5rem !important;
       }
     }
     /* Gráfico de barras para categorias */
     .category-bar {
-      height: 28px;
+      height: 36px;
       background: rgba(71, 85, 105, 0.3);
       border-radius: 6px;
       overflow: hidden;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       position: relative;
+      display: flex;
+      align-items: center;
     }
     .category-bar-fill {
       height: 100%;
@@ -140,6 +169,9 @@
       transition: width 0.5s ease;
       position: relative;
       min-width: 4%;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
     }
     .category-bar-fill.alt-color {
       background: linear-gradient(90deg, #3b82f6, #1d4ed8);
@@ -151,10 +183,6 @@
       background: linear-gradient(90deg, #f59e0b, #d97706);
     }
     .category-bar-label {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
       color: white;
       font-weight: 600;
       font-size: 13px;
@@ -163,31 +191,52 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .category-bar-value {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
       color: white;
       font-weight: 600;
       font-size: 12px;
       z-index: 2;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      margin-left: auto;
+      white-space: nowrap;
+      padding-left: 8px;
     }
     .category-item {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
+      padding: 0 4px;
     }
     .category-legend {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
     }
     .category-color {
       width: 12px;
       height: 12px;
       border-radius: 50%;
+      flex-shrink: 0;
+    }
+    @media (max-width: 640px) {
+      .category-bar {
+        height: 32px;
+        margin-bottom: 10px;
+      }
+      .category-bar-label {
+        font-size: 11px;
+        gap: 4px;
+      }
+      .category-bar-value {
+        font-size: 11px;
+      }
+      .category-item {
+        margin-bottom: 12px;
+      }
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -1340,14 +1389,144 @@
     }
 
     // Settings & Family Management
-    function openSettings() {
-      const modal = document.getElementById('settings-modal');
-      if (modal) modal.classList.remove('hidden');
+    async function openSettings() {
+      try {
+        const modal = document.getElementById('settings-modal');
+        if (!modal) {
+          console.error('Settings modal not found');
+          showToast('❌', 'Erro: Modal não encontrado');
+          return;
+        }
+        
+        // Mostrar o modal imediatamente
+        modal.classList.remove('hidden');
+        
+        // Carregar dados em paralelo se disponível
+        if (currentFamily && currentFamilyData && db) {
+          try {
+            await loadFamilyMembersForSettings();
+          } catch (error) {
+            console.warn('Could not load family members:', error);
+            // Continua mesmo se falhar ao carregar membros
+          }
+        }
+      } catch (error) {
+        console.error('Error opening settings:', error);
+        showToast('❌', 'Erro ao abrir configurações');
+      }
     }
 
     function closeSettings() {
       const modal = document.getElementById('settings-modal');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    async function loadFamilyMembersForSettings() {
+      if (!currentFamily || !currentFamilyData) {
+        console.warn('Family data not available');
+        return;
+      }
+      
+      try {
+        const familyDoc = await db.collection('families').doc(currentFamily).get();
+        if (!familyDoc.exists) {
+          console.warn('Family document not found');
+          return;
+        }
+        
+        const data = familyDoc.data();
+        const isOwner = data.ownerId === currentUser.uid;
+        
+        // Update UI based on role
+        const ownerSection = document.getElementById('settings-owner-section');
+        const memberSection = document.getElementById('settings-member-section');
+        
+        if (isOwner) {
+          if (ownerSection) ownerSection.classList.remove('hidden');
+          if (memberSection) memberSection.classList.add('hidden');
+          
+          // Load member list
+          await loadFamilyMembersList(data.members || []);
+        } else {
+          if (ownerSection) ownerSection.classList.add('hidden');
+          if (memberSection) memberSection.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Error loading family members:', error);
+      }
+    }
+    
+    async function loadFamilyMembersList(memberIds) {
+      const membersContainer = document.getElementById('family-members');
+      if (!membersContainer) return;
+      
+      try {
+        membersContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Carregando membros...</p>';
+        
+        if (memberIds.length === 0) {
+          membersContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum membro adicional</p>';
+          return;
+        }
+        
+        const membersList = [];
+        for (const memberId of memberIds) {
+          try {
+            const userDoc = await db.collection('users').doc(memberId).get();
+            if (userDoc.exists) {
+              membersList.push({
+                id: memberId,
+                ...userDoc.data()
+              });
+            }
+          } catch (e) {
+            console.error('Error loading member:', e);
+          }
+        }
+        
+        if (membersList.length === 0) {
+          membersContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum membro adicional</p>';
+          return;
+        }
+        
+        membersContainer.innerHTML = membersList.map(member => `
+          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+            <div>
+              <p class="text-white font-medium">${member.name || 'Usuário'}</p>
+              <p class="text-slate-400 text-sm">${member.email}</p>
+            </div>
+            <button onclick="removeFamilyMember('${member.id}')" class="text-red-400 hover:text-red-300 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        `).join('');
+      } catch (error) {
+        membersContainer.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar membros</p>';
+        console.error('Error loading members list:', error);
+      }
+    }
+    
+    async function removeFamilyMember(memberId) {
+      if (!currentFamily || currentFamilyData.ownerId !== currentUser.uid) {
+        showToast('⚠️', 'Apenas o chefe pode remover membros');
+        return;
+      }
+      
+      if (!confirm('Deseja remover este membro da família?')) return;
+      
+      try {
+        await db.collection('families').doc(currentFamily).update({
+          members: firebase.firestore.FieldValue.arrayRemove(memberId)
+        });
+        showToast('✅', 'Membro removido com sucesso');
+        loadFamilyMembersForSettings();
+      } catch (error) {
+        showToast('❌', 'Erro ao remover membro');
+        console.error('Error removing member:', error);
+      }
     }
 
     async function addFamilyMember() {
@@ -1377,6 +1556,7 @@
         });
         document.getElementById('add-member-email').value = '';
         if (typeof showToast === 'function') showToast('✅', 'Membro adicionado!');
+        loadFamilyMembersForSettings();
       } catch (error) {
         console.error('Error adding member:', error);
         if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar membro');
