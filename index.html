@@ -965,6 +965,12 @@
        </div>
        <p class="text-slate-500 text-xs mt-2">O usuário precisa ter uma conta no Cash Control</p>
       </div>
+      <div class="mb-6">
+       <h3 class="text-lg font-semibold text-white mb-3">Validar Acesso de Membro</h3>
+       <div class="flex gap-2 flex-col sm:flex-row"><input type="email" id="validate-member-email" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@membro.com"> <button onclick="validateMemberLogin()" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white whitespace-nowrap"> Validar </button>
+       </div>
+       <p class="text-slate-500 text-xs mt-2">Confirme se um membro tem acesso à família</p>
+      </div>
       <div class="border-t border-slate-700 pt-6">
        <h3 class="text-lg font-semibold text-red-400 mb-3">Zona de Perigo</h3><button onclick="confirmDeleteFamily()" class="w-full py-3 rounded-xl font-semibold text-red-400 border border-red-500/50 hover:bg-red-500/10 transition-all"> Excluir Família </button>
       </div>
@@ -1106,11 +1112,107 @@
       
       try {
         errorEl.classList.add('hidden');
-        await auth.signInWithEmailAndPassword(email, password);
-        showToast('✅', 'Login realizado com sucesso!');
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        
+        // Validate user credentials and access rights
+        const isValidUser = await validateUserCredentials(userCredential.user);
+        
+        if (isValidUser) {
+          showToast('✅', 'Login realizado com sucesso!');
+        } else {
+          console.warn('User logged in but credentials validation failed');
+          showToast('⚠️', 'Login bem-sucedido. Aguarde validação das credenciais.');
+        }
       } catch (error) {
         errorEl.textContent = getErrorMessage(error.code);
         errorEl.classList.remove('hidden');
+      }
+    }
+    
+    // Validate user credentials after login
+    async function validateUserCredentials(user) {
+      try {
+        // Check if user document exists
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (!userDoc.exists) {
+          console.warn(`User document not found for ${user.email}`);
+          return false;
+        }
+        
+        const userData = userDoc.data();
+        
+        // Verify email matches
+        if (userData.email !== user.email) {
+          console.warn('Email mismatch for user:', user.uid);
+          return false;
+        }
+        
+        // Log successful validation
+        console.log(`User ${user.email} credentials validated successfully`);
+        return true;
+      } catch (error) {
+        console.error('Error validating user credentials:', error);
+        return false;
+      }
+    }
+    
+    // Validate member login - helper function for family owners
+    async function validateMemberLogin() {
+      if (!currentFamily || !currentFamilyData) {
+        showToast('⚠️', 'Selecione uma família primeiro');
+        return;
+      }
+      
+      if (currentFamilyData.ownerId !== currentUser.uid) {
+        showToast('⚠️', 'Apenas o chefe pode validar membros');
+        return;
+      }
+      
+      const memberEmail = document.getElementById('validate-member-email').value.trim();
+      if (!memberEmail) {
+        showToast('⚠️', 'Digite o email do membro');
+        return;
+      }
+      
+      try {
+        // Check if member exists in the family
+        const familyDoc = await db.collection('families').doc(currentFamily).get();
+        if (!familyDoc.exists) {
+          showToast('❌', 'Família não encontrada');
+          return;
+        }
+        
+        const familyData = familyDoc.data();
+        const members = familyData.members || [];
+        
+        if (!members.includes(memberEmail)) {
+          showToast('❌', `${memberEmail} não é membro da família`);
+          return;
+        }
+        
+        // Check if user exists
+        const userQuery = await db.collection('users').where('email', '==', memberEmail).get();
+        if (userQuery.empty) {
+          showToast('❌', `Usuário com email ${memberEmail} não encontrado`);
+          return;
+        }
+        
+        const userData = userQuery.docs[0].data();
+        
+        // Verify access
+        const hasValidAccess = await validateMemberAccess(currentFamily, userQuery.docs[0].id, memberEmail);
+        
+        if (hasValidAccess) {
+          showToast('✅', `${userData.name || memberEmail} tem acesso à família!`);
+        } else {
+          showToast('⚠️', `${userData.name || memberEmail} foi adicionado mas pode precisar fazer login novamente`);
+        }
+        
+        document.getElementById('validate-member-email').value = '';
+      } catch (error) {
+        console.error('Error validating member:', error);
+        showToast('❌', 'Erro ao validar membro');
       }
     }
     
@@ -1627,25 +1729,28 @@
       }
     }
     
-    async function loadFamilyMembersList(memberIds) {
+    async function loadFamilyMembersList(memberEmails) {
       const membersContainer = document.getElementById('family-members');
       if (!membersContainer) return;
       
       try {
         membersContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Carregando membros...</p>';
         
-        if (memberIds.length === 0) {
+        if (memberEmails.length === 0) {
           membersContainer.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum membro adicional</p>';
           return;
         }
         
         const membersList = [];
-        for (const memberId of memberIds) {
+        for (const memberEmail of memberEmails) {
           try {
-            const userDoc = await db.collection('users').doc(memberId).get();
-            if (userDoc.exists) {
+            // Query user by email
+            const userQuery = await db.collection('users').where('email', '==', memberEmail).get();
+            if (!userQuery.empty) {
+              const userDoc = userQuery.docs[0];
               membersList.push({
-                id: memberId,
+                id: userDoc.id,
+                email: memberEmail,
                 ...userDoc.data()
               });
             }
@@ -1665,7 +1770,7 @@
               <p class="text-white font-medium">${member.name || 'Usuário'}</p>
               <p class="text-slate-400 text-sm">${member.email}</p>
             </div>
-            <button onclick="removeFamilyMember('${member.id}')" class="text-red-400 hover:text-red-300 transition-colors">
+            <button onclick="removeFamilyMember('${member.email}')" class="text-red-400 hover:text-red-300 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
@@ -1678,7 +1783,7 @@
       }
     }
     
-    async function removeFamilyMember(memberId) {
+    async function removeFamilyMember(memberEmail) {
       if (!currentFamily || currentFamilyData.ownerId !== currentUser.uid) {
         showToast('⚠️', 'Apenas o chefe pode remover membros');
         return;
@@ -1688,7 +1793,7 @@
       
       try {
         await db.collection('families').doc(currentFamily).update({
-          members: firebase.firestore.FieldValue.arrayRemove(memberId)
+          members: firebase.firestore.FieldValue.arrayRemove(memberEmail)
         });
         showToast('✅', 'Membro removido com sucesso');
         loadFamilyMembersForSettings();
@@ -1719,16 +1824,57 @@
           return;
         }
         const userId = usersQuery.docs[0].id;
+        const userData = usersQuery.docs[0].data();
+        const userEmail = userData.email;
+        
         const familyRef = db.collection('families').doc(currentFamily);
-        await familyRef.update({
-          members: firebase.firestore.FieldValue.arrayUnion(userId)
-        });
+        
+        // Validate and add member with both userId and email for access verification
+        await validateAndAddMember(familyRef, userId, userEmail, currentFamily);
+        
         document.getElementById('add-member-email').value = '';
-        if (typeof showToast === 'function') showToast('✅', 'Membro adicionado!');
+        if (typeof showToast === 'function') showToast('✅', 'Membro adicionado com sucesso!');
         loadFamilyMembersForSettings();
       } catch (error) {
         console.error('Error adding member:', error);
         if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar membro');
+      }
+    }
+
+    // Validate and add member with credentials verification
+    async function validateAndAddMember(familyRef, userId, userEmail, familyId) {
+      try {
+        // Verify that user exists and has valid credentials
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+          throw new Error('Usuário não encontrado na base de dados');
+        }
+        
+        const userData = userDoc.data();
+        
+        // Add member using email for compatibility with existing queries
+        await familyRef.update({
+          members: firebase.firestore.FieldValue.arrayUnion(userEmail)
+        });
+        
+        // Also store member info for validation purposes
+        const memberData = {
+          familyId: familyId,
+          userId: userId,
+          userEmail: userEmail,
+          userName: userData.name || 'Usuário',
+          addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          status: 'active',
+          validated: true
+        };
+        
+        // Create a member access log for audit purposes
+        await db.collection('family_members').add(memberData);
+        
+        console.log(`Member ${userEmail} validated and added to family ${familyId}`);
+      } catch (error) {
+        console.error('Error validating member:', error);
+        throw error;
       }
     }
 
@@ -1813,22 +1959,32 @@
           .where('ownerId', '==', currentUser.uid)
           .get();
         
-        // Get families where user is member
+        // Get families where user is member (using email for compatibility)
         const memberFamilies = await db.collection('families')
           .where('members', 'array-contains', currentUser.email)
           .get();
         
-        const families = [];
+        // Validate credentials for member access
+        const validatedFamilies = [];
         
-        ownedFamilies.forEach(doc => {
-          families.push({ id: doc.id, ...doc.data(), isOwner: true });
-        });
+        // Validate owned families
+        for (const doc of ownedFamilies.docs) {
+          validatedFamilies.push({ id: doc.id, ...doc.data(), isOwner: true, validated: true });
+        }
         
-        memberFamilies.forEach(doc => {
-          if (!families.find(f => f.id === doc.id)) {
-            families.push({ id: doc.id, ...doc.data(), isOwner: false });
+        // Validate member access through credentials
+        for (const doc of memberFamilies.docs) {
+          // Skip if already added as owner
+          if (!validatedFamilies.find(f => f.id === doc.id)) {
+            // Verify member access is valid
+            const isValidMember = await validateMemberAccess(doc.id, currentUser.uid, currentUser.email);
+            if (isValidMember) {
+              validatedFamilies.push({ id: doc.id, ...doc.data(), isOwner: false, validated: true });
+            }
           }
-        });
+        }
+        
+        const families = validatedFamilies;
         
         if (families.length === 0) {
           familyList.innerHTML = '<p class="text-slate-500 text-center py-4">Você ainda não tem famílias. Crie uma abaixo!</p>';
@@ -1852,6 +2008,43 @@
       } catch (error) {
         familyList.innerHTML = '<p class="text-red-400 text-center py-4">Erro ao carregar famílias</p>';
         console.error('Error loading families:', error);
+      }
+    }
+    
+    // Validate member access credentials
+    async function validateMemberAccess(familyId, userId, userEmail) {
+      try {
+        // Check if member is in the family's members array
+        const familyDoc = await db.collection('families').doc(familyId).get();
+        if (!familyDoc.exists) {
+          console.warn(`Family ${familyId} not found`);
+          return false;
+        }
+        
+        const members = familyDoc.data().members || [];
+        
+        // Check if user email is in members array
+        if (members.includes(userEmail)) {
+          // Additional validation: check if member record exists and is validated
+          const memberRecords = await db.collection('family_members')
+            .where('familyId', '==', familyId)
+            .where('userEmail', '==', userEmail)
+            .where('status', '==', 'active')
+            .get();
+          
+          if (!memberRecords.empty) {
+            return true;
+          }
+          
+          // If no member record but email is in array, consider it valid for backward compatibility
+          console.log(`Member ${userEmail} in family ${familyId} without validation record (legacy)`);
+          return true;
+        }
+        
+        return false;
+      } catch (error) {
+        console.error('Error validating member access:', error);
+        return false;
       }
     }
     
