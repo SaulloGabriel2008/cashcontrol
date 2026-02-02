@@ -2195,11 +2195,11 @@
           }
         }
         
-        // Update category chart with bars
+        // Update category chart with bars (always show 4 main categories, use commit-% when available)
         const categoryChart = document.getElementById('category-chart');
         if (categoryChart) {
-          const categoryTotals = {};
-
+          // make sure commitment-derived values are up to date before reading them
+          try { await updateCommitmentValues(); } catch (e) { /* ignore */ }
           // helper to parse currency text from elements like 'R$ 1.234,56'
           function parseCurrencyText(id) {
             const el = document.getElementById(id);
@@ -2211,87 +2211,32 @@
             return v;
           }
 
-          // Primary: read values from commitments summary
-          const mainItems = [
-            {key: 'despesas', label: 'Despesas', icon: '💳', value: parseCurrencyText('val-expenses'), colorClass: ''},
-            {key: 'investimentos', label: 'Investimentos', icon: '📈', value: parseCurrencyText('val-invest'), colorClass: 'alt-color'},
-            {key: 'dizimo', label: 'Dízimo/Doações', icon: '⛪', value: parseCurrencyText('val-tithe'), colorClass: 'alt-color2'},
-            {key: 'emergencia', label: 'Reserva de Emergência', icon: '🎯', value: parseCurrencyText('val-emergency'), colorClass: 'alt-color3'}
+          // read commit percentages (prefer these for display)
+          const pExpenses = Number(document.getElementById('commit-expenses')?.value) || 0;
+          const pInvest = Number(document.getElementById('commit-invest')?.value) || 0;
+          const pTithe = Number(document.getElementById('commit-tithe')?.value) || 0;
+          const pEmergency = Number(document.getElementById('commit-emergency')?.value) || 0;
+          const sumPerc = pExpenses + pInvest + pTithe + pEmergency;
+
+          // read amounts (for value display)
+          const aExpenses = parseCurrencyText('val-expenses');
+          const aInvest = parseCurrencyText('val-invest');
+          const aTithe = parseCurrencyText('val-tithe');
+          const aEmergency = parseCurrencyText('val-emergency');
+
+          // fixed order of main categories
+          const items = [
+            { key: 'despesas', label: 'Despesas', icon: '💳', amount: aExpenses, percent: pExpenses, colorClass: '' },
+            { key: 'investimentos', label: 'Investimentos', icon: '📈', amount: aInvest, percent: pInvest, colorClass: 'alt-color' },
+            { key: 'dizimo', label: 'Dízimo/Doações', icon: '⛪', amount: aTithe, percent: pTithe, colorClass: 'alt-color2' },
+            { key: 'emergencia', label: 'Reserva de Emergência', icon: '🎯', amount: aEmergency, percent: pEmergency, colorClass: 'alt-color3' }
           ];
 
-          mainItems.forEach(it => { 
-            if (it.value > 0) categoryTotals[it.key] = { 
-              label: it.label, 
-              icon: it.icon, 
-              value: it.value,
-              colorClass: it.colorClass
-            }; 
-          });
-
-          // include custom commitments (rendered as elements with id starting with val-custom-)
-          document.querySelectorAll('[id^="val-custom-"]').forEach(el => {
-            try {
-              const key = el.id.replace('val-custom-', '');
-              const value = parseCurrencyText(el.id);
-              const parent = el.closest('[data-custom-name]');
-              const name = parent ? parent.getAttribute('data-custom-name') : key;
-              const icon = parent ? parent.querySelector('.text-2xl')?.textContent || '📦' : '📦';
-              if (value > 0) categoryTotals[key] = { 
-                label: name, 
-                icon: icon, 
-                value,
-                colorClass: ''
-              };
-            } catch (e) {}
-          });
-
-          // If no commitments values found, fallback to expense transactions distribution
-          const totalFromCommitments = Object.values(categoryTotals).reduce((s, c) => s + Number(c.value || 0), 0);
-          if (totalFromCommitments === 0 && expenseSnap) {
-            expenseSnap.forEach(doc => {
-              const data = doc.data();
-              const category = data.category || 'outros';
-              if (!categoryTotals[category]) {
-                categoryTotals[category] = { 
-                  label: getCategoryLabel(category), 
-                  icon: getCategoryIcon(category), 
-                  value: 0,
-                  colorClass: ''
-                };
-              }
-              categoryTotals[category].value += Number(data.amount || 0);
-            });
-          }
-
-          if (Object.keys(categoryTotals).length === 0) {
-            categoryChart.innerHTML = '<p class="text-slate-500 text-center py-8">Nenhuma despesa registrada</p>';
-          } else {
-            // convert to array and sort
-            const arr = Object.keys(categoryTotals).map(k => {
-              const v = categoryTotals[k];
-              if (typeof v === 'number') return { 
-                key: k, 
-                label: getCategoryLabel(k), 
-                icon: getCategoryIcon(k), 
-                value: v,
-                colorClass: ''
-              };
-              return { 
-                key: k, 
-                label: v.label || k, 
-                icon: v.icon || getCategoryIcon(k), 
-                value: v.value || 0,
-                colorClass: v.colorClass || ''
-              };
-            }).sort((a, b) => b.value - a.value);
-
-            const total = arr.reduce((s, it) => s + Number(it.value || 0), 0);
-
-            // Create bar chart
-            categoryChart.innerHTML = arr.map((it, index) => {
-              const percentage = total > 0 ? Math.round((it.value/total)*1000)/10 : 0;
-              const width = total > 0 ? Math.max(4, (it.value/total)*100) : 0;
-              
+          // If commit percentages present (sum > 0), use them to calculate widths; otherwise fall back to amounts
+          if (sumPerc > 0) {
+            categoryChart.innerHTML = items.map(it => {
+              const percentage = Math.round((it.percent) * 10) / 10; // 1 decimal
+              const width = Math.max(4, percentage);
               return `
                 <div class="category-item">
                   <div class="category-legend">
@@ -2302,7 +2247,29 @@
                   <div class="category-bar">
                     <div class="category-bar-fill ${it.colorClass}" style="width: ${width}%">
                       <span class="category-bar-label">${it.icon} ${it.label}</span>
-                      <span class="category-bar-value">${formatCurrency(it.value)}</span>
+                      <span class="category-bar-value">${formatCurrency(it.amount)}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            // fallback: compute from amounts but still show all four categories
+            const totalAmt = items.reduce((s, x) => s + Number(x.amount || 0), 0);
+            categoryChart.innerHTML = items.map(it => {
+              const percentage = totalAmt > 0 ? Math.round((it.amount / totalAmt) * 1000) / 10 : 0;
+              const width = totalAmt > 0 ? Math.max(4, percentage) : 4;
+              return `
+                <div class="category-item">
+                  <div class="category-legend">
+                    <span class="text-lg">${it.icon}</span>
+                    <span class="text-slate-300 text-sm font-medium">${it.label}</span>
+                    <span class="text-slate-400 text-sm ml-auto">${percentage}%</span>
+                  </div>
+                  <div class="category-bar">
+                    <div class="category-bar-fill ${it.colorClass}" style="width: ${width}%">
+                      <span class="category-bar-label">${it.icon} ${it.label}</span>
+                      <span class="category-bar-value">${formatCurrency(it.amount)}</span>
                     </div>
                   </div>
                 </div>
@@ -2441,13 +2408,20 @@ async function loadSalariesList() {
   el.innerHTML = '<p class="text-slate-500 text-center py-4">Carregando salários...</p>';
 
   try {
+    if (!currentUser) {
+      el.innerHTML = '<p class="text-slate-500 text-center py-4">Faça login para ver seus salários</p>';
+      return;
+    }
+
+    // Apenas salários do usuário logado (salários individuais)
     const query = db.collection('transactions')
       .where('familyId', '==', currentFamily)
-      .where('type', '==', 'salary');
+      .where('type', '==', 'salary')
+      .where('userId', '==', currentUser.uid);
 
     const snap = await query.get();
     if (snap.empty) {
-      el.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum salário cadastrado</p>';
+      el.innerHTML = '<p class="text-slate-500 text-center py-4">Nenhum salário individual cadastrado</p>';
       return;
     }
 
