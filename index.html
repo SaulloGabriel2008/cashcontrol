@@ -70,6 +70,30 @@
     .progress-ring {
       transform: rotate(-90deg);
     }
+    
+    /* Global improvements */
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Better button sizing for touch */
+    button {
+      min-height: 44px;
+      padding: 0.75rem;
+    }
+    
+    /* Better input sizing */
+    input, select, textarea {
+      min-height: 44px;
+      padding: 0.75rem;
+    }
+    
+    /* Modal improvements */
+    .fixed.inset-0 {
+      overflow: auto;
+    }
+    
     /* Botão voltar ao topo */
     #back-to-top {
       position: fixed;
@@ -86,71 +110,304 @@
     }
     /* Melhorias para mobile */
     @media (max-width: 640px) {
-      body, html, #app, #main-screen {
+      * {
+        box-sizing: border-box;
+      }
+      
+      html, body {
+        width: 100vw !important;
         overflow-x: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      #app, #main-screen, main {
         width: 100% !important;
-        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      .card-glass {
-        padding: 1rem !important;
-        overflow: hidden;
+      
+      header {
+        padding: 0.75rem 0.5rem !important;
+        gap: 0.5rem !important;
       }
-      .grid-cols-1 {
-        grid-template-columns: 1fr !important;
+      
+      header .max-w-7xl {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
       }
-      .md\:grid-cols-2, .md\:grid-cols-3 {
-        grid-template-columns: 1fr !important;
-      }
-      .lg\:grid-cols-2 {
-        grid-template-columns: 1fr !important;
-      }
-      .text-3xl {
-        font-size: 1.75rem !important;
-      }
-      .text-2xl {
-        font-size: 1.5rem !important;
-      }
-      .p-8 {
-        padding: 1.5rem !important;
-      }
-      .p-5 {
-        padding: 1rem !important;
-      }
-      .gap-4 {
-        gap: 0.75rem !important;
-      }
-      .flex-wrap {
+      
+      header .flex {
+        gap: 0.5rem !important;
         flex-wrap: wrap !important;
+        align-items: center !important;
       }
-      .overflow-x-auto {
+      
+      nav {
+        padding: 0.5rem !important;
         overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
       }
-      .sticky {
-        position: sticky !important;
-      }
-      input, select, textarea {
-        font-size: 16px !important; /* Evita zoom no iOS */
-        width: 100% !important;
-        box-sizing: border-box !important;
-      }
-      button {
-        min-width: 100% !important;
-        box-sizing: border-box !important;
-      }
-      .whitespace-nowrap {
-        white-space: normal !important;
-      }
+      
       main {
         padding: 0.5rem !important;
       }
-      header {
-        padding: 0.5rem !important;
+      
+      .max-w-7xl {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
-      nav {
+      
+      .card-glass {
+        padding: 1rem !important;
+        margin-bottom: 0.75rem !important;
+        overflow: hidden !important;
+        width: 100% !important;
+      }
+      
+      .grid, [class*="grid-cols"] {
+        width: 100% !important;
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+      }
+      
+      .md\:grid-cols-2, .md\:grid-cols-3, .lg\:grid-cols-2, .lg\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .text-3xl {
+        font-size: 1.5rem !important;
+        line-height: 1.2 !important;
+      }
+      
+      .text-2xl {
+        font-size: 1.25rem !important;
+        line-height: 1.3 !important;
+      }
+      
+      .text-xl {
+        font-size: 1.1rem !important;
+      }
+      
+      .text-lg {
+        font-size: 1rem !important;
+      }
+      
+      .p-8 {
+        padding: 1rem !important;
+      }
+      
+      .p-6 {
+        padding: 0.75rem !important;
+      }
+      
+      .p-5 {
+        padding: 0.75rem !important;
+      }
+      
+      .p-4 {
+        padding: 0.75rem !important;
+      }
+      
+      .px-4, .px-6 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      
+      .py-3, .py-4 {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+      }
+      
+      .gap-4 {
+        gap: 0.75rem !important;
+      }
+      
+      .gap-3 {
+        gap: 0.5rem !important;
+      }
+      
+      .gap-2 {
+        gap: 0.5rem !important;
+      }
+      
+      .flex {
+        flex-wrap: wrap !important;
+      }
+      
+      .flex-col {
+        flex-direction: column !important;
+      }
+      
+      .flex-row {
+        flex-direction: row !important;
+      }
+      
+      .mb-6, .mb-4 {
+        margin-bottom: 0.75rem !important;
+      }
+      
+      .mt-4, .mt-6 {
+        margin-top: 0.75rem !important;
+      }
+      
+      input, select, textarea {
+        font-size: 16px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0.75rem !important;
+        display: block !important;
+        margin-bottom: 0.5rem !important;
+      }
+      
+      button {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0.75rem !important;
+        font-size: 0.95rem !important;
+        min-height: 44px !important;
+        display: block !important;
+      }
+      
+      .whitespace-nowrap {
+        white-space: normal !important;
+        word-break: break-word !important;
+      }
+      
+      .truncate {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+      }
+      
+      h1, h2, h3, h4, h5 {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+      }
+      
+      .flex-1 {
+        min-width: 100% !important;
+        width: 100% !important;
+      }
+      
+      .sm\:flex-row {
+        flex-direction: column !important;
+      }
+      
+      .sm\:w-auto {
+        width: 100% !important;
+      }
+      
+      .inline-flex {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+      }
+      
+      .hidden-mobile {
+        display: none !important;
+      }
+      
+      .max-h-96, .max-h-80, .max-h-64, .max-h-48 {
+        max-height: none !important;
+      }
+      
+      /* Header adjustments */
+      header .max-w-7xl {
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      
+      header button {
+        min-width: auto !important;
         padding: 0.5rem !important;
+        width: auto !important;
+      }
+      
+      header h1, header p {
+        margin: 0 !important;
+        overflow: visible !important;
+        white-space: normal !important;
+      }
+      
+      header div:first-child {
+        flex: 1 !important;
+        min-width: 0 !important;
+      }
+      
+      /* Tabs */
+      .tab-btn {
+        flex-shrink: 0 !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.85rem !important;
+      }
+      
+      nav div {
+        gap: 0.25rem !important;
+      }
+      
+      /* Dashboard buttons */
+      .dashboard-view-btn, .finance-view-btn {
+        flex: 1 !important;
+        padding: 0.75rem !important;
+        font-size: 0.9rem !important;
+        min-height: 40px !important;
+      }
+      
+      /* Form elements spacing */
+      label {
+        display: block !important;
+        margin-bottom: 0.25rem !important;
+        font-size: 0.9rem !important;
+      }
+      
+      /* Cards spacing */
+      .space-y-3 > *, .space-y-4 > * {
+        margin-bottom: 0.75rem !important;
+      }
+      
+      .space-y-2 > * {
+        margin-bottom: 0.5rem !important;
+      }
+    
+    /* Tabs Navigation Styling */
+    #tabs-container {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    #tabs-container::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    #tabs-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    #tabs-container::-webkit-scrollbar-thumb {
+      background: rgba(71, 85, 105, 0.3);
+      border-radius: 2px;
+    }
+    
+    #tabs-scroll-indicator {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 1;
       }
     }
+    
     /* Gráfico de barras para categorias */
     .category-bar {
       height: 36px;
@@ -309,7 +566,15 @@
      </div>
     </header><!-- Tab Navigation -->
     <nav class="card-glass border-b border-slate-700/50 px-4 py-2 sticky top-14 z-40">
-     <div class="max-w-7xl mx-auto flex gap-2 overflow-x-auto scrollbar-thin pb-1"><button onclick="switchTab('dashboard')" class="tab-btn tab-active px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all" data-tab="dashboard"> 📊 Dashboard </button> <button onclick="switchTab('finances')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="finances"> 💰 Finanças </button> <button onclick="switchTab('commitments')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="commitments"> 📋 Compromissos </button> <button onclick="switchTab('projections')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="projections"> 📈 Projeções </button>
+     <div class="relative flex items-center">
+      <div id="tabs-scroll-indicator-left" class="hidden absolute left-0 top-0 bottom-0 bg-gradient-to-r from-slate-900 via-slate-900 to-transparent w-12 flex items-center justify-center pointer-events-none">
+       <span class="text-emerald-400 font-bold text-lg">‹</span>
+      </div>
+      <div class="max-w-7xl mx-auto flex-1 overflow-x-auto scrollbar-thin pb-1" id="tabs-container"><button onclick="switchTab('dashboard')" class="tab-btn tab-active px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all" data-tab="dashboard">📊 Dashboard</button> <button onclick="switchTab('finances')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="finances">💰 Finanças</button> <button onclick="switchTab('commitments')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="commitments">📋 Compromissos</button> <button onclick="switchTab('projections')" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-400 hover:text-white transition-all" data-tab="projections">📈 Projeções</button>
+      </div>
+      <div id="tabs-scroll-indicator-right" class="hidden absolute right-0 top-0 bottom-0 bg-gradient-to-l from-slate-900 via-slate-900 to-transparent w-12 flex items-center justify-center pointer-events-none">
+       <span class="text-emerald-400 font-bold text-lg">›</span>
+      </div>
      </div>
     </nav><!-- Content Area -->
     <main class="flex-1 p-4 overflow-y-auto">
@@ -473,84 +738,28 @@
         <div id="commitment-categories" class="space-y-4">
          <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-expenses">💳</span>
           <div class="flex-1 w-full sm:w-auto">
-            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-expenses">Gastos Gerais</label> 
-            <input type="text" id="name-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Gastos Gerais">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-expenses">Gastos Gerais</label>
             <input type="number" id="commit-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="70" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
          <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-invest">📈</span>
           <div class="flex-1 w-full sm:w-auto">
-            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-invest">Investimentos</label> 
-            <input type="text" id="name-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Investimentos">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-invest">Investimentos</label>
             <input type="number" id="commit-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="20" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
          <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-tithe">⛪</span>
           <div class="flex-1 w-full sm:w-auto">
-            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-tithe">Dízimo/Doações</label> 
-            <input type="text" id="name-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Dízimo/Doações">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-tithe">Dízimo/Doações</label>
             <input type="number" id="commit-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="10" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
          <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-emergency">🎯</span>
           <div class="flex-1 w-full sm:w-auto">
-            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-emergency">Reserva de Emergência</label> 
-            <input type="text" id="name-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Reserva de Emergência">
+            <label class="block text-sm font-medium text-slate-300 mb-1" id="label-emergency">Reserva de Emergência</label>
             <input type="number" id="commit-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="0" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
-        </div>
-        <div id="edit-commitments-section" class="hidden mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-          <h4 class="font-semibold text-white mb-3">Editar Nomes dos Compromissos</h4>
-          <div class="space-y-3 mb-4 max-h-60 overflow-y-auto scrollbar-thin">
-            <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1">Gastos Gerais</label>
-              <input type="text" id="edit-name-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1">Investimentos</label>
-              <input type="text" id="edit-name-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1">Dízimo/Doações</label>
-              <input type="text" id="edit-name-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-slate-300 mb-1">Reserva de Emergência</label>
-              <input type="text" id="edit-name-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Digite o novo nome">
-            </div>
-            <div id="custom-commitments-list" class="space-y-2">
-              <!-- Custom commitments will be added here -->
-            </div>
-          </div>
-
-          <div class="border-t border-emerald-500/20 pt-4 mt-4">
-            <h5 class="font-semibold text-white mb-3">Adicionar Nova Divisão</h5>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Emoji</label>
-                <input type="text" id="new-commitment-emoji" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Ex: 🎓" maxlength="5">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Nome</label>
-                <input type="text" id="new-commitment-name" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" placeholder="Ex: Educação">
-              </div>
-              <div class="flex items-end">
-                <button onclick="addNewCommitment()" class="w-full px-3 py-2 text-sm text-emerald-400 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-all">
-                  ➕ Adicionar
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex gap-2 mt-3 flex-col sm:flex-row">
-            <button onclick="saveCommitmentNames()" class="btn-primary flex-1 px-4 py-2 rounded-lg text-sm font-medium">
-              ✅ Salvar Nomes
-            </button>
-            <button onclick="toggleEditCommitments()" class="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-300 border border-slate-600 hover:border-slate-500">
-              ❌ Cancelar
-            </button>
-          </div>
         </div>
         <div class="mt-4 p-3 bg-slate-900/50 rounded-xl">
          <div class="flex justify-between items-center"><span class="text-slate-300">Total:</span> <span id="commit-total" class="text-xl font-bold text-emerald-400">100%</span>
@@ -880,6 +1089,7 @@
       document.getElementById('main-screen').classList.remove('hidden');
       loadFamilyData();
       initBackToTop();
+      initTabsScrollIndicator();
     }
     
     function goToFamilySelection() {
@@ -966,11 +1176,7 @@
     }
 
     // Commitment Edit Toggle
-    function toggleEditCommitments() {
-      const editPanel = document.getElementById('edit-commitments-section');
-      if (!editPanel) return;
-      editPanel.classList.toggle('hidden');
-    }
+    // Commitment Edit Toggle removed
 
     // Income/Expense/Commitment loaders
     async function loadIncomeHistory() {
@@ -1080,19 +1286,7 @@
       });
     }
 
-    async function loadCommitmentNames() {
-      if (!currentFamily) return;
-      try {
-        const docRef = db.collection('finances').doc(`${currentFamily}_commitment_names`);
-        const docSnap = await docRef.get();
-        if (docSnap.exists && docSnap.data().names) {
-          const names = docSnap.data().names;
-          // aplicar nomes customizados (ex: document.getElementById('label-expenses').textContent = names.expenses || 'Despesas')
-        }
-      } catch (error) {
-        console.log('Could not load commitment names:', error);
-      }
-    }
+    // loadCommitmentNames removed - function no longer needed
 
     async function loadGoalsList() {
       if (!currentFamily || !currentUser) return;
@@ -1284,32 +1478,7 @@
     }
 
     // Commitment Names Edit
-    async function saveCommitmentNames() {
-      if (!currentFamily) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
-        return;
-      }
-      try {
-        const names = {
-          expenses: document.getElementById('edit-name-expenses')?.value || 'Gastos Gerais',
-          invest: document.getElementById('edit-name-invest')?.value || 'Investimentos',
-          tithe: document.getElementById('edit-name-tithe')?.value || 'Dízimo/Doações',
-          emergency: document.getElementById('edit-name-emergency')?.value || 'Reserva de Emergência'
-        };
-        
-        await db.collection('finances').doc(`${currentFamily}_commitment_names`).set({
-          familyId: currentFamily,
-          names: names,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-        
-        if (typeof toggleEditCommitments === 'function') toggleEditCommitments();
-        if (typeof showToast === 'function') showToast('✅', 'Nomes salvos!');
-      } catch (error) {
-        console.error('Error saving commitment names:', error);
-        if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar');
-      }
-    }
+    // saveCommitmentNames removed - function no longer needed
 
     // Goal Modal & Functions
     function openAddGoalModal() {
@@ -2019,7 +2188,6 @@
         await loadSalariesList();
         await loadIncomeHistory();
         await loadExpenseHistory();
-        await loadCommitmentNames();
         await loadCustomCommitments();
         await loadGoalsList();
         updateDashboard();
@@ -2840,6 +3008,45 @@ async function saveCommitments() {
     showToast('❌', 'Erro ao salvar');
     console.error('Error saving commitments:', error);
   }
+}
+
+// Controlar indicador de scroll das abas
+function initTabsScrollIndicator() {
+  const tabsContainer = document.getElementById('tabs-container');
+  const indicatorLeft = document.getElementById('tabs-scroll-indicator-left');
+  const indicatorRight = document.getElementById('tabs-scroll-indicator-right');
+  
+  if (!tabsContainer || !indicatorLeft || !indicatorRight) return;
+  
+  function updateIndicators() {
+    // Verifica se há conteúdo para scroll
+    const hasScroll = tabsContainer.scrollWidth > tabsContainer.clientWidth;
+    const scrollPos = tabsContainer.scrollLeft;
+    const maxScroll = tabsContainer.scrollWidth - tabsContainer.clientWidth;
+    
+    // Mostra indicador esquerdo se há scroll e não estamos no início
+    if (hasScroll && scrollPos > 10) {
+      indicatorLeft.classList.remove('hidden');
+    } else {
+      indicatorLeft.classList.add('hidden');
+    }
+    
+    // Mostra indicador direito se há scroll e não estamos no final
+    if (hasScroll && scrollPos < maxScroll - 10) {
+      indicatorRight.classList.remove('hidden');
+    } else {
+      indicatorRight.classList.add('hidden');
+    }
+  }
+  
+  // Listener para scroll
+  tabsContainer.addEventListener('scroll', updateIndicators);
+  
+  // Verificar ao carregar e quando redimensionar
+  window.addEventListener('resize', updateIndicators);
+  
+  // Verificação inicial
+  setTimeout(updateIndicators, 100);
 }
 
 // Botão Voltar ao Topo
