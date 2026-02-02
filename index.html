@@ -2,7 +2,7 @@
 <html lang="pt-BR" class="h-full">
  <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Cash Control - Gestão Financeira Familiar</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#10b981">
@@ -20,6 +20,8 @@
     body {
       box-sizing: border-box;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
     }
     .gradient-bg {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
@@ -67,6 +69,125 @@
     }
     .progress-ring {
       transform: rotate(-90deg);
+    }
+    /* Botão voltar ao topo */
+    #back-to-top {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    #back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Melhorias para mobile */
+    @media (max-width: 640px) {
+      .card-glass {
+        padding: 1rem !important;
+      }
+      .grid-cols-1 {
+        grid-template-columns: 1fr !important;
+      }
+      .md\:grid-cols-2, .md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+      }
+      .text-3xl {
+        font-size: 1.75rem !important;
+      }
+      .text-2xl {
+        font-size: 1.5rem !important;
+      }
+      .p-8 {
+        padding: 1.5rem !important;
+      }
+      .p-5 {
+        padding: 1rem !important;
+      }
+      .gap-4 {
+        gap: 0.75rem !important;
+      }
+      .flex-wrap {
+        flex-wrap: wrap !important;
+      }
+      .overflow-x-auto {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .sticky {
+        position: sticky !important;
+      }
+      input, select, textarea {
+        font-size: 16px !important; /* Evita zoom no iOS */
+      }
+    }
+    /* Gráfico de barras para categorias */
+    .category-bar {
+      height: 28px;
+      background: rgba(71, 85, 105, 0.3);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .category-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #10b981, #059669);
+      transition: width 0.5s ease;
+      position: relative;
+      min-width: 4%;
+    }
+    .category-bar-fill.alt-color {
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    }
+    .category-bar-fill.alt-color2 {
+      background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+    }
+    .category-bar-fill.alt-color3 {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+    }
+    .category-bar-label {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      z-index: 2;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .category-bar-value {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+      z-index: 2;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .category-item {
+      margin-bottom: 12px;
+    }
+    .category-legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .category-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -117,7 +238,7 @@
       </div>
       <div class="border-t border-slate-700 pt-6">
        <h3 class="text-lg font-semibold text-white mb-4">Criar Nova Família</h3>
-       <div class="flex gap-3"><input type="text" id="new-family-name" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Nome da família (ex: Fonseca)"> <button onclick="createFamily()" class="btn-primary px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Criar </button>
+       <div class="flex gap-3 flex-col sm:flex-row"><input type="text" id="new-family-name" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Nome da família (ex: Fonseca)"> <button onclick="createFamily()" class="btn-primary px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20 whitespace-nowrap"> Criar </button>
        </div>
       </div>
      </div>
@@ -130,8 +251,8 @@
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg></button>
        <div>
-        <h1 class="text-xl font-bold text-white" id="current-family-name">Cash Control</h1>
-        <p class="text-xs text-slate-400" id="current-user-name">Usuário</p>
+        <h1 class="text-xl font-bold text-white truncate max-w-[150px] sm:max-w-none" id="current-family-name">Cash Control</h1>
+        <p class="text-xs text-slate-400 truncate max-w-[150px] sm:max-w-none" id="current-user-name">Usuário</p>
        </div>
       </div><button onclick="openSettings()" class="text-slate-400 hover:text-emerald-400 transition-colors p-2">
        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -145,7 +266,7 @@
     <main class="flex-1 p-4 overflow-y-auto">
      <div class="max-w-7xl mx-auto"><!-- Dashboard Tab -->
       <div id="tab-dashboard" class="tab-content animate-fade-in">
-       <div class="flex gap-2 mb-6"><button onclick="setDashboardView('individual')" class="dashboard-view-btn px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white" data-view="individual"> 👤 Individual </button> <button onclick="setDashboardView('family')" class="dashboard-view-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all" data-view="family"> 👨‍👩‍👧‍👦 Familiar </button>
+       <div class="flex gap-2 mb-6 flex-wrap"><button onclick="setDashboardView('individual')" class="dashboard-view-btn px-4 py-2 rounded-lg text-sm font-medium bg-emerald-600 text-white" data-view="individual"> 👤 Individual </button> <button onclick="setDashboardView('family')" class="dashboard-view-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition-all" data-view="family"> 👨‍👩‍👧‍👦 Familiar </button>
        </div>
        <div id="dashboard-content"><!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -171,8 +292,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
          <div class="card-glass rounded-xl p-5">
           <h3 class="text-lg font-semibold text-white mb-4">Distribuição por Categoria</h3>
-          <div id="category-chart" class="h-48 flex items-center justify-center">
-           <p class="text-slate-500">Adicione despesas para ver o gráfico</p>
+          <div id="category-chart" class="min-h-48">
+           <p class="text-slate-500 text-center py-4">Adicione despesas para ver o gráfico</p>
           </div>
          </div>
          <div class="card-glass rounded-xl p-5">
@@ -207,9 +328,9 @@
        </div><!-- Income View -->
        <div id="finance-income" class="finance-content animate-fade-in">
         <div class="card-glass rounded-xl p-5 mb-6">
-         <div class="flex items-center justify-between mb-4">
+         <div class="flex items-center justify-between mb-4 flex-col sm:flex-row gap-3">
           <h3 class="text-lg font-semibold text-white">Meus Salários</h3>
-          <button onclick="openAddSalaryModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+          <button onclick="openAddSalaryModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
             ➕ Novo Salário
           </button>
          </div>
@@ -221,23 +342,25 @@
          <h3 class="text-lg font-semibold text-white mb-4">Satisfação Geral</h3>
          <div class="flex items-center gap-4">
           <input type="range" id="salary-satisfaction" min="0" max="100" value="50" class="flex-1 accent-emerald-500">
-          <span id="satisfaction-display" class="text-emerald-400 text-lg font-semibold">50%</span>
+          <span id="satisfaction-display" class="text-emerald-400 text-lg font-semibold whitespace-nowrap">50%</span>
          </div>
          <p class="text-slate-400 text-sm mt-2">Qual é seu nível de satisfação com seus ganhos?</p>
-         <button onclick="saveSatisfaction()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white">
+         <button onclick="saveSatisfaction()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white w-full sm:w-auto">
            Salvar Satisfação
          </button>
         </div>
         <div class="card-glass rounded-xl p-5 mb-6">
          <h3 class="text-lg font-semibold text-white mb-4">Adicionar Ganho Extra</h3>
          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div><label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label> <input type="text" id="extra-income-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Freelance">
+          <div class="md:col-span-3"><label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label> <input type="text" id="extra-income-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Freelance">
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Valor</label> <input type="number" id="extra-income-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00">
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Data</label> <input type="date" id="extra-income-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
           </div>
-         </div><button onclick="addExtraIncome()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Adicionar </button>
+          <div class="md:col-span-3"><button onclick="addExtraIncome()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20 w-full"> Adicionar </button>
+          </div>
+         </div>
         </div>
         <div class="card-glass rounded-xl p-5">
          <h3 class="text-lg font-semibold text-white mb-4">Histórico de Entradas</h3>
@@ -249,7 +372,7 @@
        <div id="finance-expenses" class="finance-content hidden">
         <div class="card-glass rounded-xl p-5 mb-6">
          <h3 class="text-lg font-semibold text-white mb-4">Adicionar Despesa</h3>
-         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+         <div class="grid grid-cols-1 gap-4">
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label> <input type="text" id="expense-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Conta de luz">
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Valor</label> <input type="number" id="expense-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00">
@@ -260,13 +383,13 @@
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Recorrência</label> <select id="expense-recurrence" class="input-dark w-full px-4 py-3 rounded-xl text-white"> <option value="once">Uma única vez</option> <option value="weekly">Semanal</option> <option value="biweekly">Quinzenal</option> <option value="monthly">Mensal</option> <option value="yearly">Anual</option> </select>
           </div>
-          <div class="md:col-span-2"><label class="block text-sm font-medium text-slate-300 mb-2">Observações</label> <textarea id="expense-notes" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 resize-none" rows="2" placeholder="Detalhes adicionais..."></textarea>
+          <div><label class="block text-sm font-medium text-slate-300 mb-2">Observações</label> <textarea id="expense-notes" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 resize-none" rows="2" placeholder="Detalhes adicionais..."></textarea>
           </div>
-         </div><button onclick="addExpense()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Adicionar Despesa </button>
+         </div><button onclick="addExpense()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20 w-full"> Adicionar Despesa </button>
         </div>
         <div class="card-glass rounded-xl p-5">
-         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-white">Histórico de Despesas</h3><select id="expense-filter" onchange="filterExpenses()" class="input-dark px-3 py-2 rounded-lg text-sm text-white"> <option value="all">Todas</option> <option value="moradia">🏠 Moradia</option> <option value="alimentacao">🍽️ Alimentação</option> <option value="transporte">🚗 Transporte</option> <option value="saude">🏥 Saúde</option> <option value="educacao">📚 Educação</option> <option value="lazer">🎮 Lazer</option> <option value="vestuario">👕 Vestuário</option> <option value="servicos">📱 Serviços</option> <option value="outros">📦 Outros</option> </select>
+         <div class="flex items-center justify-between mb-4 flex-col sm:flex-row gap-3">
+          <h3 class="text-lg font-semibold text-white">Histórico de Despesas</h3><select id="expense-filter" onchange="filterExpenses()" class="input-dark px-3 py-2 rounded-lg text-sm text-white w-full sm:w-auto"> <option value="all">Todas</option> <option value="moradia">🏠 Moradia</option> <option value="alimentacao">🍽️ Alimentação</option> <option value="transporte">🚗 Transporte</option> <option value="saude">🏥 Saúde</option> <option value="educacao">📚 Educação</option> <option value="lazer">🎮 Lazer</option> <option value="vestuario">👕 Vestuário</option> <option value="servicos">📱 Serviços</option> <option value="outros">📦 Outros</option> </select>
          </div>
          <div id="expense-history" class="space-y-3 max-h-80 overflow-y-auto scrollbar-thin">
           <p class="text-slate-500 text-center py-4">Nenhuma despesa registrada</p>
@@ -299,29 +422,29 @@
           </div>
         </div>
         <div id="commitment-categories" class="space-y-4">
-         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-expenses">💳</span>
-          <div class="flex-1">
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-expenses">💳</span>
+          <div class="flex-1 w-full sm:w-auto">
             <label class="block text-sm font-medium text-slate-300 mb-1" id="label-expenses">Gastos Gerais</label> 
             <input type="text" id="name-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Gastos Gerais">
             <input type="number" id="commit-expenses" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="70" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
-         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-invest">📈</span>
-          <div class="flex-1">
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-invest">📈</span>
+          <div class="flex-1 w-full sm:w-auto">
             <label class="block text-sm font-medium text-slate-300 mb-1" id="label-invest">Investimentos</label> 
             <input type="text" id="name-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Investimentos">
             <input type="number" id="commit-invest" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="20" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
-         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-tithe">⛪</span>
-          <div class="flex-1">
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-tithe">⛪</span>
+          <div class="flex-1 w-full sm:w-auto">
             <label class="block text-sm font-medium text-slate-300 mb-1" id="label-tithe">Dízimo/Doações</label> 
             <input type="text" id="name-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Dízimo/Doações">
             <input type="number" id="commit-tithe" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="10" min="0" max="100">
           </div><span class="text-slate-400">%</span>
          </div>
-         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl"><span class="text-2xl" id="icon-emergency">🎯</span>
-          <div class="flex-1">
+         <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-emergency">🎯</span>
+          <div class="flex-1 w-full sm:w-auto">
             <label class="block text-sm font-medium text-slate-300 mb-1" id="label-emergency">Reserva de Emergência</label> 
             <input type="text" id="name-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm hidden" value="Reserva de Emergência">
             <input type="number" id="commit-emergency" class="input-dark w-full px-3 py-2 rounded-lg text-white text-sm" value="0" min="0" max="100">
@@ -371,7 +494,7 @@
             </div>
           </div>
 
-          <div class="flex gap-2 mt-3">
+          <div class="flex gap-2 mt-3 flex-col sm:flex-row">
             <button onclick="saveCommitmentNames()" class="btn-primary flex-1 px-4 py-2 rounded-lg text-sm font-medium">
               ✅ Salvar Nomes
             </button>
@@ -383,7 +506,7 @@
         <div class="mt-4 p-3 bg-slate-900/50 rounded-xl">
          <div class="flex justify-between items-center"><span class="text-slate-300">Total:</span> <span id="commit-total" class="text-xl font-bold text-emerald-400">100%</span>
          </div>
-        </div><button onclick="saveCommitments()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Salvar Divisão </button>
+        </div><button onclick="saveCommitments()" class="btn-primary mt-4 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20 w-full"> Salvar Divisão </button>
        </div>
        <div class="card-glass rounded-xl p-5">
         <h3 class="text-lg font-semibold text-white mb-4">Valores Calculados</h3>
@@ -414,9 +537,9 @@
       </div><!-- Projections Tab -->
       <div id="tab-projections" class="tab-content hidden">
        <div class="card-glass rounded-xl p-5 mb-6">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between mb-4 flex-col sm:flex-row gap-3">
           <h3 class="text-lg font-semibold text-white">Meus Objetivos</h3>
-          <button onclick="openAddGoalModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+          <button onclick="openAddGoalModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
             ➕ Novo Objetivo
           </button>
         </div>
@@ -479,7 +602,7 @@
     </main>
    </div><!-- Add Salary Modal -->
    <div id="add-salary-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4">
      <div class="flex items-center justify-between mb-6">
       <h2 class="text-xl font-bold text-white">Adicionar Novo Salário</h2>
       <button onclick="closeAddSalaryModal()" class="text-slate-400 hover:text-white transition-colors">
@@ -515,7 +638,7 @@
        <label class="block text-sm font-medium text-slate-300 mb-2">Projeção de Aumento (%/ano)</label>
        <input type="number" id="modal-salary-projection" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0" step="0.1">
       </div>
-      <div class="flex gap-3 pt-4">
+      <div class="flex gap-3 pt-4 flex-col sm:flex-row">
        <button onclick="closeAddSalaryModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all">
         Cancelar
        </button>
@@ -526,7 +649,7 @@
     </div>
    </div><!-- Add Goal Modal -->
    <div id="add-goal-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4">
      <div class="flex items-center justify-between mb-6">
       <h2 class="text-xl font-bold text-white">Adicionar Novo Objetivo</h2>
       <button onclick="closeAddGoalModal()" class="text-slate-400 hover:text-white transition-colors">
@@ -554,7 +677,7 @@
        <label class="block text-sm font-medium text-slate-300 mb-2">Descrição (opcional)</label>
        <textarea id="modal-goal-description" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 resize-none" rows="2" placeholder="Detalhes sobre o objetivo..."></textarea>
       </div>
-      <div class="flex gap-3 pt-4">
+      <div class="flex gap-3 pt-4 flex-col sm:flex-row">
        <button onclick="closeAddGoalModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all">
         Cancelar
        </button>
@@ -566,7 +689,7 @@
     </div>
    </div><!-- Settings Modal -->
    <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-lg max-h-[90%] overflow-y-auto animate-fade-in">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-lg max-h-[90%] overflow-y-auto animate-fade-in mx-4">
      <div class="flex items-center justify-between mb-6">
       <h2 class="text-xl font-bold text-white">Configurações da Família</h2><button onclick="closeSettings()" class="text-slate-400 hover:text-white transition-colors">
        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -580,7 +703,7 @@
       </div>
       <div class="mb-6">
        <h3 class="text-lg font-semibold text-white mb-3">Adicionar Membro</h3>
-       <div class="flex gap-2"><input type="email" id="add-member-email" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@exemplo.com"> <button onclick="addFamilyMember()" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white"> Adicionar </button>
+       <div class="flex gap-2 flex-col sm:flex-row"><input type="email" id="add-member-email" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@exemplo.com"> <button onclick="addFamilyMember()" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white whitespace-nowrap"> Adicionar </button>
        </div>
        <p class="text-slate-500 text-xs mt-2">O usuário precisa ter uma conta no Cash Control</p>
       </div>
@@ -594,7 +717,7 @@
     </div>
    </div><!-- Delete Confirmation Modal -->
    <div id="delete-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4">
      <div class="text-center mb-6">
       <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -603,14 +726,19 @@
       <h3 class="text-xl font-bold text-white mb-2">Confirmar Exclusão</h3>
       <p class="text-slate-400" id="delete-message">Tem certeza que deseja excluir?</p>
      </div>
-     <div class="flex gap-3"><button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all"> Cancelar </button> <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all"> Excluir </button>
+     <div class="flex gap-3 flex-col sm:flex-row"><button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all"> Cancelar </button> <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all"> Excluir </button>
      </div>
     </div>
    </div><!-- Toast Notification -->
    <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
     <div class="card-glass rounded-xl px-4 py-3 flex items-center gap-3 animate-fade-in"><span id="toast-icon" class="text-xl">✅</span> <span id="toast-message" class="text-white">Operação realizada com sucesso!</span>
     </div>
-   </div>
+   </div><!-- Botão Voltar ao Topo -->
+   <button id="back-to-top" class="card-glass rounded-full p-3 text-emerald-400 hover:text-white hover:bg-emerald-500/20 transition-all shadow-lg">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+   </button>
   </div>
   <script>
     // Firebase Configuration
@@ -680,11 +808,13 @@
       document.getElementById('main-screen').classList.add('hidden');
       document.getElementById('login-form').classList.remove('hidden');
       document.getElementById('register-form').classList.add('hidden');
+      hideBackToTop();
     }
     
     function showRegister() {
       document.getElementById('login-form').classList.add('hidden');
       document.getElementById('register-form').classList.remove('hidden');
+      hideBackToTop();
     }
     
     function showFamilySelection() {
@@ -692,6 +822,7 @@
       document.getElementById('family-screen').classList.remove('hidden');
       document.getElementById('main-screen').classList.add('hidden');
       loadUserFamilies();
+      hideBackToTop();
     }
     
     function showMainApp() {
@@ -699,6 +830,7 @@
       document.getElementById('family-screen').classList.add('hidden');
       document.getElementById('main-screen').classList.remove('hidden');
       loadFamilyData();
+      initBackToTop();
     }
     
     function goToFamilySelection() {
@@ -814,12 +946,12 @@
           const inc = doc.data();
           return `
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-income-id="${doc.id}">
-              <div>
-                <p class="text-white font-medium">${inc.description}</p>
+              <div class="min-w-0 flex-1 mr-2">
+                <p class="text-white font-medium truncate">${inc.description}</p>
                 <p class="text-slate-400 text-xs">${inc.date || ''}</p>
               </div>
-              <div class="flex items-center gap-2">
-                <p class="font-semibold text-green-400">+ ${(typeof formatCurrency === 'function') ? formatCurrency(inc.amount) : 'R$ '+inc.amount.toFixed(2)}</p>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <p class="font-semibold text-green-400 whitespace-nowrap">+ ${(typeof formatCurrency === 'function') ? formatCurrency(inc.amount) : 'R$ '+inc.amount.toFixed(2)}</p>
                 <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
               </div>
             </div>
@@ -852,12 +984,12 @@
           const exp = doc.data();
           return `
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-category="${exp.category || 'outros'}">
-              <div>
-                <p class="text-white font-medium">${exp.description}</p>
+              <div class="min-w-0 flex-1 mr-2">
+                <p class="text-white font-medium truncate">${exp.description}</p>
                 <p class="text-slate-400 text-xs">${exp.date || ''}</p>
               </div>
-              <div class="flex items-center gap-2">
-                <p class="font-semibold text-red-400">- ${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ '+exp.amount.toFixed(2)}</p>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <p class="font-semibold text-red-400 whitespace-nowrap">- ${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ '+exp.amount.toFixed(2)}</p>
                 <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
               </div>
             </div>
@@ -940,8 +1072,8 @@
               html.push(`
                 <div class="p-4 bg-slate-800/40 rounded-lg" id="goal-${id}">
                   <div class="flex items-center justify-between mb-2">
-                    <strong class="text-white">${g.name}</strong>
-                    <span class="text-xs text-slate-400">${Math.min(progress, 100).toFixed(0)}%</span>
+                    <strong class="text-white truncate">${g.name}</strong>
+                    <span class="text-xs text-slate-400 whitespace-nowrap">${Math.min(progress, 100).toFixed(0)}%</span>
                   </div>
                   <div class="w-full bg-slate-700 rounded-full h-2 mb-2">
                     <div class="bg-emerald-500 h-2 rounded-full" style="width: ${Math.min(progress, 100)}%"></div>
@@ -951,10 +1083,10 @@
 
                   <div class="mt-3 p-3 bg-slate-800/30 rounded-lg">
                     <h5 class="text-sm font-semibold text-slate-200 mb-2">Estimativa com Aportes Mensais</h5>
-                    <div class="flex gap-2 mb-2 items-center">
-                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-44 goal-monthly" placeholder="Aporte mensal (R$)">
-                      <button onclick="computeEstimatesForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white">Calcular</button>
-                      <button onclick="useAllInvestmentForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-slate-600 text-white">Usar todo investimento</button>
+                    <div class="flex flex-col sm:flex-row gap-2 mb-2 items-start sm:items-center">
+                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-full sm:w-44 goal-monthly" placeholder="Aporte mensal (R$)">
+                      <button onclick="computeEstimatesForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white w-full sm:w-auto">Calcular</button>
+                      <button onclick="useAllInvestmentForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-slate-600 text-white w-full sm:w-auto">Usar todo investimento</button>
                     </div>
                     <div id="goal-estimates-${id}" class="space-y-2 text-sm text-slate-300">
                       <!-- estimates will render here -->
@@ -962,14 +1094,14 @@
                     </div>
                   </div>
 
-                  <div class="mt-3 flex items-center gap-2">
-                    <input type="number" min="0" step="0.01" id="goal-add-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-44" placeholder="Adicionar valor"/>
-                    <button onclick="addToGoalProgress('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white">Adicionar</button>
+                  <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <input type="number" min="0" step="0.01" id="goal-add-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-full sm:w-44" placeholder="Adicionar valor"/>
+                    <button onclick="addToGoalProgress('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white w-full sm:w-auto">Adicionar</button>
                   </div>
 
-                  <div class="mt-3 flex gap-2">
-                    <button onclick="completeGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-blue-600 text-white">Concluir</button>
-                    <button onclick="deleteGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-red-600 text-white">Excluir</button>
+                  <div class="mt-3 flex gap-2 flex-col sm:flex-row">
+                    <button onclick="completeGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-blue-600 text-white w-full sm:w-auto">Concluir</button>
+                    <button onclick="deleteGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-red-600 text-white w-full sm:w-auto">Excluir</button>
                   </div>
                 </div>
               `);
@@ -1358,12 +1490,12 @@
           <button onclick="selectFamily('${family.id}')" class="w-full p-4 bg-slate-800/50 hover:bg-slate-700/50 rounded-xl flex items-center justify-between transition-all group">
             <div class="flex items-center gap-3">
               <span class="text-2xl">${family.isOwner ? '👑' : '👨‍👩‍👧‍👦'}</span>
-              <div class="text-left">
-                <p class="font-medium text-white group-hover:text-emerald-400 transition-colors">${family.name}</p>
+              <div class="text-left min-w-0">
+                <p class="font-medium text-white group-hover:text-emerald-400 transition-colors truncate">${family.name}</p>
                 <p class="text-xs text-slate-500">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
               </div>
             </div>
-            <svg class="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
@@ -1434,7 +1566,7 @@
       }, 3000);
     }
 
-    // Dashboard Update
+    // Dashboard Update com gráfico de barras
     async function updateDashboard() {
       if (!currentFamily || !currentUser) return;
       try {
@@ -1509,11 +1641,11 @@
           } else {
             txContainer.innerHTML = txList.sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 5).map(tx => `
               <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg">
-                <div>
-                  <p class="text-white font-medium">${tx.description || tx.type}</p>
+                <div class="min-w-0 flex-1 mr-2">
+                  <p class="text-white font-medium truncate">${tx.description || tx.type}</p>
                   <p class="text-slate-400 text-xs">${tx.date || ''}</p>
                 </div>
-                <p class="font-semibold ${tx.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
+                <p class="font-semibold ${tx.type === 'expense' ? 'text-red-400' : 'text-emerald-400'} whitespace-nowrap">
                   ${tx.type === 'expense' ? '- ' : '+ '}${(typeof formatCurrency === 'function') ? formatCurrency(tx.amount) : 'R$ '+tx.amount.toFixed(2)}
                 </p>
               </div>
@@ -1521,7 +1653,7 @@
           }
         }
         
-        // Update category chart (use commitment-calculated values first, fallback to expense transactions)
+        // Update category chart with bars
         const categoryChart = document.getElementById('category-chart');
         if (categoryChart) {
           const categoryTotals = {};
@@ -1539,13 +1671,20 @@
 
           // Primary: read values from commitments summary
           const mainItems = [
-            {key: 'despesas', label: 'Despesas', icon: '🍽️', value: parseCurrencyText('val-expenses')},
-            {key: 'investimentos', label: 'Investimentos', icon: '💰', value: parseCurrencyText('val-invest')},
-            {key: 'dizimo', label: 'Dízimo/Doações', icon: '⛪', value: parseCurrencyText('val-tithe')},
-            {key: 'emergencia', label: 'Reserva de Emergência', icon: '🎯', value: parseCurrencyText('val-emergency')}
+            {key: 'despesas', label: 'Despesas', icon: '💳', value: parseCurrencyText('val-expenses'), colorClass: ''},
+            {key: 'investimentos', label: 'Investimentos', icon: '📈', value: parseCurrencyText('val-invest'), colorClass: 'alt-color'},
+            {key: 'dizimo', label: 'Dízimo/Doações', icon: '⛪', value: parseCurrencyText('val-tithe'), colorClass: 'alt-color2'},
+            {key: 'emergencia', label: 'Reserva de Emergência', icon: '🎯', value: parseCurrencyText('val-emergency'), colorClass: 'alt-color3'}
           ];
 
-          mainItems.forEach(it => { if (it.value > 0) categoryTotals[it.key] = { label: it.label, icon: it.icon, value: it.value }; });
+          mainItems.forEach(it => { 
+            if (it.value > 0) categoryTotals[it.key] = { 
+              label: it.label, 
+              icon: it.icon, 
+              value: it.value,
+              colorClass: it.colorClass
+            }; 
+          });
 
           // include custom commitments (rendered as elements with id starting with val-custom-)
           document.querySelectorAll('[id^="val-custom-"]').forEach(el => {
@@ -1554,7 +1693,13 @@
               const value = parseCurrencyText(el.id);
               const parent = el.closest('[data-custom-name]');
               const name = parent ? parent.getAttribute('data-custom-name') : key;
-              if (value > 0) categoryTotals[key] = { label: name, icon: '📦', value };
+              const icon = parent ? parent.querySelector('.text-2xl')?.textContent || '📦' : '📦';
+              if (value > 0) categoryTotals[key] = { 
+                label: name, 
+                icon: icon, 
+                value,
+                colorClass: ''
+              };
             } catch (e) {}
           });
 
@@ -1564,34 +1709,95 @@
             expenseSnap.forEach(doc => {
               const data = doc.data();
               const category = data.category || 'outros';
-              categoryTotals[category] = (categoryTotals[category] && categoryTotals[category].value ? categoryTotals[category].value : 0) + Number(data.amount || 0);
+              if (!categoryTotals[category]) {
+                categoryTotals[category] = { 
+                  label: getCategoryLabel(category), 
+                  icon: getCategoryIcon(category), 
+                  value: 0,
+                  colorClass: ''
+                };
+              }
+              categoryTotals[category].value += Number(data.amount || 0);
             });
           }
 
           if (Object.keys(categoryTotals).length === 0) {
-            categoryChart.innerHTML = '<p class="text-slate-500 text-center">Nenhuma despesa registrada</p>';
+            categoryChart.innerHTML = '<p class="text-slate-500 text-center py-8">Nenhuma despesa registrada</p>';
           } else {
             // convert to array and sort
             const arr = Object.keys(categoryTotals).map(k => {
               const v = categoryTotals[k];
-              if (typeof v === 'number') return { key: k, label: k, icon: '📦', value: v };
-              return { key: k, label: v.label || k, icon: v.icon || '📦', value: v.value || 0 };
+              if (typeof v === 'number') return { 
+                key: k, 
+                label: getCategoryLabel(k), 
+                icon: getCategoryIcon(k), 
+                value: v,
+                colorClass: ''
+              };
+              return { 
+                key: k, 
+                label: v.label || k, 
+                icon: v.icon || getCategoryIcon(k), 
+                value: v.value || 0,
+                colorClass: v.colorClass || ''
+              };
             }).sort((a, b) => b.value - a.value);
 
             const total = arr.reduce((s, it) => s + Number(it.value || 0), 0);
 
-            categoryChart.innerHTML = arr.map(it => `
-              <div class="flex items-center gap-4 mr-6">
-                <div class="text-sm text-slate-400">${it.icon}</div>
-                <div>
-                  <div class="text-sm text-slate-200 font-medium">${it.label} <span class="text-slate-400 text-xs">${(typeof formatCurrency === 'function') ? formatCurrency(it.value) : 'R$ '+it.value.toFixed(2)}</span></div>
-                  <div class="text-xs text-slate-400">${total > 0 ? Math.round((it.value/total)*1000)/10 : 0}%</div>
+            // Create bar chart
+            categoryChart.innerHTML = arr.map((it, index) => {
+              const percentage = total > 0 ? Math.round((it.value/total)*1000)/10 : 0;
+              const width = total > 0 ? Math.max(4, (it.value/total)*100) : 0;
+              
+              return `
+                <div class="category-item">
+                  <div class="category-legend">
+                    <span class="text-lg">${it.icon}</span>
+                    <span class="text-slate-300 text-sm font-medium">${it.label}</span>
+                    <span class="text-slate-400 text-sm ml-auto">${percentage}%</span>
+                  </div>
+                  <div class="category-bar">
+                    <div class="category-bar-fill ${it.colorClass}" style="width: ${width}%">
+                      <span class="category-bar-label">${it.icon} ${it.label}</span>
+                      <span class="category-bar-value">${formatCurrency(it.value)}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            `).join('');
+              `;
+            }).join('');
           }
         }
 
+        function getCategoryLabel(cat) {
+          const labels = {
+            'moradia': 'Moradia',
+            'alimentacao': 'Alimentação',
+            'transporte': 'Transporte',
+            'saude': 'Saúde',
+            'educacao': 'Educação',
+            'lazer': 'Lazer',
+            'vestuario': 'Vestuário',
+            'servicos': 'Serviços',
+            'outros': 'Outros'
+          };
+          return labels[cat] || cat;
+        }
+
+        function getCategoryIcon(cat) {
+          const icons = {
+            'moradia': '🏠',
+            'alimentacao': '🍽️',
+            'transporte': '🚗',
+            'saude': '🏥',
+            'educacao': '📚',
+            'lazer': '🎮',
+            'vestuario': '👕',
+            'servicos': '📱',
+            'outros': '📦'
+          };
+          return icons[cat] || '📦';
+        }
         
         // Update satisfaction display
         const satisfactionEl = document.getElementById('satisfaction-value');
@@ -1654,8 +1860,6 @@
       document.getElementById(id).addEventListener('input', updateCommitmentValues); // ADD THIS
     });
 
-    // modal observer removed (debug code) ---------------------------------------------
-    
     // helper para gerar ids seguros
 function sanitizeKey(name) {
   return name.replace(/\s+/g, '-').replace(/[^a-z0-9\-]/gi, '').toLowerCase();
@@ -1711,12 +1915,12 @@ async function loadSalariesList() {
       const s = doc.data();
       const monthly = (typeof calculateMonthlySalary === 'function') ? calculateMonthlySalary(s.amount, s.frequency) : (Number(s.amount) || 0);
       html.push(`
-        <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
-          <div>
+        <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg flex-col sm:flex-row gap-2">
+          <div class="w-full sm:w-auto">
             <div class="flex items-center gap-2"><strong class="text-white">${s.description || 'Salário'}</strong> <span class="text-slate-400 text-sm">(${s.frequency || 'mensal'})</span></div>
             <div class="text-slate-400 text-sm">${s.startDate || ''}${s.endDate ? ' → '+s.endDate : ''}</div>
           </div>
-          <div class="text-right">
+          <div class="text-right w-full sm:w-auto">
             <div class="font-semibold text-white">${(typeof formatCurrency === 'function') ? formatCurrency(monthly) : 'R$ '+monthly.toFixed(2)}</div>
             <div class="text-slate-400 text-sm mt-1"><button onclick="editSalary('${doc.id}')" class="text-emerald-400 mr-2">Editar</button><button onclick="deleteSalary('${doc.id}')" class="text-red-400">Remover</button></div>
           </div>
@@ -2055,12 +2259,12 @@ async function loadCompletedGoals() {
       const d = doc.data();
       const startText = d.startDate ? formatDate((d.startDate || '').split('T')[0]) : '—';
       const endText = d.completedAt ? formatDate((d.completedAt || '').split('T')[0]) : '—';
-      items.push(`<div class="p-3 bg-slate-800/30 rounded-lg flex items-center justify-between">
-        <div>
+      items.push(`<div class="p-3 bg-slate-800/30 rounded-lg flex items-center justify-between flex-col sm:flex-row gap-2">
+        <div class="w-full sm:w-auto">
           <div class="font-medium text-white">${d.name}</div>
           <div class="text-xs text-slate-400">Início: ${startText} — Conclusão: ${endText} — ${d.progress ? (typeof formatCurrency === 'function' ? formatCurrency(d.progress) : d.progress) : ''} / ${typeof formatCurrency === 'function' ? formatCurrency(d.targetAmount) : d.targetAmount}</div>
         </div>
-        <div class="text-right"><button class="text-xs text-emerald-400" onclick="reopenGoalFromHistory('${doc.id}')">Reabrir</button> <button class="text-xs text-red-400 ml-2" onclick="deleteCompletedGoal('${doc.id}')">Excluir</button></div>
+        <div class="text-right w-full sm:w-auto flex gap-2"><button class="text-xs text-emerald-400" onclick="reopenGoalFromHistory('${doc.id}')">Reabrir</button> <button class="text-xs text-red-400" onclick="deleteCompletedGoal('${doc.id}')">Excluir</button></div>
       </div>`);
     });
 
@@ -2265,10 +2469,10 @@ async function loadCustomCommitments() {
 
     // render na área de edição (com botão remover)
     customList.innerHTML = commitments.map((com, idx) => `
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 flex-col sm:flex-row">
         <input type="text" value="${com.emoji} ${com.name}" disabled class="input-dark w-full px-2 py-1 rounded text-white text-sm opacity-70">
         <input type="number" min="0" max="100" step="1" class="input-dark px-2 py-1 rounded text-white text-sm commit-custom-percent" data-custom-input-index="${idx}" value="${percentages[idx] || 0}">
-        <button onclick="deleteCustomCommitment(${idx})" class="ml-2 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10 rounded">🗑️</button>
+        <button onclick="deleteCustomCommitment(${idx})" class="ml-2 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10 rounded w-full sm:w-auto">🗑️ Remover</button>
       </div>
     `).join('');
 
@@ -2278,21 +2482,23 @@ async function loadCustomCommitments() {
       const pct = percentages[idx] || 0;
 
       const mainHtml = document.createElement('div');
-      mainHtml.className = 'flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl';
+      mainHtml.className = 'flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row';
       mainHtml.setAttribute('data-custom-index', idx);
       mainHtml.setAttribute('data-custom-name', com.name);
       mainHtml.innerHTML = `
-        <div class="flex items-center gap-3 flex-1">
+        <div class="flex items-center gap-3 flex-1 w-full">
           <span class="text-2xl">${com.emoji}</span>
           <div class="flex-1">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-col sm:flex-row">
               <span class="text-slate-300">${com.name}</span>
-              <input type="number" min="0" max="100" step="1" value="${pct}" class="input-dark ml-3 px-2 py-1 rounded commit-custom-percent" data-custom-input-index="${idx}">
-              <span class="text-slate-400 ml-1">%</span>
+              <div class="flex items-center ml-0 sm:ml-3">
+                <input type="number" min="0" max="100" step="1" value="${pct}" class="input-dark px-2 py-1 rounded commit-custom-percent w-16" data-custom-input-index="${idx}">
+                <span class="text-slate-400 ml-1">%</span>
+              </div>
             </div>
           </div>
         </div>
-        <div class="text-right">
+        <div class="text-right w-full sm:w-auto">
           <p class="text-2xl font-bold text-slate-400" id="val-custom-${key}" data-custom-value="true">R$ 0,00</p>
         </div>
       `;
@@ -2456,7 +2662,37 @@ async function saveCommitments() {
   }
 }
 
-// Ajuste: ao salvar nomes, preserva porcentagens e recarrega tudo (já feito anteriormente)
+// Botão Voltar ao Topo
+function initBackToTop() {
+  const backToTop = document.getElementById('back-to-top');
+  if (!backToTop) return;
+  
+  function toggleBackToTop() {
+    if (window.scrollY > 300) {
+      backToTop.classList.add('visible');
+    } else {
+      backToTop.classList.remove('visible');
+    }
+  }
+  
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+  
+  backToTop.addEventListener('click', scrollToTop);
+  window.addEventListener('scroll', toggleBackToTop);
+  toggleBackToTop(); // Initial check
+}
+
+function hideBackToTop() {
+  const backToTop = document.getElementById('back-to-top');
+  if (backToTop) {
+    backToTop.classList.remove('visible');
+  }
+}
 
 // RELATÓRIO: incluir salários pro rata no período selecionado
 function monthsBetweenInclusive(start, end) {
@@ -2559,7 +2795,7 @@ async function generateReport() {
     // Monta HTML do relatório (manter exportação separada)
     reportEl.innerHTML = `
       <h3 class="text-lg font-semibold text-white mb-4">Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}</h3>
-      <button onclick="exportReportToCSV('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4">📥 Exportar para CSV</button>
+      <button onclick="exportReportToCSV('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4 w-full sm:w-auto">📥 Exportar para CSV</button>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
           <p class="text-slate-400 text-sm">Total de Entradas</p>
@@ -2582,7 +2818,7 @@ async function generateReport() {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
         ${Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]).map(([cat, amount]) => `
           <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-            <span class="text-slate-300">${cat}</span>
+            <span class="text-slate-300">${getCategoryLabel(cat)}</span>
             <span class="font-semibold text-white">${formatCurrency(amount)}</span>
           </div>
         `).join('')}
@@ -2592,7 +2828,7 @@ async function generateReport() {
         <h4 class="font-semibold text-white mb-3">Detalhamento de Entradas</h4>
         <div class="space-y-2 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
           ${incomeItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
-            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
+            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm flex-col sm:flex-row">
               <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
               <span class="text-emerald-400 font-medium">+ ${formatCurrency(item.amount)}</span>
             </div>
@@ -2604,7 +2840,7 @@ async function generateReport() {
         <h4 class="font-semibold text-white mb-3">Detalhamento de Despesas</h4>
         <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
           ${expenseItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
-            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm">
+            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm flex-col sm:flex-row">
               <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
               <span class="text-red-400 font-medium">- ${formatCurrency(item.amount)}</span>
             </div>
@@ -2619,9 +2855,6 @@ async function generateReport() {
   }
 }
 
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6dc2a81525df55',t:'MTc2OTkxMDIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6dc2a81525df55',t:'MTc2OTkxMDIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
