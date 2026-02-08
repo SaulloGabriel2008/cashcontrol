@@ -71,6 +71,29 @@
       transform: rotate(-90deg);
     }
     
+    /* Melhorias de Modal - Z-index e Backdrop */
+    .modal-backdrop {
+      z-index: 50 !important;
+    }
+    
+    .modal-content {
+      z-index: 51 !important;
+    }
+    
+    /* Prevenir scroll quando modal aberto */
+    body.modal-open {
+      overflow: hidden;
+    }
+    
+    /* Garantir que apenas um modal esteja visível por vez */
+    [id$="-modal"] {
+      z-index: 50;
+    }
+    
+    [id$="-modal"]:not(.hidden) ~ [id$="-modal"] {
+      pointer-events: none;
+    }
+    
     /* Global improvements */
     body {
       -webkit-font-smoothing: antialiased;
@@ -451,27 +474,28 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding-right: 8px;
     }
     .category-bar-value {
       color: white;
-      font-weight: 600;
-      font-size: 12px;
+      font-weight: 700;
+      font-size: 13px;
       z-index: 2;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-      margin-left: auto;
-      white-space: nowrap;
-      padding-left: 8px;
+      color: #e6eef7;
+      flex-shrink: 0;
     }
-    .category-item {
-      margin-bottom: 16px;
+    .category-item { 
+      margin-bottom: 16px; 
       padding: 0 4px;
     }
-    .category-legend {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .category-legend { 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
       margin-bottom: 8px;
       flex-wrap: wrap;
+      justify-content: space-between;
     }
     .category-color {
       width: 12px;
@@ -493,6 +517,17 @@
       }
       .category-item {
         margin-bottom: 12px;
+      }
+    }
+    @media (min-width: 641px) {
+      .category-item {
+        padding: 12px 8px;
+        background: rgba(71, 85, 105, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(71, 85, 105, 0.2);
+      }
+      .category-legend {
+        padding: 0 4px 8px 4px;
       }
     }
   </style>
@@ -560,9 +595,10 @@
         <h1 class="text-xl font-bold text-white truncate max-w-[150px] sm:max-w-none" id="current-family-name">Cash Control</h1>
         <p class="text-xs text-slate-400 truncate max-w-[150px] sm:max-w-none" id="current-user-name">Usuário</p>
        </div>
-      </div><button onclick="openSettings()" class="text-slate-400 hover:text-emerald-400 transition-colors p-2">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-       </svg></button>
+      </div>
+      <button onclick="openModal('settings')" class="text-slate-400 hover:text-emerald-400 transition-colors p-2" title="Configurações">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+      </button>
      </div>
     </header><!-- Tab Navigation -->
     <nav class="card-glass border-b border-slate-700/50 px-4 py-2 sticky top-14 z-40">
@@ -603,7 +639,7 @@
           <p class="text-xs text-slate-500 mt-1">Disponível</p>
          </div>
         </div><!-- Charts Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <div class="grid grid-cols-1 gap-4 mb-6">
          <div class="card-glass rounded-xl p-5">
           <h3 class="text-lg font-semibold text-white mb-4">Distribuição por Categoria</h3>
           <div id="category-chart" class="min-h-48">
@@ -644,9 +680,7 @@
         <div class="card-glass rounded-xl p-5 mb-6">
          <div class="flex items-center justify-between mb-4 flex-col sm:flex-row gap-3">
           <h3 class="text-lg font-semibold text-white">Meus Salários</h3>
-          <button onclick="openAddSalaryModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
-            ➕ Novo Salário
-          </button>
+          <button onclick="openModal('salary')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">➕ Novo Salário</button>
          </div>
          <div id="salaries-list" class="space-y-3 max-h-96 overflow-y-auto scrollbar-thin">
            <!-- Salaries will be loaded here -->
@@ -691,9 +725,32 @@
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Valor</label> <input type="number" id="expense-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00">
           </div>
-          <div><label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label> <select id="expense-category" class="input-dark w-full px-4 py-3 rounded-xl text-white"> <option value="moradia">🏠 Moradia</option> <option value="alimentacao">🍽️ Alimentação</option> <option value="transporte">🚗 Transporte</option> <option value="saude">🏥 Saúde</option> <option value="educacao">📚 Educação</option> <option value="lazer">🎮 Lazer</option> <option value="vestuario">👕 Vestuário</option> <option value="servicos">📱 Serviços</option> <option value="outros">📦 Outros</option> </select>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label> 
+              <select id="expense-category" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="moradia">🏠 Moradia</option>
+                <option value="alimentacao">🍽️ Alimentação</option>
+                <option value="transporte">🚗 Transporte</option>
+                <option value="saude">🏥 Saúde</option>
+                <option value="educacao">📚 Educação</option>
+                <option value="lazer">🎮 Lazer</option>
+                <option value="vestuario">👕 Vestuário</option>
+                <option value="servicos">📱 Serviços</option>
+                <option value="outros">📦 Outros</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button onclick="openModal('newcategory')" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white whitespace-nowrap">+ Nova</button>
+            </div>
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Data</label> <input type="date" id="expense-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">📸 Foto da Conta (opcional)</label>
+            <input type="file" id="expense-photo" accept="image/*" class="input-dark w-full px-4 py-3 rounded-xl text-white file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:cursor-pointer">
+            <p class="text-slate-500 text-xs mt-1">JPG, PNG ou WebP (max 5MB)</p>
+            <div id="expense-photo-preview" class="mt-2 text-sm text-slate-400"></div>
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Recorrência</label> <select id="expense-recurrence" class="input-dark w-full px-4 py-3 rounded-xl text-white"> <option value="once">Uma única vez</option> <option value="weekly">Semanal</option> <option value="biweekly">Quinzenal</option> <option value="monthly">Mensal</option> <option value="yearly">Anual</option> </select>
           </div>
@@ -713,14 +770,29 @@
        <div id="finance-report" class="finance-content hidden">
         <div class="card-glass rounded-xl p-5 mb-6">
          <h3 class="text-lg font-semibold text-white mb-4">Gerar Relatório</h3>
-         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Data Inicial</label> <input type="date" id="report-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
           </div>
           <div><label class="block text-sm font-medium text-slate-300 mb-2">Data Final</label> <input type="date" id="report-end" class="input-dark w-full px-4 py-3 rounded-xl text-white">
           </div>
-          <div class="flex items-end"><button onclick="generateReport()" class="btn-primary w-full px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Gerar </button>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Escopo</label>
+            <div class="flex gap-2">
+              <label class="inline-flex items-center text-sm"><input type="radio" name="report-scope" value="individual" checked class="mr-2">Meu</label>
+              <label id="family-scope-option" class="inline-flex items-center text-sm"><input type="radio" name="report-scope" value="family" class="mr-2">Familiar</label>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Formato</label>
+            <select id="report-format" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+              <option value="csv">CSV</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+          <div class="flex items-end md:hidden"><button onclick="generateReport()" class="btn-primary w-full px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Gerar </button>
           </div>
          </div>
+         <div class="hidden md:flex md:justify-end mt-3"><button onclick="generateReport()" class="btn-primary px-6 py-3 rounded-xl font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/20"> Gerar </button></div>
         </div>
         <div id="report-content" class="card-glass rounded-xl p-5">
          <p class="text-slate-500 text-center py-8">Selecione um período e clique em "Gerar" para ver o relatório</p>
@@ -734,6 +806,7 @@
             <h3 class="text-lg font-semibold text-white mb-2">Divisão Percentual</h3>
             <p class="text-slate-400 text-sm">Defina como você quer dividir sua renda entre seus compromissos. O total deve ser 100%.</p>
           </div>
+          <button onclick="openModal('labels')" class="btn-primary px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ml-4">✏️ Editar Nomes</button>
         </div>
         <div id="commitment-categories" class="space-y-4">
          <div class="flex items-center gap-4 p-3 bg-slate-800/50 rounded-xl flex-col sm:flex-row"><span class="text-2xl" id="icon-expenses">💳</span>
@@ -771,22 +844,22 @@
         <p class="text-slate-400 text-sm mb-4">Baseado na sua renda mensal total</p>
         <div id="commitment-values" class="grid grid-cols-1 md:grid-cols-2 gap-4">
          <div class="p-4 bg-slate-800/50 rounded-xl">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💳</span> <span class="text-slate-300">Gastos Gerais</span>
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">💳</span> <span class="text-slate-300" data-commitment-label="expenses">Despesas</span>
           </div>
           <p class="text-2xl font-bold text-white" id="val-expenses">R$ 0,00</p>
          </div>
          <div class="p-4 bg-slate-800/50 rounded-xl">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📈</span> <span class="text-slate-300">Investimentos</span>
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">📈</span> <span class="text-slate-300" data-commitment-label="invest">Investimentos</span>
           </div>
           <p class="text-2xl font-bold text-emerald-400" id="val-invest">R$ 0,00</p>
          </div>
          <div class="p-4 bg-slate-800/50 rounded-xl">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">⛪</span> <span class="text-slate-300">Dízimo/Doações</span>
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">⛪</span> <span class="text-slate-300" data-commitment-label="tithe">Dízimo/Doações</span>
           </div>
           <p class="text-2xl font-bold text-purple-400" id="val-tithe">R$ 0,00</p>
          </div>
          <div class="p-4 bg-slate-800/50 rounded-xl">
-          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎯</span> <span class="text-slate-300">Reserva de Emergência</span>
+          <div class="flex items-center gap-3 mb-2"><span class="text-2xl">🎯</span> <span class="text-slate-300" data-commitment-label="emergency">Reserva de Emergência</span>
           </div>
           <p class="text-2xl font-bold text-blue-400" id="val-emergency">R$ 0,00</p>
          </div>
@@ -797,9 +870,7 @@
        <div class="card-glass rounded-xl p-5 mb-6">
         <div class="flex items-center justify-between mb-4 flex-col sm:flex-row gap-3">
           <h3 class="text-lg font-semibold text-white">Meus Objetivos</h3>
-          <button onclick="openAddGoalModal()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
-            ➕ Novo Objetivo
-          </button>
+          <button onclick="openModal('goal')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">➕ Novo Objetivo</button>
         </div>
         <div id="goals-list" class="space-y-3">
           <!-- Goals will be loaded here -->
@@ -858,128 +929,20 @@
        </div>
       </div>
     </main>
-   </div><!-- Add Salary Modal -->
-   <div id="add-salary-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4">
+   </div><!-- Generic Modal for Multiple Functions -->
+   <div id="generic-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4 max-h-[90vh] overflow-y-auto">
      <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-bold text-white">Adicionar Novo Salário</h2>
-      <button onclick="closeAddSalaryModal()" class="text-slate-400 hover:text-white transition-colors">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      <h2 id="modal-title" class="text-xl font-bold text-white">Modal</h2>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
      </div>
-     <div class="space-y-4">
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Nome/Descrição do Salário</label>
-       <input type="text" id="modal-salary-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Salário Principal, Freelance">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
-       <input type="number" id="modal-salary-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Frequência</label>
-       <select id="modal-salary-frequency" class="input-dark w-full px-4 py-3 rounded-xl text-white">
-        <option value="monthly">Mensal</option>
-        <option value="biweekly">Quinzenal</option>
-        <option value="weekly">Semanal</option>
-       </select>
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Data de Início</label>
-       <input type="date" id="modal-salary-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Data de Término (opcional)</label>
-       <input type="date" id="modal-salary-end" class="input-dark w-full px-4 py-3 rounded-xl text-white">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Projeção de Aumento (%/ano)</label>
-       <input type="number" id="modal-salary-projection" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0" step="0.1">
-      </div>
-      <div class="flex gap-3 pt-4 flex-col sm:flex-row">
-       <button onclick="closeAddSalaryModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all">
-        Cancelar
-       </button>
-       <button onclick="addNewSalary()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary transition-all hover:shadow-lg hover:shadow-emerald-500/20">
-        Adicionar
-       </button>
-      </div>
-    </div>
-   </div><!-- Add Goal Modal -->
-   <div id="add-goal-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4">
-     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-bold text-white">Adicionar Novo Objetivo</h2>
-      <button onclick="closeAddGoalModal()" class="text-slate-400 hover:text-white transition-colors">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-      </button>
-     </div>
-     <div class="space-y-4">
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Nome do Objetivo</label>
-       <input type="text" id="modal-goal-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Comprar um carro">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Valor Alvo (R$)</label>
-       <input type="number" id="modal-goal-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="100000" step="0.01">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Data de Início (opcional)</label>
-       <input type="date" id="modal-goal-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Data Limite (opcional)</label>
-       <input type="date" id="modal-goal-deadline" class="input-dark w-full px-4 py-3 rounded-xl text-white">
-      </div>
-      <div>
-       <label class="block text-sm font-medium text-slate-300 mb-2">Descrição (opcional)</label>
-       <textarea id="modal-goal-description" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 resize-none" rows="2" placeholder="Detalhes sobre o objetivo..."></textarea>
-      </div>
-      <div class="flex gap-3 pt-4 flex-col sm:flex-row">
-       <button onclick="closeAddGoalModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all">
-        Cancelar
-       </button>
-       <button onclick="addNewGoal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary transition-all hover:shadow-lg hover:shadow-emerald-500/20">
-        Adicionar
-       </button>
-      </div>
+     <div id="modal-content" class="space-y-4">
+      <!-- Content will be inserted here -->
      </div>
     </div>
-   </div><!-- Settings Modal -->
-   <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="card-glass rounded-2xl p-6 w-full max-w-lg max-h-[90%] overflow-y-auto animate-fade-in mx-4">
-     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-bold text-white">Configurações da Família</h2><button onclick="closeSettings()" class="text-slate-400 hover:text-white transition-colors">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-       </svg></button>
-     </div>
-     <div id="settings-owner-section">
-      <div class="mb-6">
-       <h3 class="text-lg font-semibold text-white mb-3">Membros da Família</h3>
-       <div id="family-members" class="space-y-2 mb-4 max-h-40 overflow-y-auto scrollbar-thin"><!-- Members will be loaded here -->
-       </div>
-      </div>
-      <div class="mb-6">
-       <h3 class="text-lg font-semibold text-white mb-3">Adicionar Membro</h3>
-       <div class="flex gap-2 flex-col sm:flex-row"><input type="email" id="add-member-email" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@exemplo.com"> <button onclick="addFamilyMember()" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white whitespace-nowrap"> Adicionar </button>
-       </div>
-       <p class="text-slate-500 text-xs mt-2">O usuário precisa ter uma conta no Cash Control</p>
-      </div>
-      <div class="mb-6">
-       <h3 class="text-lg font-semibold text-white mb-3">Validar Acesso de Membro</h3>
-       <div class="flex gap-2 flex-col sm:flex-row"><input type="email" id="validate-member-email" class="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@membro.com"> <button onclick="validateMemberLogin()" class="btn-primary px-4 py-3 rounded-xl font-semibold text-white whitespace-nowrap"> Validar </button>
-       </div>
-       <p class="text-slate-500 text-xs mt-2">Confirme se um membro tem acesso à família</p>
-      </div>
-      <div class="border-t border-slate-700 pt-6">
-       <h3 class="text-lg font-semibold text-red-400 mb-3">Zona de Perigo</h3><button onclick="confirmDeleteFamily()" class="w-full py-3 rounded-xl font-semibold text-red-400 border border-red-500/50 hover:bg-red-500/10 transition-all"> Excluir Família </button>
-      </div>
-     </div>
-     <div id="settings-member-section" class="hidden">
-      <p class="text-slate-400 text-center py-4">Apenas o chefe da família pode gerenciar os membros.</p><button onclick="leaveFamily()" class="w-full py-3 rounded-xl font-semibold text-red-400 border border-red-500/50 hover:bg-red-500/10 transition-all mt-4"> Sair da Família </button>
-     </div>
-    </div>
-   </div><!-- Delete Confirmation Modal -->
+   </div><!-- Delete Modal -->
    <div id="delete-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="card-glass rounded-2xl p-6 w-full max-w-md animate-fade-in mx-4">
      <div class="text-center mb-6">
@@ -992,6 +955,15 @@
      </div>
      <div class="flex gap-3 flex-col sm:flex-row"><button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all"> Cancelar </button> <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all"> Excluir </button>
      </div>
+    </div>
+   </div><!-- Photo Viewer Modal -->
+   <div id="photo-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="relative w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <button onclick="closePhotoModal()" class="absolute -top-10 right-0 text-white hover:text-slate-300 transition-colors z-10">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      <img id="photo-image" src="" alt="Foto da despesa" class="w-full h-auto rounded-xl object-contain max-h-[85vh]">
+      <button onclick="deleteExpensePhoto()" class="mt-4 w-full py-2 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all">🗑️ Remover Foto</button>
     </div>
    </div><!-- Toast Notification -->
    <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
@@ -1027,12 +999,607 @@
     let dashboardView = 'individual';
     let deleteCallback = null;
     
+    // Commitment Labels (customizable names)
+    let commitmentLabels = {
+      expenses: 'Despesas',
+      invest: 'Investimentos',
+      tithe: 'Dízimo/Doações',
+      emergency: 'Reserva de Emergência'
+    };
+    
     // Default Config
     const defaultConfig = {
       app_title: 'Cash Control'
     };
     
     let config = { ...defaultConfig };
+    
+    // Variável para rastrear qual foto está sendo visualizada
+    let currentViewingPhotoDocId = null;
+    
+    // Função centralizada para fechar todos os modais
+    function closeAllModals() {
+      const allModals = [
+        'generic-modal',
+        'delete-modal',
+        'photo-modal'
+      ];
+      
+      allModals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add('hidden');
+        }
+      });
+    }
+    
+    // Fazer a função acessível globalmente
+    window.closeAllModals = closeAllModals;
+    
+    // Sistema de Modal Genérico
+    function closeModal() {
+      document.getElementById('generic-modal').classList.add('hidden');
+    }
+    
+    function openModal(type) {
+      closeAllModals();
+      const modal = document.getElementById('generic-modal');
+      const title = document.getElementById('modal-title');
+      const content = document.getElementById('modal-content');
+      
+      const modals = {
+        salary: {
+          title: 'Adicionar Novo Salário',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Nome/Descrição</label>
+              <input type="text" id="modal-salary-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Salário Principal">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
+              <input type="number" id="modal-salary-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Frequência</label>
+              <select id="modal-salary-frequency" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="monthly">Mensal</option>
+                <option value="biweekly">Quinzenal</option>
+                <option value="weekly">Semanal</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Data de Início</label>
+              <input type="date" id="modal-salary-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveSalaryModal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Adicionar</button>
+            </div>
+          `
+        },
+        goal: {
+          title: 'Adicionar Novo Objetivo',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Nome do Objetivo</label>
+              <input type="text" id="modal-goal-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Comprar um carro">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Valor Alvo (R$)</label>
+              <input type="number" id="modal-goal-target" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="100000" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Data Limite (opcional)</label>
+              <input type="date" id="modal-goal-deadline" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveGoalModal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Adicionar</button>
+            </div>
+          `
+        },
+        labels: {
+          title: 'Editar Nomes dos Compromissos',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">💳 Primeiro Compromisso</label>
+              <input type="text" id="modal-label-expenses" class="input-dark w-full px-4 py-2 rounded-lg text-white" placeholder="ex: Despesas">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">📈 Segundo Compromisso</label>
+              <input type="text" id="modal-label-invest" class="input-dark w-full px-4 py-2 rounded-lg text-white" placeholder="ex: Investimentos">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">⛪ Terceiro Compromisso</label>
+              <input type="text" id="modal-label-tithe" class="input-dark w-full px-4 py-2 rounded-lg text-white" placeholder="ex: Dízimo/Doações">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">🎯 Quarto Compromisso</label>
+              <input type="text" id="modal-label-emergency" class="input-dark w-full px-4 py-2 rounded-lg text-white" placeholder="ex: Reserva de Emergência">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveLabelsModal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar</button>
+            </div>
+          `
+        },
+        settings: {
+          title: 'Configurações da Família',
+          html: `
+            <h3 class="text-lg font-semibold text-white mb-3">Adicionar Membro</h3>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Email do Membro</label>
+              <input type="email" id="modal-member-email" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="email@exemplo.com">
+              <p class="text-slate-500 text-xs mt-2">O membro precisa ter uma conta no Cash Control</p>
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveMemberModal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Adicionar</button>
+            </div>
+          `
+        },
+        newcategory: {
+          title: 'Nova Categoria de Despesa',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Emoji</label>
+              <input type="text" id="modal-category-emoji" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: 🎬" maxlength="2">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Nome da Categoria</label>
+              <input type="text" id="modal-category-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Cinema">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveNewCategory()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Criar</button>
+            </div>
+          `
+        },
+        'edit-income': {
+          title: 'Editar Entrada',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label>
+              <input type="text" id="edit-inc-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Freelance">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
+              <input type="number" id="edit-inc-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Data</label>
+              <input type="date" id="edit-inc-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveEditedTransaction()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar</button>
+            </div>
+          `
+        },
+        'edit-expense': {
+          title: 'Editar Despesa',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label>
+              <input type="text" id="edit-exp-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Supermercado">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
+              <input type="number" id="edit-exp-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label>
+              <select id="edit-exp-category" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="moradia">🏠 Moradia</option>
+                <option value="alimentacao">🍽️ Alimentação</option>
+                <option value="transporte">🚗 Transporte</option>
+                <option value="saude">🏥 Saúde</option>
+                <option value="educacao">📚 Educação</option>
+                <option value="lazer">🎮 Lazer</option>
+                <option value="vestuario">👕 Vestuário</option>
+                <option value="servicos">📱 Serviços</option>
+                <option value="outros">📦 Outros</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Data</label>
+              <input type="date" id="edit-exp-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">📸 Foto da Conta (opcional)</label>
+              <input type="file" id="edit-exp-photo" accept="image/*" class="input-dark w-full px-4 py-3 rounded-xl text-white file:bg-emerald-600 file:text-white file:border-0 file:rounded-lg file:cursor-pointer">
+              <p class="text-slate-500 text-xs mt-1">JPG, PNG ou WebP (max 5MB)</p>
+              <div id="edit-exp-photo-preview" class="mt-2 text-sm text-slate-400"></div>
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveEditedTransaction()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar</button>
+            </div>
+          `
+        },
+        'edit-salary': {
+          title: 'Editar Salário',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Nome/Descrição</label>
+              <input type="text" id="edit-sal-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Salário Principal">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
+              <input type="number" id="edit-sal-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Frequência</label>
+              <select id="edit-sal-frequency" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="monthly">Mensal</option>
+                <option value="biweekly">Quinzenal</option>
+                <option value="weekly">Semanal</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Data de Início</label>
+              <input type="date" id="edit-sal-start" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveEditedTransaction()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar</button>
+            </div>
+          `
+        }
+      };
+      
+      if (modals[type]) {
+        title.textContent = modals[type].title;
+        content.innerHTML = modals[type].html;
+        modal.classList.remove('hidden');
+        // Auto-focus first input
+        setTimeout(() => {
+          const firstInput = content.querySelector('input');
+          if (firstInput) firstInput.focus();
+        }, 100);
+      }
+    }
+    
+    async function saveSalaryModal() {
+      if (!currentFamily || !currentUser) {
+        showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      
+      const description = document.getElementById('modal-salary-name').value.trim();
+      const amount = Number(document.getElementById('modal-salary-amount').value) || 0;
+      const frequency = document.getElementById('modal-salary-frequency').value;
+      const startDate = document.getElementById('modal-salary-start').value || '';
+      
+      if (!description || amount <= 0) {
+        showToast('⚠️', 'Preencha nome e valor');
+        return;
+      }
+      
+      try {
+        await db.collection('transactions').add({
+          familyId: currentFamily,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          type: 'salary',
+          description,
+          amount,
+          frequency,
+          startDate,
+          isActive: true,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal();
+        showToast('✅', 'Salário adicionado');
+        if (typeof loadSalariesList === 'function') await loadSalariesList();
+        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
+      } catch (error) {
+        console.error('Error saving salary:', error);
+        showToast('❌', 'Erro ao salvar salário');
+      }
+    }
+    
+    async function saveGoalModal() {
+      if (!currentFamily || !currentUser) {
+        showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+      
+      const name = document.getElementById('modal-goal-name').value.trim();
+      const targetAmount = Number(document.getElementById('modal-goal-target').value) || 0;
+      const deadline = document.getElementById('modal-goal-deadline').value;
+      
+      if (!name || targetAmount <= 0) {
+        showToast('⚠️', 'Preencha nome e valor');
+        return;
+      }
+      
+      try {
+        await db.collection('goals').add({
+          familyId: currentFamily,
+          userId: currentUser.uid,
+          userName: currentUser.displayName || currentUser.email,
+          name,
+          targetAmount,
+          deadline: deadline || null,
+          progress: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeModal();
+        showToast('✅', 'Meta adicionada');
+        if (typeof loadGoalsList === 'function') await loadGoalsList();
+      } catch (error) {
+        console.error('Error saving goal:', error);
+        showToast('❌', 'Erro ao adicionar meta');
+      }
+    }
+    
+    async function saveLabelsModal() {
+      commitmentLabels.expenses = document.getElementById('modal-label-expenses').value.trim() || 'Despesas';
+      commitmentLabels.invest = document.getElementById('modal-label-invest').value.trim() || 'Investimentos';
+      commitmentLabels.tithe = document.getElementById('modal-label-tithe').value.trim() || 'Dízimo/Doações';
+      commitmentLabels.emergency = document.getElementById('modal-label-emergency').value.trim() || 'Reserva de Emergência';
+      
+      // Update all labels in the UI
+      document.getElementById('label-expenses').textContent = commitmentLabels.expenses;
+      document.getElementById('label-invest').textContent = commitmentLabels.invest;
+      document.getElementById('label-tithe').textContent = commitmentLabels.tithe;
+      document.getElementById('label-emergency').textContent = commitmentLabels.emergency;
+      
+      closeModal();
+      showToast('✅', 'Nomes atualizados');
+    }
+    
+    async function saveMemberModal() {
+      if (!currentFamily || !currentFamilyData || currentFamilyData.ownerId !== currentUser.uid) {
+        showToast('⚠️', 'Apenas o proprietário pode adicionar membros');
+        return;
+      }
+      
+      const email = document.getElementById('modal-member-email').value.trim();
+      if (!email) {
+        showToast('⚠️', 'Digite um email');
+        return;
+      }
+      
+      try {
+        await db.collection('families').doc(currentFamily).update({
+          members: firebase.firestore.FieldValue.arrayUnion(email)
+        });
+        closeModal();
+        showToast('✅', 'Membro adicionado');
+      } catch (error) {
+        console.error('Error adding member:', error);
+        showToast('❌', 'Erro ao adicionar membro');
+      }
+    }
+    
+    // Variable to store editing transaction data
+    let editingTransactionId = null;
+    let editingTransactionType = null;
+    let expensePhotoBase64 = null; // Store current photo in base64
+    let editExpensePhotoBase64 = null; // Store edit modal photo in base64
+    
+    // Compress and convert image to base64
+    async function compressImageToBase64(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve(null);
+          return;
+        }
+        
+        // Check file size (max 5MB for compression)
+        if (file.size > 5 * 1024 * 1024) {
+          reject(new Error('Arquivo muito grande. Máximo 5MB'));
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Resize if needed
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width = Math.round(width * ratio);
+              height = Math.round(height * ratio);
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Determine format based on file type
+            const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+            const base64 = canvas.toDataURL(format, quality);
+            resolve(base64);
+          };
+          img.onerror = () => reject(new Error('Falha ao carregar imagem'));
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('Falha ao ler arquivo'));
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // Handle photo selection in add expense
+    document.addEventListener('change', async function(e) {
+      if (e.target.id === 'expense-photo') {
+        const preview = document.getElementById('expense-photo-preview');
+        const file = e.target.files[0];
+        
+        if (!file) {
+          expensePhotoBase64 = null;
+          preview.textContent = '';
+          return;
+        }
+        
+        try {
+          preview.textContent = '⏳ Comprimindo imagem...';
+          expensePhotoBase64 = await compressImageToBase64(file);
+          preview.textContent = `✅ Foto carregada (${(expensePhotoBase64.length / 1024).toFixed(1)}KB)`;
+        } catch (error) {
+          preview.textContent = `❌ ${error.message}`;
+          expensePhotoBase64 = null;
+        }
+      }
+      
+      if (e.target.id === 'edit-exp-photo') {
+        const preview = document.getElementById('edit-exp-photo-preview');
+        const file = e.target.files[0];
+        
+        if (!file) {
+          editExpensePhotoBase64 = null;
+          preview.textContent = '';
+          return;
+        }
+        
+        try {
+          preview.textContent = '⏳ Comprimindo imagem...';
+          editExpensePhotoBase64 = await compressImageToBase64(file);
+          preview.textContent = `✅ Foto carregada (${(editExpensePhotoBase64.length / 1024).toFixed(1)}KB)`;
+        } catch (error) {
+          preview.textContent = `❌ ${error.message}`;
+          editExpensePhotoBase64 = null;
+        }
+      }
+    }, true);
+    
+    async function editTransaction(docId, type) {
+      editingTransactionId = docId;
+      editingTransactionType = type;
+      
+      try {
+        const doc = await db.collection('transactions').doc(docId).get();
+        if (!doc.exists) {
+          showToast('❌', 'Documento não encontrado');
+          return;
+        }
+        
+        const data = doc.data();
+        
+        if (type === 'income') {
+          openModal('edit-income');
+          document.getElementById('edit-inc-desc').value = data.description || '';
+          document.getElementById('edit-inc-amount').value = data.amount || '';
+          document.getElementById('edit-inc-date').value = data.date || '';
+        } else if (type === 'expense') {
+          openModal('edit-expense');
+          document.getElementById('edit-exp-desc').value = data.description || '';
+          document.getElementById('edit-exp-amount').value = data.amount || '';
+          document.getElementById('edit-exp-category').value = data.category || '';
+          document.getElementById('edit-exp-date').value = data.date || '';
+        } else if (type === 'salary') {
+          openModal('edit-salary');
+          document.getElementById('edit-sal-desc').value = data.description || '';
+          document.getElementById('edit-sal-amount').value = data.amount || '';
+          document.getElementById('edit-sal-frequency').value = data.frequency || 'monthly';
+          document.getElementById('edit-sal-start').value = data.startDate || '';
+        }
+      } catch (error) {
+        console.error('Error loading transaction:', error);
+        showToast('❌', 'Erro ao carregar dados');
+      }
+    }
+    
+    async function saveEditedTransaction() {
+      if (!editingTransactionId || !editingTransactionType) {
+        showToast('❌', 'Erro: dados de edição não inicializados');
+        return;
+      }
+      
+      try {
+        const updateData = {};
+        
+        if (editingTransactionType === 'income') {
+          updateData.description = document.getElementById('edit-inc-desc').value.trim();
+          updateData.amount = Number(document.getElementById('edit-inc-amount').value) || 0;
+          updateData.date = document.getElementById('edit-inc-date').value;
+        } else if (editingTransactionType === 'expense') {
+          updateData.description = document.getElementById('edit-exp-desc').value.trim();
+          updateData.amount = Number(document.getElementById('edit-exp-amount').value) || 0;
+          updateData.category = document.getElementById('edit-exp-category').value;
+          updateData.date = document.getElementById('edit-exp-date').value;
+          
+          // Update photo if new one was selected
+          if (editExpensePhotoBase64) {
+            updateData.photoBase64 = editExpensePhotoBase64;
+          }
+        } else if (editingTransactionType === 'salary') {
+          updateData.description = document.getElementById('edit-sal-desc').value.trim();
+          updateData.amount = Number(document.getElementById('edit-sal-amount').value) || 0;
+          updateData.frequency = document.getElementById('edit-sal-frequency').value;
+          updateData.startDate = document.getElementById('edit-sal-start').value;
+        }
+        
+        await db.collection('transactions').doc(editingTransactionId).update(updateData);
+        
+        closeModal();
+        showToast('✅', 'Atualizado com sucesso');
+        
+        // Reload appropriate list
+        if (editingTransactionType === 'income' && typeof loadIncomeHistory === 'function') {
+          await loadIncomeHistory();
+        } else if (editingTransactionType === 'expense' && typeof loadExpenseHistory === 'function') {
+          await loadExpenseHistory();
+        } else if (editingTransactionType === 'salary' && typeof loadSalariesList === 'function') {
+          await loadSalariesList();
+        }
+        
+        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
+        if (typeof updateDashboard === 'function') await updateDashboard();
+        
+        editingTransactionId = null;
+        editingTransactionType = null;
+      } catch (error) {
+        console.error('Error saving transaction:', error);
+        showToast('❌', 'Erro ao salvar');
+      }
+    }
+    
+    async function deleteSalaryItem(docId) {
+      if (!confirm('Deseja remover este salário?')) return;
+      
+      try {
+        await db.collection('transactions').doc(docId).delete();
+        showToast('✅', 'Salário removido');
+        
+        if (typeof loadSalariesList === 'function') await loadSalariesList();
+        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
+        if (typeof updateDashboard === 'function') await updateDashboard();
+      } catch (error) {
+        console.error('Error deleting salary:', error);
+        showToast('❌', 'Erro ao remover');
+      }
+    }
+    
+    async function saveNewCategory() {
+      const emoji = document.getElementById('modal-category-emoji').value.trim();
+      const name = document.getElementById('modal-category-name').value.trim();
+      
+      if (!emoji || !name) {
+        showToast('⚠️', 'Preencha emoji e nome');
+        return;
+      }
+      
+      const value = name.toLowerCase().replace(/\s+/g, '_');
+      
+      const select = document.getElementById('expense-category');
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = `${emoji} ${name}`;
+      select.appendChild(option);
+      select.value = value;
+      
+      closeModal();
+      showToast('✅', `Categoria "${name}" criada`);
+    }
     
     // Element SDK Integration
     if (window.elementSdk) {
@@ -1301,15 +1868,32 @@
         
         container.innerHTML = snap.docs.map(doc => {
           const inc = doc.data();
+          const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
+          const investPercent = parseFloat(document.getElementById('commit-invest').value) || 20;
+          const tithePercent = parseFloat(document.getElementById('commit-tithe').value) || 0;
+          const emergencyPercent = parseFloat(document.getElementById('commit-emergency').value) || 0;
+          
+          const expensesAmount = inc.amount * (expensesPercent / 100);
+          const investAmount = inc.amount * (investPercent / 100);
+          const titheAmount = inc.amount * (tithePercent / 100);
+          const emergencyAmount = inc.amount * (emergencyPercent / 100);
+          
           return `
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-income-id="${doc.id}">
               <div class="min-w-0 flex-1 mr-2">
                 <p class="text-white font-medium truncate">${inc.description}</p>
                 <p class="text-slate-400 text-xs">${inc.date || ''}</p>
+                <div class="text-xs mt-1 space-y-0.5">
+                  <p class="text-yellow-400"><span class="font-semibold">📌 ${commitmentLabels.expenses}:</span> ${expensesPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(expensesAmount) : 'R$ '+expensesAmount.toFixed(2)})</p>
+                  <p class="text-emerald-400"><span class="font-semibold">💡 ${commitmentLabels.invest}:</span> ${investPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(investAmount) : 'R$ '+investAmount.toFixed(2)})</p>
+                  ${tithePercent > 0 ? `<p class="text-blue-400"><span class="font-semibold">📕 ${commitmentLabels.tithe}:</span> ${tithePercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(titheAmount) : 'R$ '+titheAmount.toFixed(2)})</p>` : ''}
+                  ${emergencyPercent > 0 ? `<p class="text-red-400"><span class="font-semibold">🚨 ${commitmentLabels.emergency}:</span> ${emergencyPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(emergencyAmount) : 'R$ '+emergencyAmount.toFixed(2)})</p>` : ''}
+                </div>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
                 <p class="font-semibold text-green-400 whitespace-nowrap">+ ${(typeof formatCurrency === 'function') ? formatCurrency(inc.amount) : 'R$ '+inc.amount.toFixed(2)}</p>
-                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
+                <button onclick="editTransaction('${doc.id}', 'income')" class="text-emerald-400 hover:text-emerald-300 font-semibold text-sm" title="Editar">✏️</button>
+                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm" title="Excluir">🗑️</button>
               </div>
             </div>
           `;
@@ -1339,15 +1923,33 @@
         
         container.innerHTML = snap.docs.map(doc => {
           const exp = doc.data();
+          const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
+          const investPercent = parseFloat(document.getElementById('commit-invest').value) || 20;
+          const tithePercent = parseFloat(document.getElementById('commit-tithe').value) || 0;
+          const emergencyPercent = parseFloat(document.getElementById('commit-emergency').value) || 0;
+          
+          const expensesAmount = exp.amount * (expensesPercent / 100);
+          const investAmount = exp.amount * (investPercent / 100);
+          const titheAmount = exp.amount * (tithePercent / 100);
+          const emergencyAmount = exp.amount * (emergencyPercent / 100);
+          
           return `
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-category="${exp.category || 'outros'}">
               <div class="min-w-0 flex-1 mr-2">
                 <p class="text-white font-medium truncate">${exp.description}</p>
                 <p class="text-slate-400 text-xs">${exp.date || ''}</p>
+                <div class="text-xs mt-1 space-y-0.5">
+                  <p class="text-yellow-400"><span class="font-semibold">📌 ${commitmentLabels.expenses}:</span> ${expensesPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(expensesAmount) : 'R$ '+expensesAmount.toFixed(2)})</p>
+                  <p class="text-emerald-400"><span class="font-semibold">💡 ${commitmentLabels.invest}:</span> ${investPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(investAmount) : 'R$ '+investAmount.toFixed(2)})</p>
+                  ${tithePercent > 0 ? `<p class="text-blue-400"><span class="font-semibold">📕 ${commitmentLabels.tithe}:</span> ${tithePercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(titheAmount) : 'R$ '+titheAmount.toFixed(2)})</p>` : ''}
+                  ${emergencyPercent > 0 ? `<p class="text-red-400"><span class="font-semibold">🚨 ${commitmentLabels.emergency}:</span> ${emergencyPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(emergencyAmount) : 'R$ '+emergencyAmount.toFixed(2)})</p>` : ''}
+                </div>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
                 <p class="font-semibold text-red-400 whitespace-nowrap">- ${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ '+exp.amount.toFixed(2)}</p>
-                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
+                ${exp.photoBase64 ? `<button onclick="currentViewingPhotoDocId='${doc.id}'; viewExpensePhoto('${exp.photoBase64}')" class="text-blue-400 hover:text-blue-300 font-semibold text-sm" title="Ver Foto">📸</button>` : ''}
+                <button onclick="editTransaction('${doc.id}', 'expense')" class="text-emerald-400 hover:text-emerald-300 font-semibold text-sm" title="Editar">✏️</button>
+                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm" title="Excluir">🗑️</button>
               </div>
             </div>
           `;
@@ -1555,7 +2157,7 @@
       }
 
       try {
-        await db.collection('transactions').add({
+        const payload = {
           familyId: currentFamily,
           userId: currentUser.uid,
           userName: currentUser.displayName || currentUser.email,
@@ -1565,11 +2167,21 @@
           amount: amount,
           date: date,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        };
+        
+        // Add photo if exists
+        if (expensePhotoBase64) {
+          payload.photoBase64 = expensePhotoBase64;
+        }
+        
+        await db.collection('transactions').add(payload);
         document.getElementById('expense-desc').value = '';
         document.getElementById('expense-category').value = '';
         document.getElementById('expense-amount').value = '';
         document.getElementById('expense-date').value = '';
+        document.getElementById('expense-photo').value = '';
+        document.getElementById('expense-photo-preview').textContent = '';
+        expensePhotoBase64 = null;
         if (typeof showToast === 'function') showToast('✅', 'Despesa adicionada!');
         if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
         if (typeof updateDashboard === 'function') updateDashboard();
@@ -1583,151 +2195,10 @@
     // saveCommitmentNames removed - function no longer needed
 
     // Goal Modal & Functions
-    function openAddGoalModal() {
-      const modal = document.getElementById('add-goal-modal');
-      if (!modal) return;
 
-      // If modal is inside a hidden container, move it to body so it's always visible
-      if (modal.parentNode !== document.body) document.body.appendChild(modal);
-
-      // ensure salary modal is fully hidden (inline style to avoid stacking issues)
-      const salaryModal = document.getElementById('add-salary-modal');
-      if (salaryModal) {
-        salaryModal.style.display = 'none';
-        salaryModal.classList.add('hidden');
-      }
-
-      // reset fields
-      const nameInput = document.getElementById('modal-goal-name');
-      if (nameInput) nameInput.value = '';
-      const amountInput = document.getElementById('modal-goal-amount');
-      if (amountInput) amountInput.value = '';
-      const deadlineInput = document.getElementById('modal-goal-deadline');
-      if (deadlineInput) deadlineInput.value = '';
-
-      // show modal with inline styles to ensure visibility
-      modal.style.display = 'flex';
-      modal.classList.remove('hidden');
-      modal.style.zIndex = 10000;
-      modal.style.pointerEvents = 'auto';
-
-      // focus first input for accessibility
-      setTimeout(() => { try { nameInput && nameInput.focus(); } catch (e) {} }, 50);
-    }
-
-    function closeAddGoalModal() {
-      const modal = document.getElementById('add-goal-modal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.classList.add('hidden');
-      }
-    }
-
-    async function addNewGoal() {
-      if (!currentFamily || !currentUser) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
-        return;
-      }
-      const name = document.getElementById('modal-goal-name').value.trim();
-      const amount = Number(document.getElementById('modal-goal-amount').value) || 0;
-      const start = document.getElementById('modal-goal-start').value;
-      const deadline = document.getElementById('modal-goal-deadline').value;
-
-      if (!name || amount <= 0) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Preencha nome e valor');
-        return;
-      }
-
-      try {
-        await db.collection('goals').add({
-          familyId: currentFamily,
-          userId: currentUser.uid,
-          userName: currentUser.displayName || currentUser.email,
-          name: name,
-          targetAmount: amount,
-          startDate: start || null,
-          deadline: deadline || null,
-          progress: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        closeAddGoalModal();
-        if (typeof showToast === 'function') showToast('✅', 'Meta adicionada!');
-        if (typeof loadGoalsList === 'function') await loadGoalsList();
-      } catch (error) {
-        console.error('Error adding goal:', error);
-        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar meta');
-      }
-    }
 
     // Settings & Family Management
-    async function openSettings() {
-      try {
-        const modal = document.getElementById('settings-modal');
-        if (!modal) {
-          console.error('Settings modal not found');
-          showToast('❌', 'Erro: Modal não encontrado');
-          return;
-        }
-        
-        // Mostrar o modal imediatamente
-        modal.classList.remove('hidden');
-        
-        // Carregar dados em paralelo se disponível
-        if (currentFamily && currentFamilyData && db) {
-          try {
-            await loadFamilyMembersForSettings();
-          } catch (error) {
-            console.warn('Could not load family members:', error);
-            // Continua mesmo se falhar ao carregar membros
-          }
-        }
-      } catch (error) {
-        console.error('Error opening settings:', error);
-        showToast('❌', 'Erro ao abrir configurações');
-      }
-    }
 
-    function closeSettings() {
-      const modal = document.getElementById('settings-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-      }
-    }
-
-    async function loadFamilyMembersForSettings() {
-      if (!currentFamily || !currentFamilyData) {
-        console.warn('Family data not available');
-        return;
-      }
-      
-      try {
-        const familyDoc = await db.collection('families').doc(currentFamily).get();
-        if (!familyDoc.exists) {
-          console.warn('Family document not found');
-          return;
-        }
-        
-        const data = familyDoc.data();
-        const isOwner = data.ownerId === currentUser.uid;
-        
-        // Update UI based on role
-        const ownerSection = document.getElementById('settings-owner-section');
-        const memberSection = document.getElementById('settings-member-section');
-        
-        if (isOwner) {
-          if (ownerSection) ownerSection.classList.remove('hidden');
-          if (memberSection) memberSection.classList.add('hidden');
-          
-          // Load member list
-          await loadFamilyMembersList(data.members || []);
-        } else {
-          if (ownerSection) ownerSection.classList.add('hidden');
-          if (memberSection) memberSection.classList.remove('hidden');
-        }
-      } catch (error) {
-        console.error('Error loading family members:', error);
-      }
-    }
     
     async function loadFamilyMembersList(memberEmails) {
       const membersContainer = document.getElementById('family-members');
@@ -1796,7 +2267,6 @@
           members: firebase.firestore.FieldValue.arrayRemove(memberEmail)
         });
         showToast('✅', 'Membro removido com sucesso');
-        loadFamilyMembersForSettings();
       } catch (error) {
         showToast('❌', 'Erro ao remover membro');
         console.error('Error removing member:', error);
@@ -1834,7 +2304,6 @@
         
         document.getElementById('add-member-email').value = '';
         if (typeof showToast === 'function') showToast('✅', 'Membro adicionado com sucesso!');
-        loadFamilyMembersForSettings();
       } catch (error) {
         console.error('Error adding member:', error);
         if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar membro');
@@ -1883,6 +2352,7 @@
         if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode excluir');
         return;
       }
+      closeAllModals();
       const modal = document.getElementById('delete-modal');
       if (modal) modal.classList.remove('hidden');
     }
@@ -1903,8 +2373,7 @@
     }
 
     function closeDeleteModal() {
-      const modal = document.getElementById('delete-modal');
-      if (modal) modal.classList.add('hidden');
+      closeAllModals();
     }
 
     async function confirmDelete() {
@@ -1927,11 +2396,290 @@
       }
     }
 
-    // Report Export (placeholder)
-    function exportReportToCSV(startDate, endDate) {
-      if (typeof showToast === 'function') showToast('ℹ️', 'Exportação em desenvolvimento');
-      console.log('Export report:', startDate, endDate);
+    // Report export (supports CSV for now)
+async function generateReport() {
+  if (!currentFamily || !currentFamilyData) return;
+
+  const startDate = document.getElementById('report-start').value;
+  const endDate = document.getElementById('report-end').value;
+
+  if (!startDate || !endDate) {
+    showToast('⚠️', 'Selecione as datas');
+    return;
+  }
+
+  const reportEl = document.getElementById('report-content');
+
+  try {
+    reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Gerando relatório...</p>';
+
+    // queries de entradas e despesas com base no escopo selecionado (individual ou familiar)
+    let incomeQuery, expenseQuery;
+    const scope = document.querySelector('input[name="report-scope"]:checked')?.value || 'individual';
+
+    if (scope === 'individual') {
+      incomeQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'income')
+        .where('userId', '==', currentUser.uid);
+
+      expenseQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'expense')
+        .where('userId', '==', currentUser.uid);
+    } else {
+      // family scope requested
+      if (!currentFamilyData || currentFamilyData.ownerId !== currentUser.uid) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode gerar relatório familiar');
+        reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Apenas o chefe da família pode gerar relatório familiar</p>';
+        return;
+      }
+      incomeQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'income');
+      expenseQuery = db.collection('transactions')
+        .where('familyId', '==', currentFamily)
+        .where('type', '==', 'expense');
     }
+
+    const [incomeSnap, expenseSnap, salarySnap] = await Promise.all([
+      incomeQuery.get(),
+      expenseQuery.get(),
+      db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'salary').get()
+    ]);
+
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    const incomeItems = [];
+    const expenseItems = [];
+    const categoryTotals = {};
+
+    // incluir salários como entradas proporcionais ao período
+    const months = monthsBetweenInclusive(startDate, endDate);
+
+    salarySnap.forEach(doc => {
+      const s = doc.data();
+      // verificar se o salário está ativo dentro do período
+      const startOk = s.startDate <= endDate;
+      const endOk = !s.endDate || s.endDate >= startDate;
+      if (startOk && endOk) {
+        const monthly = calculateMonthlySalary(s.amount, s.frequency);
+        const totalForPeriod = monthly * months;
+        totalIncome += totalForPeriod;
+        incomeItems.push({
+          date: `${startDate} → ${endDate}`,
+          description: `Salário: ${s.description} (${months} mês${months>1?'es':''})`,
+          amount: totalForPeriod,
+          userName: s.userName || s.userId
+        });
+      }
+    });
+
+    incomeSnap.forEach(doc => {
+      const data = doc.data();
+      if (data.date >= startDate && data.date <= endDate) {
+        totalIncome += Number(data.amount);
+        incomeItems.push(data);
+      }
+    });
+
+    expenseSnap.forEach(doc => {
+      const data = doc.data();
+      if (data.date >= startDate && data.date <= endDate) {
+        totalExpenses += Number(data.amount);
+        expenseItems.push(data);
+        categoryTotals[data.category] = (categoryTotals[data.category] || 0) + Number(data.amount);
+      }
+    });
+
+    const balance = totalIncome - totalExpenses;
+
+    // Monta HTML do relatório (manter exportação separada)
+    reportEl.innerHTML = `
+      <h3 class="text-lg font-semibold text-white mb-4">Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}</h3>
+      <button onclick="downloadReport('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4 w-full sm:w-auto">📥 Exportar CSV</button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+          <p class="text-slate-400 text-sm">Total de Entradas</p>
+          <p class="text-2xl font-bold text-emerald-400">${formatCurrency(totalIncome)}</p>
+          <p class="text-xs text-slate-500">${incomeItems.length} transações</p>
+        </div>
+        <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+          <p class="text-slate-400 text-sm">Total de Despesas</p>
+          <p class="text-2xl font-bold text-red-400">${formatCurrency(totalExpenses)}</p>
+          <p class="text-xs text-slate-500">${expenseItems.length} transações</p>
+        </div>
+        <div class="p-4 ${balance >= 0 ? 'bg-blue-500/10 border-blue-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-xl">
+          <p class="text-slate-400 text-sm">Saldo do Período</p>
+          <p class="text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatCurrency(balance)}</p>
+          <p class="text-xs text-slate-500">${balance >= 0 ? 'Positivo' : 'Negativo'}</p>
+        </div>
+      </div>
+
+      <h4 class="font-semibold text-white mb-3">Despesas por Categoria</h4>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        ${Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]).map(([cat, amount]) => `
+          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+            <span class="text-slate-300">${getCategoryLabel(cat)}</span>
+            <span class="font-semibold text-white">${formatCurrency(amount)}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      ${incomeItems.length > 0 ? `
+        <h4 class="font-semibold text-white mb-3">Detalhamento de Entradas</h4>
+        <div class="space-y-2 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
+          ${incomeItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
+            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm flex-col sm:flex-row">
+              <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
+              <span class="text-emerald-400 font-medium">+ ${formatCurrency(item.amount)}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${expenseItems.length > 0 ? `
+        <h4 class="font-semibold text-white mb-3">Detalhamento de Despesas</h4>
+        <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
+          ${expenseItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
+            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm flex-col sm:flex-row">
+              <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
+              <span class="text-red-400 font-medium">- ${formatCurrency(item.amount)}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+    `;
+
+  } catch (error) {
+    reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Erro ao gerar relatório</p>';
+    console.error('Error generating report:', error);
+  }
+}
+
+
+    function getErrorMessage(code) {
+      const messages = {
+        'auth/invalid-email': 'Email inválido',
+        'auth/user-disabled': 'Usuário desativado',
+        'auth/user-not-found': 'Usuário não encontrado',
+        'auth/wrong-password': 'Senha incorreta',
+        'auth/email-already-in-use': 'Email já está em uso',
+        'auth/weak-password': 'Senha muito fraca (mínimo 6 caracteres)',
+        'auth/invalid-credential': 'Credenciais inválidas'
+      };
+      return messages[code] || 'Erro ao processar. Tente novamente.';
+    }
+
+    // Download Report as CSV
+    async function downloadReport(startDate, endDate) {
+      if (!currentFamily || !currentUser) {
+        showToast('⚠️', 'Selecione uma família primeiro');
+        return;
+      }
+
+      try {
+        showToast('⏳', 'Gerando relatório...');
+
+        const scope = document.querySelector('input[name="report-scope"]:checked')?.value || 'individual';
+        
+        let queries = {
+          salaries: db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'salary'),
+          incomes: db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'income'),
+          expenses: db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'expense')
+        };
+
+        // Filter by user if individual scope
+        if (scope === 'individual') {
+          queries.salaries = queries.salaries.where('userId', '==', currentUser.uid);
+          queries.incomes = queries.incomes.where('userId', '==', currentUser.uid);
+          queries.expenses = queries.expenses.where('userId', '==', currentUser.uid);
+        }
+
+        const [salariesSnap, incomesSnap, expensesSnap] = await Promise.all([
+          queries.salaries.get(),
+          queries.incomes.get(),
+          queries.expenses.get()
+        ]);
+
+        // Build CSV
+        let csv = 'Tipo,Data,Descrição,Categoria,Valor,Usuário\n';
+
+        // Add salaries
+        const monthCount = monthsBetweenInclusive(startDate, endDate);
+        salariesSnap.forEach(doc => {
+          const s = doc.data();
+          const startOk = s.startDate <= endDate;
+          const endOk = !s.endDate || s.endDate >= startDate;
+          if (startOk && endOk) {
+            const monthly = calculateMonthlySalary(s.amount, s.frequency);
+            const total = monthly * monthCount;
+            csv += `"Salário","${startDate} a ${endDate}","${s.description}","${s.frequency}","${total.toFixed(2)}","${s.userName || s.userId}"\n`;
+          }
+        });
+
+        // Add incomes
+        incomesSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.date >= startDate && d.date <= endDate) {
+            csv += `"Entrada Extra","${d.date}","${d.description}","","${d.amount}","${d.userName || d.userId}"\n`;
+          }
+        });
+
+        // Add expenses
+        expensesSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.date >= startDate && d.date <= endDate) {
+            csv += `"Despesa","${d.date}","${d.description}","${d.category || 'Outros'}","${d.amount}","${d.userName || d.userId}"\n`;
+          }
+        });
+
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `relatorio_${scope}_${startDate}_${endDate}.csv`;
+        link.click();
+
+        showToast('✅', 'Relatório baixado com sucesso!');
+      } catch (error) {
+        console.error('Download error:', error);
+        showToast('❌', 'Erro ao baixar relatório');
+      }
+    }
+
+    // Load commitment labels from database
+    async function loadCommitmentLabels() {
+      if (!currentFamily) return;
+      try {
+        const doc = await db.collection('finances').doc(`${currentFamily}_labels`).get();
+        if (doc.exists) {
+          commitmentLabels = { ...commitmentLabels, ...doc.data() };
+        }
+      } catch (error) {
+        console.error('Error loading commitment labels:', error);
+      }
+    }
+
+    // Save commitment labels to database
+    async function saveCommitmentLabels() {
+      if (!currentFamily) return;
+      try {
+        await db.collection('finances').doc(`${currentFamily}_labels`).set(commitmentLabels);
+        showToast('✅', 'Nomes dos compromissos salvos!');
+        // Rerender everything that uses the labels
+        await updateDashboard();
+        await loadIncomeHistory();
+        await loadExpenseHistory();
+        await loadSalariesList();
+      } catch (error) {
+        console.error('Error saving commitment labels:', error);
+        showToast('❌', 'Erro ao salvar nomes');
+      }
+    }
+
+    // Open edit labels modal
+
 
     function getErrorMessage(code) {
       const messages = {
@@ -2095,6 +2843,46 @@
         console.error('Error selecting family:', error);
       }
     }
+
+    // Photo Modal Functions
+    function viewExpensePhoto(photoBase64) {
+      const photoModal = document.getElementById('photo-modal');
+      const photoImage = document.getElementById('photo-image');
+      
+      if (!photoModal || !photoImage) return;
+      
+      photoImage.src = photoBase64;
+      photoModal.classList.remove('hidden');
+    }
+
+    function closePhotoModal() {
+      const photoModal = document.getElementById('photo-modal');
+      if (photoModal) {
+        photoModal.classList.add('hidden');
+      }
+    }
+
+    async function deleteExpensePhoto() {
+      // First, need to get the expense ID from the current context
+      // This is trickier - we'll need to track which expense photo we're viewing
+      if (!currentViewingPhotoDocId) {
+        showToast('❌', 'Erro ao remover foto');
+        return;
+      }
+
+      try {
+        const docRef = db.collection('transactions').doc(currentViewingPhotoDocId);
+        await docRef.update({
+          photoBase64: firebase.firestore.FieldValue.delete()
+        });
+        showToast('✅', 'Foto removida com sucesso');
+        closePhotoModal();
+        loadExpenseHistory();
+      } catch (error) {
+        console.error('Error deleting photo:', error);
+        showToast('❌', 'Erro ao remover foto');
+      }
+    }
     
     // Toast Notification
     function showToast(icon, message) {
@@ -2198,6 +2986,16 @@
         // Update category chart with bars (always show 4 main categories, use commit-% when available)
         const categoryChart = document.getElementById('category-chart');
         if (categoryChart) {
+          // hide the entire card when viewing family dashboard (only show for individual view)
+          const categoryCard = categoryChart.closest('.card-glass') || categoryChart.parentElement;
+          if (isFamily) {
+            if (categoryCard) categoryCard.style.display = 'none';
+            // skip rendering
+            return;
+          } else {
+            if (categoryCard) categoryCard.style.display = '';
+          }
+
           // make sure commitment-derived values are up to date before reading them
           try { await updateCommitmentValues(); } catch (e) { /* ignore */ }
           // helper to parse currency text from elements like 'R$ 1.234,56'
@@ -2226,10 +3024,10 @@
 
           // fixed order of main categories
           const items = [
-            { key: 'despesas', label: 'Despesas', icon: '💳', amount: aExpenses, percent: pExpenses, colorClass: '' },
-            { key: 'investimentos', label: 'Investimentos', icon: '📈', amount: aInvest, percent: pInvest, colorClass: 'alt-color' },
-            { key: 'dizimo', label: 'Dízimo/Doações', icon: '⛪', amount: aTithe, percent: pTithe, colorClass: 'alt-color2' },
-            { key: 'emergencia', label: 'Reserva de Emergência', icon: '🎯', amount: aEmergency, percent: pEmergency, colorClass: 'alt-color3' }
+            { key: 'despesas', label: commitmentLabels.expenses, icon: '💳', amount: aExpenses, percent: pExpenses, colorClass: '' },
+            { key: 'investimentos', label: commitmentLabels.invest, icon: '📈', amount: aInvest, percent: pInvest, colorClass: 'alt-color' },
+            { key: 'dizimo', label: commitmentLabels.tithe, icon: '⛪', amount: aTithe, percent: pTithe, colorClass: 'alt-color2' },
+            { key: 'emergencia', label: commitmentLabels.emergency, icon: '🎯', amount: aEmergency, percent: pEmergency, colorClass: 'alt-color3' }
           ];
 
           // If commit percentages present (sum > 0), use them to calculate widths; otherwise fall back to amounts
@@ -2240,14 +3038,17 @@
               return `
                 <div class="category-item">
                   <div class="category-legend">
-                    <span class="text-lg">${it.icon}</span>
-                    <span class="text-slate-300 text-sm font-medium">${it.label}</span>
-                    <span class="text-slate-400 text-sm ml-auto">${percentage}%</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                      <span class="text-lg">${it.icon}</span>
+                      <span class="text-slate-300 text-sm font-medium">${it.label}</span>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center; margin-left: auto;">
+                      <span class="text-slate-400 text-sm font-semibold">${percentage}%</span>
+                      <span class="category-bar-value">${formatCurrency(it.amount)}</span>
+                    </div>
                   </div>
                   <div class="category-bar">
                     <div class="category-bar-fill ${it.colorClass}" style="width: ${width}%">
-                      <span class="category-bar-label">${it.icon} ${it.label}</span>
-                      <span class="category-bar-value">${formatCurrency(it.amount)}</span>
                     </div>
                   </div>
                 </div>
@@ -2262,14 +3063,17 @@
               return `
                 <div class="category-item">
                   <div class="category-legend">
-                    <span class="text-lg">${it.icon}</span>
-                    <span class="text-slate-300 text-sm font-medium">${it.label}</span>
-                    <span class="text-slate-400 text-sm ml-auto">${percentage}%</span>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                      <span class="text-lg">${it.icon}</span>
+                      <span class="text-slate-300 text-sm font-medium">${it.label}</span>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center; margin-left: auto;">
+                      <span class="text-slate-400 text-sm font-semibold">${percentage}%</span>
+                      <span class="category-bar-value">${formatCurrency(it.amount)}</span>
+                    </div>
                   </div>
                   <div class="category-bar">
                     <div class="category-bar-fill ${it.colorClass}" style="width: ${width}%">
-                      <span class="category-bar-label">${it.icon} ${it.label}</span>
-                      <span class="category-bar-value">${formatCurrency(it.amount)}</span>
                     </div>
                   </div>
                 </div>
@@ -2344,14 +3148,29 @@
           document.getElementById('commit-emergency').value = data.emergency || 0;
         }
         
+        // Load commitment labels
+        await loadCommitmentLabels();
+        
         // Load and display data
         await loadSalariesList();
         await loadIncomeHistory();
         await loadExpenseHistory();
         await loadCustomCommitments();
         await loadGoalsList();
-        updateDashboard();
-        updateCommitmentValues();
+        // show or hide family-scope option depending on whether current user is owner
+        const familyScopeOption = document.getElementById('family-scope-option');
+        if (familyScopeOption) {
+          if (currentFamilyData && currentFamilyData.ownerId === currentUser.uid) {
+            familyScopeOption.style.display = '';
+          } else {
+            familyScopeOption.style.display = 'none';
+            // ensure selection falls back to individual
+            const ind = document.querySelector('input[name="report-scope"][value="individual"]');
+            if (ind) ind.checked = true;
+          }
+        }
+        await updateDashboard();
+        await updateCommitmentValues();
       } catch (error) {
         console.error('Error loading family data:', error);
       }
@@ -2365,7 +3184,12 @@
     // Commitment total calculator
     ['commit-expenses', 'commit-invest', 'commit-tithe', 'commit-emergency'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateCommitmentTotal);
-      document.getElementById(id).addEventListener('input', updateCommitmentValues); // ADD THIS
+      document.getElementById(id).addEventListener('input', updateCommitmentValues);
+      document.getElementById(id).addEventListener('input', () => {
+        // recarregar históricos quando percentuais mudam
+        if (typeof loadIncomeHistory === 'function') loadIncomeHistory();
+        if (typeof loadExpenseHistory === 'function') loadExpenseHistory();
+      });
     });
 
     // helper para gerar ids seguros
@@ -2392,9 +3216,6 @@ function switchTab(tabName) {
     if (typeof updateDashboard === 'function') updateDashboard();
   }
 }
-
-// Estado para edição de salário
-let _editingSalaryId = null;
 
 // Lista de salários: busca e renderiza na área `#salaries-list`
 async function loadSalariesList() {
@@ -2429,15 +3250,35 @@ async function loadSalariesList() {
     snap.forEach(doc => {
       const s = doc.data();
       const monthly = (typeof calculateMonthlySalary === 'function') ? calculateMonthlySalary(s.amount, s.frequency) : (Number(s.amount) || 0);
+      
+      const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
+      const investPercent = parseFloat(document.getElementById('commit-invest').value) || 20;
+      const tithePercent = parseFloat(document.getElementById('commit-tithe').value) || 0;
+      const emergencyPercent = parseFloat(document.getElementById('commit-emergency').value) || 0;
+      
+      const expensesAmount = monthly * (expensesPercent / 100);
+      const investAmount = monthly * (investPercent / 100);
+      const titheAmount = monthly * (tithePercent / 100);
+      const emergencyAmount = monthly * (emergencyPercent / 100);
+      
       html.push(`
-        <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg flex-col sm:flex-row gap-2">
+        <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg flex-col sm:flex-row gap-3">
           <div class="w-full sm:w-auto">
             <div class="flex items-center gap-2"><strong class="text-white">${s.description || 'Salário'}</strong> <span class="text-slate-400 text-sm">(${s.frequency || 'mensal'})</span></div>
             <div class="text-slate-400 text-sm">${s.startDate || ''}${s.endDate ? ' → '+s.endDate : ''}</div>
+            <div class="text-xs mt-2 space-y-0.5">
+              <p class="text-yellow-400"><span class="font-semibold">📌 ${commitmentLabels.expenses}:</span> ${expensesPercent}% ${(typeof formatCurrency === 'function') ? formatCurrency(expensesAmount) : 'R$ '+expensesAmount.toFixed(2)}</p>
+              <p class="text-emerald-400"><span class="font-semibold">💡 ${commitmentLabels.invest}:</span> ${investPercent}% ${(typeof formatCurrency === 'function') ? formatCurrency(investAmount) : 'R$ '+investAmount.toFixed(2)}</p>
+              ${tithePercent > 0 ? `<p class="text-blue-400"><span class="font-semibold">📕 ${commitmentLabels.tithe}:</span> ${tithePercent}% ${(typeof formatCurrency === 'function') ? formatCurrency(titheAmount) : 'R$ '+titheAmount.toFixed(2)}</p>` : ''}
+              ${emergencyPercent > 0 ? `<p class="text-red-400"><span class="font-semibold">🚨 ${commitmentLabels.emergency}:</span> ${emergencyPercent}% ${(typeof formatCurrency === 'function') ? formatCurrency(emergencyAmount) : 'R$ '+emergencyAmount.toFixed(2)}</p>` : ''}
+            </div>
           </div>
-          <div class="text-right w-full sm:w-auto">
+          <div class="text-right w-full sm:w-auto flex flex-col items-end gap-2">
             <div class="font-semibold text-white">${(typeof formatCurrency === 'function') ? formatCurrency(monthly) : 'R$ '+monthly.toFixed(2)}</div>
-            <div class="text-slate-400 text-sm mt-1"><button onclick="editSalary('${doc.id}')" class="text-emerald-400 mr-2">Editar</button><button onclick="deleteSalary('${doc.id}')" class="text-red-400">Remover</button></div>
+            <div class="flex gap-1">
+              <button onclick="editTransaction('${doc.id}', 'salary')" class="text-emerald-400 hover:text-emerald-300 font-semibold text-sm" title="Editar">✏️</button>
+              <button onclick="deleteSalaryItem('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm" title="Excluir">🗑️</button>
+            </div>
           </div>
         </div>
       `);
@@ -2450,122 +3291,7 @@ async function loadSalariesList() {
   }
 }
 
-function openAddSalaryModal() {
-  _editingSalaryId = null;
 
-  // ensure goal modal is fully hidden to avoid stacking issues
-  const goalModal = document.getElementById('add-goal-modal');
-  if (goalModal) {
-    goalModal.style.display = 'none';
-    goalModal.classList.add('hidden');
-  }
-
-  // reset salary fields
-  document.getElementById('modal-salary-name').value = '';
-  document.getElementById('modal-salary-amount').value = '';
-  document.getElementById('modal-salary-frequency').value = 'monthly';
-  document.getElementById('modal-salary-start').value = '';
-  document.getElementById('modal-salary-end').value = '';
-  document.getElementById('modal-salary-projection').value = '';
-
-  // show salary modal (inline style ensures it's on top)
-  const salaryModal = document.getElementById('add-salary-modal');
-  salaryModal.style.display = 'flex';
-  salaryModal.classList.remove('hidden');
-  salaryModal.style.zIndex = 10000;
-
-  setTimeout(() => { try { document.getElementById('modal-salary-name').focus(); } catch (e) {} }, 50);
-}
-
-function closeAddSalaryModal() {
-  const modal = document.getElementById('add-salary-modal');
-  if (modal) {
-    modal.style.display = 'none';
-    modal.classList.add('hidden');
-  }
-  _editingSalaryId = null;
-}
-
-async function addNewSalary() {
-  if (!currentFamily || !currentUser) {
-    if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família e faça login');
-    return;
-  }
-
-  const description = document.getElementById('modal-salary-name').value.trim();
-  const amount = Number(document.getElementById('modal-salary-amount').value) || 0;
-  const frequency = document.getElementById('modal-salary-frequency').value;
-  const startDate = document.getElementById('modal-salary-start').value || '';
-  const endDate = document.getElementById('modal-salary-end').value || '';
-  const projection = Number(document.getElementById('modal-salary-projection').value) || 0;
-
-  if (!description || amount <= 0) {
-    if (typeof showToast === 'function') showToast('⚠️', 'Preencha nome e valor');
-    return;
-  }
-
-  const payload = {
-    familyId: currentFamily,
-    userId: currentUser.uid,
-    userName: currentUser.displayName || currentUser.email,
-    type: 'salary',
-    description,
-    amount,
-    frequency,
-    startDate,
-    endDate: endDate || null,
-    projection,
-    isActive: true,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-
-  try {
-    if (_editingSalaryId) {
-      await db.collection('transactions').doc(_editingSalaryId).set({ ...payload, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-      if (typeof showToast === 'function') showToast('✅', 'Salário atualizado');
-    } else {
-      await db.collection('transactions').add(payload);
-      if (typeof showToast === 'function') showToast('✅', 'Salário adicionado');
-    }
-    closeAddSalaryModal();
-    await loadSalariesList();
-    if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
-  } catch (error) {
-    console.error('Error saving salary:', error);
-    if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar salário');
-  }
-}
-
-async function editSalary(id) {
-  try {
-    const doc = await db.collection('transactions').doc(id).get();
-    if (!doc.exists) return;
-    const s = doc.data();
-    _editingSalaryId = id;
-    document.getElementById('modal-salary-name').value = s.description || '';
-    document.getElementById('modal-salary-amount').value = s.amount || '';
-    document.getElementById('modal-salary-frequency').value = s.frequency || 'monthly';
-    document.getElementById('modal-salary-start').value = s.startDate || '';
-    document.getElementById('modal-salary-end').value = s.endDate || '';
-    document.getElementById('modal-salary-projection').value = s.projection || '';
-    document.getElementById('add-salary-modal').classList.remove('hidden');
-  } catch (error) {
-    console.error('Error editing salary:', error);
-  }
-}
-
-async function deleteSalary(id) {
-  if (!confirm('Deseja remover este salário?')) return;
-  try {
-    await db.collection('transactions').doc(id).delete();
-    if (typeof showToast === 'function') showToast('✅', 'Salário removido');
-    await loadSalariesList();
-    if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
-  } catch (error) {
-    console.error('Error deleting salary:', error);
-    if (typeof showToast === 'function') showToast('❌', 'Erro ao remover salário');
-  }
-}
 
 // Fallback helpers (somente se não existirem)
 if (typeof calculateMonthlySalary !== 'function') {
@@ -2861,6 +3587,7 @@ async function updateCommitmentValues() {
   if (!currentFamily || !currentFamilyData) return;
 
   try {
+    // Carregar salários ativos
     const salariesQuery = db.collection('transactions')
       .where('familyId', '==', currentFamily)
       .where('type', '==', 'salary')
@@ -2882,18 +3609,39 @@ async function updateCommitmentValues() {
       }
     });
 
+    // Carregar entradas extras (income) do mês atual
+    const currentMonth = today.substring(0, 7); // YYYY-MM
+    const incomeQuery = db.collection('transactions')
+      .where('familyId', '==', currentFamily)
+      .where('type', '==', 'income')
+      .where('userId', '==', currentUser.uid);
+
+    const incomeSnap = await incomeQuery.get();
+    let totalMonthlyIncome = 0;
+
+    incomeSnap.forEach(doc => {
+      const data = doc.data();
+      // Filtrar apenas do mês atual
+      if (data.date && data.date.substring(0, 7) === currentMonth) {
+        totalMonthlyIncome += Number(data.amount) || 0;
+      }
+    });
+
+    // Total de renda (salário + entradas extras)
+    const totalIncome = totalMonthlySalary + totalMonthlyIncome;
+
     const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
     const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
     const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
     const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
 
-    document.getElementById('val-expenses').textContent = formatCurrency(totalMonthlySalary * expenses / 100);
-    const investAmount = totalMonthlySalary * invest / 100;
+    document.getElementById('val-expenses').textContent = formatCurrency(totalIncome * expenses / 100);
+    const investAmount = totalIncome * invest / 100;
     // cache last computed invest amount for use by goals
     window._lastInvestAmount = investAmount;
     document.getElementById('val-invest').textContent = formatCurrency(investAmount);
-    document.getElementById('val-tithe').textContent = formatCurrency(totalMonthlySalary * tithe / 100);
-    document.getElementById('val-emergency').textContent = formatCurrency(totalMonthlySalary * emergency / 100);
+    document.getElementById('val-tithe').textContent = formatCurrency(totalIncome * tithe / 100);
+    document.getElementById('val-emergency').textContent = formatCurrency(totalIncome * emergency / 100);
 
     // If goals are rendered, distribute investAmount as default monthly contribution
     const goalsContainer = document.getElementById('goals-list');
@@ -3170,7 +3918,10 @@ async function saveCommitments() {
 
     showToast('✅', 'Divisão salva!');
     await loadCustomCommitments();
-    updateCommitmentValues();
+    await updateCommitmentValues();
+    // Recarregar históricos para refletir os novos valores de compromisso
+    if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+    if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
   } catch (error) {
     showToast('❌', 'Erro ao salvar');
     console.error('Error saving commitments:', error);
@@ -3272,10 +4023,11 @@ async function generateReport() {
   try {
     reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Gerando relatório...</p>';
 
-    // queries de entradas e despesas (como antes)
+    // queries de entradas e despesas com base no escopo selecionado (individual ou familiar)
     let incomeQuery, expenseQuery;
+    const scope = document.querySelector('input[name="report-scope"]:checked')?.value || 'individual';
 
-    if (dashboardView === 'individual') {
+    if (scope === 'individual') {
       incomeQuery = db.collection('transactions')
         .where('familyId', '==', currentFamily)
         .where('type', '==', 'income')
@@ -3286,6 +4038,12 @@ async function generateReport() {
         .where('type', '==', 'expense')
         .where('userId', '==', currentUser.uid);
     } else {
+      // family scope requested
+      if (!currentFamilyData || currentFamilyData.ownerId !== currentUser.uid) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode gerar relatório familiar');
+        reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Apenas o chefe da família pode gerar relatório familiar</p>';
+        return;
+      }
       incomeQuery = db.collection('transactions')
         .where('familyId', '==', currentFamily)
         .where('type', '==', 'income');
@@ -3349,7 +4107,7 @@ async function generateReport() {
     // Monta HTML do relatório (manter exportação separada)
     reportEl.innerHTML = `
       <h3 class="text-lg font-semibold text-white mb-4">Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}</h3>
-      <button onclick="exportReportToCSV('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4 w-full sm:w-auto">📥 Exportar para CSV</button>
+      <button onclick="downloadReport('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4 w-full sm:w-auto">📥 Exportar CSV</button>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
           <p class="text-slate-400 text-sm">Total de Entradas</p>
@@ -3408,6 +4166,30 @@ async function generateReport() {
     console.error('Error generating report:', error);
   }
 }
+
+// Event listener para fechar modais com tecla ESC
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeAllModals();
+  }
+});
+
+// Event listeners para fechar modais ao clicar fora deles (no backdrop)
+document.addEventListener('click', function(event) {
+  const modals = ['generic-modal', 'delete-modal', 'photo-modal'];
+  
+  for (const modalId of modals) {
+    const modal = document.getElementById(modalId);
+    if (modal && !modal.classList.contains('hidden')) {
+      // Verifica se o clique foi no elemento raiz do modal (backdrop)
+      if (event.target === modal) {
+        closeAllModals();
+        closeModal();
+        break;
+      }
+    }
+  }
+});
 
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c6dc2a81525df55',t:'MTc2OTkxMDIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
