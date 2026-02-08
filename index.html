@@ -1335,6 +1335,11 @@
     }
     
     async function saveLabelsModal() {
+      if (!currentFamily) {
+        showToast('⚠️', 'Selecione uma família primeiro');
+        return;
+      }
+      
       commitmentLabels.expenses = document.getElementById('modal-label-expenses').value.trim() || 'Despesas';
       commitmentLabels.invest = document.getElementById('modal-label-invest').value.trim() || 'Investimentos';
       commitmentLabels.tithe = document.getElementById('modal-label-tithe').value.trim() || 'Dízimo/Doações';
@@ -1346,8 +1351,30 @@
       document.getElementById('label-tithe').textContent = commitmentLabels.tithe;
       document.getElementById('label-emergency').textContent = commitmentLabels.emergency;
       
-      closeModal();
-      showToast('✅', 'Nomes atualizados');
+      // Save to Firestore
+      try {
+        const settingsRef = db.collection('familySettings').doc(currentFamily);
+        const settingsDoc = await settingsRef.get();
+        
+        if (settingsDoc.exists) {
+          // Update existing settings
+          await settingsRef.update({
+            commitmentLabels: commitmentLabels
+          });
+        } else {
+          // Create new settings document
+          await settingsRef.set({
+            commitmentLabels: commitmentLabels,
+            customCategories: []
+          });
+        }
+        
+        closeModal();
+        showToast('✅', 'Nomes atualizados e salvos');
+      } catch (error) {
+        console.error('Error saving labels:', error);
+        showToast('❌', 'Erro ao salvar nomes');
+      }
     }
     
     async function saveMemberModal() {
@@ -1580,6 +1607,11 @@
     }
     
     async function saveNewCategory() {
+      if (!currentFamily) {
+        showToast('⚠️', 'Selecione uma família primeiro');
+        return;
+      }
+      
       const emoji = document.getElementById('modal-category-emoji').value.trim();
       const name = document.getElementById('modal-category-name').value.trim();
       
@@ -1590,15 +1622,59 @@
       
       const value = name.toLowerCase().replace(/\s+/g, '_');
       
-      const select = document.getElementById('expense-category');
-      const option = document.createElement('option');
-      option.value = value;
-      option.textContent = `${emoji} ${name}`;
-      select.appendChild(option);
-      select.value = value;
-      
-      closeModal();
-      showToast('✅', `Categoria "${name}" criada`);
+      try {
+        // Get current settings
+        const settingsRef = db.collection('familySettings').doc(currentFamily);
+        const settingsDoc = await settingsRef.get();
+        
+        let customCategories = [];
+        if (settingsDoc.exists) {
+          customCategories = settingsDoc.data().customCategories || [];
+        }
+        
+        // Add new category
+        const newCategory = { value, emoji, name };
+        const categoryExists = customCategories.some(cat => cat.value === value);
+        
+        if (!categoryExists) {
+          customCategories.push(newCategory);
+          
+          // Save to Firestore
+          if (settingsDoc.exists) {
+            await settingsRef.update({
+              customCategories: customCategories
+            });
+          } else {
+            await settingsRef.set({
+              commitmentLabels: commitmentLabels,
+              customCategories: customCategories
+            });
+          }
+          
+          // Add to select elements
+          const select = document.getElementById('expense-category');
+          const editSelect = document.getElementById('edit-exp-category');
+          
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = `${emoji} ${name}`;
+          select.appendChild(option);
+          select.value = value;
+          
+          const editOption = document.createElement('option');
+          editOption.value = value;
+          editOption.textContent = `${emoji} ${name}`;
+          editSelect.appendChild(editOption);
+          
+          closeModal();
+          showToast('✅', `Categoria "${name}" criada e salva`);
+        } else {
+          showToast('⚠️', 'Esta categoria já existe');
+        }
+      } catch (error) {
+        console.error('Error saving category:', error);
+        showToast('❌', 'Erro ao salvar categoria');
+      }
     }
     
     // Element SDK Integration
@@ -2836,11 +2912,61 @@ async function generateReport() {
           currentFamilyData = { id: doc.id, ...doc.data() };
           document.getElementById('current-family-name').textContent = currentFamilyData.name;
           document.getElementById('current-user-name').textContent = currentUser.displayName || currentUser.email;
+          
+          // Load family settings (customized labels and categories)
+          await loadFamilySettings(familyId);
+          
           showMainApp();
         }
       } catch (error) {
         showToast('❌', 'Erro ao selecionar família');
         console.error('Error selecting family:', error);
+      }
+    }
+    
+    async function loadFamilySettings(familyId) {
+      try {
+        const settingsDoc = await db.collection('familySettings').doc(familyId).get();
+        if (settingsDoc.exists) {
+          const settings = settingsDoc.data();
+          
+          // Load commitment labels
+          if (settings.commitmentLabels) {
+            commitmentLabels = { ...commitmentLabels, ...settings.commitmentLabels };
+          }
+          
+          // Update label elements
+          document.getElementById('label-expenses').textContent = commitmentLabels.expenses;
+          document.getElementById('label-invest').textContent = commitmentLabels.invest;
+          document.getElementById('label-tithe').textContent = commitmentLabels.tithe;
+          document.getElementById('label-emergency').textContent = commitmentLabels.emergency;
+          
+          // Load custom categories
+          if (settings.customCategories && Array.isArray(settings.customCategories)) {
+            const categorySelect = document.getElementById('expense-category');
+            const editCategorySelect = document.getElementById('edit-exp-category');
+            
+            // Remove custom categories (keep only default ones)
+            const defaultCategories = ['moradia', 'alimentacao', 'transporte', 'saude', 'educacao', 'lazer', 'vestuario', 'servicos', 'outros'];
+            const optionsToRemove = Array.from(categorySelect.options).filter(opt => !defaultCategories.includes(opt.value));
+            optionsToRemove.forEach(opt => opt.remove());
+            
+            // Add custom categories
+            settings.customCategories.forEach(category => {
+              const option1 = document.createElement('option');
+              option1.value = category.value;
+              option1.textContent = `${category.emoji} ${category.name}`;
+              categorySelect.appendChild(option1);
+              
+              const option2 = document.createElement('option');
+              option2.value = category.value;
+              option2.textContent = `${category.emoji} ${category.name}`;
+              editCategorySelect.appendChild(option2);
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error loading family settings:', error);
       }
     }
 
