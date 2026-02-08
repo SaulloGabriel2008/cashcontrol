@@ -159,6 +159,36 @@
       color: rgba(203, 213, 225, 0.5);
     }
 
+    .input-dark {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1.5px solid rgba(71, 85, 105, 0.3);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .input-dark:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+
+    .input-dark::placeholder {
+      color: rgba(203, 213, 225, 0.5);
+    }
+
+    select.input-dark {
+      background: rgba(15, 23, 42, 0.6) url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 24px;
+      padding-right: 40px;
+      appearance: none;
+    }
+
     /* Animações */
     @keyframes slideInUp {
       from {
@@ -647,59 +677,211 @@
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       main {
-        padding: 16px 12px;
+        padding: 12px 8px;
         padding-bottom: 100px;
       }
 
       header .container {
-        padding: 12px 16px;
-        gap: 12px;
+        padding: 12px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .header-left {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .header-brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
       }
 
       .header-info h1 {
-        font-size: 16px;
-        max-width: 150px;
+        font-size: 14px;
+        max-width: 120px;
       }
 
       .header-info p {
-        font-size: 11px;
+        font-size: 10px;
+      }
+
+      nav {
+        top: 50px;
+      }
+
+      nav .tabs {
+        padding: 8px 12px;
+        gap: 2px;
+      }
+
+      .tab-btn {
+        padding: 8px 12px;
+        font-size: 12px;
       }
 
       .modal-content {
-        padding: 24px;
-        border-radius: 16px;
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 90%;
       }
 
       .modal-title {
-        font-size: 20px;
-      }
-
-      .summary-card {
-        padding: 20px;
-      }
-
-      .section-title {
         font-size: 18px;
+      }
+
+      .modal-close {
+        width: 32px;
+        height: 32px;
+      }
+
+      .input-field {
+        padding: 10px 12px;
+        font-size: 14px;
       }
 
       .btn {
         min-height: 40px;
-        padding: 8px 16px;
-        font-size: 14px;
+        padding: 10px 14px;
+        font-size: 13px;
+        gap: 6px;
+      }
+
+      .btn-primary, .btn-outline, .btn-danger {
+        font-size: 13px;
+      }
+
+      .summary-card {
+        padding: 16px;
+      }
+
+      .summary-card-value {
+        font-size: 22px;
+      }
+
+      .summary-card-label {
+        font-size: 12px;
+      }
+
+      .section {
+        margin-bottom: 20px;
+      }
+
+      .section-title {
+        font-size: 16px;
+        gap: 8px;
+      }
+
+      .section-description {
+        font-size: 12px;
+      }
+
+      .form-group label {
+        font-size: 13px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
       }
 
       .list-item {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .list-item-content {
+        width: 100%;
+      }
+
+      .list-item-title {
+        font-size: 14px;
+      }
+
+      .list-item-subtitle {
+        font-size: 11px;
+      }
+
+      .list-item-value {
+        font-size: 14px;
+        text-align: right;
       }
 
       .list-item-actions {
         width: 100%;
         justify-content: flex-end;
+        gap: 6px;
+      }
+
+      .list-item-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
       }
 
       .grid-2, .grid-3, .grid-4 {
         grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 500px) {
+        .modal-content {
+          max-width: 95%;
+        }
+
+        .container {
+          padding: 0;
+        }
+
+        .btn-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        nav .tabs {
+          padding: 6px 8px;
+        }
+
+        .tab-btn {
+          padding: 6px 10px;
+          font-size: 11px;
+        }
+
+        .card {
+          padding: 12px;
+        }
+
+        .list-item {
+          padding: 10px;
+        }
+
+        .section {
+          margin-bottom: 16px;
+        }
+
+        .summary-card {
+          padding: 14px;
+        }
+
+        .summary-card-value {
+          font-size: 20px;
+        }
+
+        .header-brand {
+          gap: 8px;
+        }
+
+        .form-row {
+          gap: 8px;
+        }
       }
     }
 
@@ -1373,6 +1555,31 @@
             </div>
           `
         },
+        'edit-goal': {
+          title: 'Editar Objetivo',
+          html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Nome do Objetivo</label>
+              <input type="text" id="edit-goal-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Comprar um carro">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Valor Alvo (R$)</label>
+              <input type="number" id="edit-goal-target" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="100000" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Progresso Atual (R$)</label>
+              <input type="number" id="edit-goal-progress" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0" step="0.01">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Data Limite (opcional)</label>
+              <input type="date" id="edit-goal-deadline" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600 hover:border-slate-500">Cancelar</button>
+              <button onclick="saveEditedGoal()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar</button>
+            </div>
+          `
+        },
         labels: {
           title: 'Editar Nomes dos Compromissos',
           html: `
@@ -1644,8 +1851,23 @@
           });
         }
         
+        // Update commitment labels in calculated values section
+        document.querySelectorAll('[data-commitment-label]').forEach(el => {
+          const key = el.getAttribute('data-commitment-label');
+          if (key === 'expenses') el.textContent = commitmentLabels.expenses;
+          if (key === 'invest') el.textContent = commitmentLabels.invest;
+          if (key === 'tithe') el.textContent = commitmentLabels.tithe;
+          if (key === 'emergency') el.textContent = commitmentLabels.emergency;
+        });
+        
         closeModal();
         showToast('✅', 'Nomes atualizados e salvos');
+        
+        // Reload all views to update labels everywhere
+        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+        if (typeof loadSalariesList === 'function') await loadSalariesList();
+        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
       } catch (error) {
         console.error('Error saving labels:', error);
         showToast('❌', 'Erro ao salvar nomes');
@@ -2173,9 +2395,22 @@
     // UI Navigation: Dashboard View
     function setDashboardView(view) {
       window.dashboardView = view;
-      document.querySelectorAll('.dashboard-view-btn').forEach(b => b.classList.remove('bg-emerald-600', 'text-white'));
-      const btn = document.querySelector(`.dashboard-view-btn[data-view="${view}"]`);
-      if (btn) btn.classList.add('bg-emerald-600', 'text-white');
+      
+      // Update button states
+      const dashboardSection = document.querySelector('[id^="tab-dashboard"]');
+      if (dashboardSection) {
+        const buttons = dashboardSection.querySelectorAll('button[data-view]');
+        buttons.forEach(btn => {
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-outline');
+        });
+        const activeBtn = dashboardSection.querySelector(`button[data-view="${view}"]`);
+        if (activeBtn) {
+          activeBtn.classList.remove('btn-outline');
+          activeBtn.classList.add('btn-primary');
+        }
+      }
+      
       if (typeof updateDashboard === 'function') updateDashboard();
     }
 
@@ -2185,20 +2420,123 @@
       const target = document.getElementById(`finance-${view}`);
       if (target) target.classList.remove('hidden');
       
-      document.querySelectorAll('.finance-view-btn').forEach(b => b.classList.remove('bg-emerald-600', 'text-white'));
-      const btn = document.querySelector(`.finance-view-btn[data-view="${view}"]`);
-      if (btn) btn.classList.add('bg-emerald-600', 'text-white');
+      // Update button states - find the parent container
+      const financeContainer = document.querySelector('[id^="tab-finances"]');
+      if (financeContainer) {
+        const buttons = financeContainer.querySelectorAll('button[data-view]');
+        buttons.forEach(btn => {
+          btn.classList.remove('btn-primary');
+          btn.classList.add('btn-outline');
+        });
+        const activeBtn = financeContainer.querySelector(`button[data-view="${view}"]`);
+        if (activeBtn) {
+          activeBtn.classList.remove('btn-outline');
+          activeBtn.classList.add('btn-primary');
+        }
+      }
 
       if (view === 'income' && typeof loadSalariesList === 'function') loadSalariesList();
-      else if (view === 'expenses') {
-        // load expenses if needed
-      }
+      else if (view === 'expenses' && typeof loadExpenseHistory === 'function') loadExpenseHistory();
     }
 
-    // Commitment Edit Toggle
-    // Commitment Edit Toggle removed
+    async function updateCategoryChart() {
+      if (!currentFamily || !currentUser) return;
+      try {
+        const query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('type', '==', 'expense')
+          .where('userId', '==', currentUser.uid);
+        
+        const snap = await query.get();
+        const categoryTotals = {};
+        let total = 0;
 
-    // Income/Expense/Commitment loaders
+        snap.forEach(doc => {
+          const data = doc.data();
+          const category = data.category || 'outros';
+          const amount = Number(data.amount) || 0;
+          categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+          total += amount;
+        });
+
+        const chartContainer = document.getElementById('category-chart');
+        if (!chartContainer) return;
+
+        if (total === 0) {
+          chartContainer.innerHTML = '<p class="text-slate-400 text-center py-8">Adicione despesas para visualizar o gráfico</p>';
+          return;
+        }
+
+        // Create pie chart using HTML/CSS
+        const colors = {
+          'moradia': '#10b981',
+          'alimentacao': '#f59e0b',
+          'transporte': '#3b82f6',
+          'saude': '#ef4444',
+          'educacao': '#8b5cf6',
+          'lazer': '#ec4899',
+          'vestuario': '#14b8a6',
+          'servicos': '#6366f1',
+          'outros': '#64748b'
+        };
+
+        const chartData = Object.entries(categoryTotals)
+          .sort((a, b) => b[1] - a[1])
+          .map(([cat, amount]) => ({
+            category: cat,
+            amount: amount,
+            percent: (amount / total) * 100,
+            color: colors[cat] || '#64748b'
+          }));
+
+        // Build pie chart with SVG
+        let svgContent = '<svg viewBox="0 0 200 200" style="max-width: 300px; margin: 0 auto;">';
+        let currentAngle = 0;
+
+        chartData.forEach(item => {
+          const sliceAngle = (item.percent / 100) * Math.PI * 2;
+          const startAngle = currentAngle;
+          const endAngle = currentAngle + sliceAngle;
+          
+          const x1 = 100 + 80 * Math.cos(startAngle - Math.PI / 2);
+          const y1 = 100 + 80 * Math.sin(startAngle - Math.PI / 2);
+          const x2 = 100 + 80 * Math.cos(endAngle - Math.PI / 2);
+          const y2 = 100 + 80 * Math.sin(endAngle - Math.PI / 2);
+          
+          const largeArc = sliceAngle > Math.PI ? 1 : 0;
+          
+          const pathData = [
+            `M 100 100`,
+            `L ${x1} ${y1}`,
+            `A 80 80 0 ${largeArc} 1 ${x2} ${y2}`,
+            'Z'
+          ].join(' ');
+          
+          svgContent += `<path d="${pathData}" fill="${item.color}" stroke="#0f172a" stroke-width="2"/>`;
+          currentAngle = endAngle;
+        });
+
+        svgContent += '</svg>';
+
+        // Build legend
+        const legendHtml = chartData.map(item => `
+          <div class="flex items-center justify-between p-2 bg-slate-900/30 rounded">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded" style="background-color: ${item.color}"></span>
+              <span class="text-slate-300 text-sm">${getCategoryLabel(item.category)}</span>
+            </div>
+            <span class="text-slate-400 text-sm font-semibold">${item.percent.toFixed(1)}% (${formatCurrency(item.amount)})</span>
+          </div>
+        `).join('');
+
+        chartContainer.innerHTML = `
+          <div class="text-center mb-4">${svgContent}</div>
+          <div class="space-y-1">${legendHtml}</div>
+        `;
+      } catch (error) {
+        console.error('Error updating category chart:', error);
+      }
+    }
     async function loadIncomeHistory() {
       if (!currentFamily || !currentUser) return;
       try {
@@ -2229,16 +2567,44 @@
           const titheAmount = inc.amount * (tithePercent / 100);
           const emergencyAmount = inc.amount * (emergencyPercent / 100);
           
+          const formatCurr = (typeof formatCurrency === 'function') ? formatCurrency : (v) => 'R$ ' + v.toFixed(2);
+          
           return `
-            <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-income-id="${doc.id}">
-              <div class="min-w-0 flex-1 mr-2">
-                <p class="text-white font-medium truncate">${inc.description}</p>
-                <p class="text-slate-400 text-xs">${inc.date || ''}</p>
+            <div class="card rounded-xl p-4 mb-2">
+              <div class="flex justify-between items-start gap-2 mb-2">
+                <div class="flex-1 min-w-0">
+                  <p class="text-white font-medium">${inc.description}</p>
+                  <p class="text-slate-400 text-xs">${inc.date || ''}</p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <p class="font-semibold text-emerald-400 whitespace-nowrap text-sm">+ ${formatCurr(inc.amount)}</p>
+                </div>
               </div>
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <p class="font-semibold text-green-400 whitespace-nowrap">+ ${(typeof formatCurrency === 'function') ? formatCurrency(inc.amount) : 'R$ '+inc.amount.toFixed(2)}</p>
-                <button onclick="editTransaction('${doc.id}', 'income')" class="text-emerald-400 hover:text-emerald-300 font-semibold text-sm" title="Editar">✏️</button>
-                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm" title="Excluir">🗑️</button>
+              <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                <div class="p-2 bg-slate-900/50 rounded">
+                  <p class="text-slate-400">💳 ${commitmentLabels.expenses || 'Despesas'}</p>
+                  <p class="text-emerald-400 font-semibold text-xs">${formatCurr(expensesAmount)}</p>
+                </div>
+                <div class="p-2 bg-slate-900/50 rounded">
+                  <p class="text-slate-400">📈 ${commitmentLabels.invest || 'Investimentos'}</p>
+                  <p class="text-blue-400 font-semibold text-xs">${formatCurr(investAmount)}</p>
+                </div>
+                ${tithePercent > 0 ? `
+                <div class="p-2 bg-slate-900/50 rounded">
+                  <p class="text-slate-400">⛪ ${commitmentLabels.tithe || 'Dízimo'}</p>
+                  <p class="text-purple-400 font-semibold text-xs">${formatCurr(titheAmount)}</p>
+                </div>
+                ` : ''}
+                ${emergencyPercent > 0 ? `
+                <div class="p-2 bg-slate-900/50 rounded">
+                  <p class="text-slate-400">🎯 ${commitmentLabels.emergency || 'Reserva'}</p>
+                  <p class="text-amber-400 font-semibold text-xs">${formatCurr(emergencyAmount)}</p>
+                </div>
+                ` : ''}
+              </div>
+              <div class="flex gap-2 justify-end">
+                <button onclick="editTransaction('${doc.id}', 'income')" class="text-emerald-400 hover:text-emerald-300 text-sm" title="Editar">✏️</button>
+                <button onclick="deleteTransaction('${doc.id}')" class="text-red-400 hover:text-red-300 text-sm" title="Excluir">🗑️</button>
               </div>
             </div>
           `;
@@ -2386,8 +2752,9 @@
                   </div>
 
                   <div class="mt-3 flex gap-2 flex-col sm:flex-row">
-                    <button onclick="completeGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-blue-600 text-white w-full sm:w-auto">Concluir</button>
-                    <button onclick="deleteGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-red-600 text-white w-full sm:w-auto">Excluir</button>
+                    <button onclick="editGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-slate-600 text-white w-full sm:w-auto">✏️ Editar</button>
+                    <button onclick="completeGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-blue-600 text-white w-full sm:w-auto">✅ Concluir</button>
+                    <button onclick="deleteGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-red-600 text-white w-full sm:w-auto">🗑️ Excluir</button>
                   </div>
                 </div>
               `);
@@ -3061,30 +3428,58 @@ async function generateReport() {
             commitmentLabels = { ...commitmentLabels, ...settings.commitmentLabels };
           }
           
-          document.getElementById('label-expenses').textContent = commitmentLabels.expenses;
-          document.getElementById('label-invest').textContent = commitmentLabels.invest;
-          document.getElementById('label-tithe').textContent = commitmentLabels.tithe;
-          document.getElementById('label-emergency').textContent = commitmentLabels.emergency;
+          // Update commitment labels in UI
+          const expenseLabel = document.getElementById('label-expenses');
+          const investLabel = document.getElementById('label-invest');
+          const titheLabel = document.getElementById('label-tithe');
+          const emergencyLabel = document.getElementById('label-emergency');
           
+          if (expenseLabel) expenseLabel.textContent = commitmentLabels.expenses;
+          if (investLabel) investLabel.textContent = commitmentLabels.invest;
+          if (titheLabel) titheLabel.textContent = commitmentLabels.tithe;
+          if (emergencyLabel) emergencyLabel.textContent = commitmentLabels.emergency;
+          
+          // Load custom categories
           if (settings.customCategories && Array.isArray(settings.customCategories)) {
             const categorySelect = document.getElementById('expense-category');
             const editCategorySelect = document.getElementById('edit-exp-category');
             
             if (categorySelect && editCategorySelect) {
+              // Get existing custom category values
               const defaultCategories = ['moradia', 'alimentacao', 'transporte', 'saude', 'educacao', 'lazer', 'vestuario', 'servicos', 'outros'];
-              const optionsToRemove = Array.from(categorySelect.options).filter(opt => !defaultCategories.includes(opt.value));
-              optionsToRemove.forEach(opt => opt.remove());
+              const existingCustom = new Set(settings.customCategories.map(c => c.value));
               
+              // Remove old custom categories that are no longer in settings
+              Array.from(categorySelect.options).forEach(opt => {
+                if (!defaultCategories.includes(opt.value) && !existingCustom.has(opt.value)) {
+                  categorySelect.remove(opt.index);
+                }
+              });
+              
+              Array.from(editCategorySelect.options).forEach(opt => {
+                if (!defaultCategories.includes(opt.value) && !existingCustom.has(opt.value)) {
+                  editCategorySelect.remove(opt.index);
+                }
+              });
+              
+              // Add all custom categories
               settings.customCategories.forEach(category => {
-                const option1 = document.createElement('option');
-                option1.value = category.value;
-                option1.textContent = `${category.emoji} ${category.name}`;
-                categorySelect.appendChild(option1);
+                // Check if option already exists
+                const exists1 = Array.from(categorySelect.options).some(opt => opt.value === category.value);
+                if (!exists1) {
+                  const option1 = document.createElement('option');
+                  option1.value = category.value;
+                  option1.textContent = `${category.emoji} ${category.name}`;
+                  categorySelect.appendChild(option1);
+                }
                 
-                const option2 = document.createElement('option');
-                option2.value = category.value;
-                option2.textContent = `${category.emoji} ${category.name}`;
-                editCategorySelect.appendChild(option2);
+                const exists2 = Array.from(editCategorySelect.options).some(opt => opt.value === category.value);
+                if (!exists2) {
+                  const option2 = document.createElement('option');
+                  option2.value = category.value;
+                  option2.textContent = `${category.emoji} ${category.name}`;
+                  editCategorySelect.appendChild(option2);
+                }
               });
             }
           }
@@ -3238,6 +3633,9 @@ async function generateReport() {
         if (slider) slider.value = satisfaction;
         const display = document.getElementById('satisfaction-display');
         if (display) display.textContent = satisfaction + '%';
+        
+        // Update category chart
+        if (typeof updateCategoryChart === 'function') await updateCategoryChart();
       } catch (error) {
         console.error('Error updating dashboard:', error);
       }
@@ -3358,15 +3756,44 @@ async function generateReport() {
           const titheAmount = monthly * (tithePercent / 100);
           const emergencyAmount = monthly * (emergencyPercent / 100);
           
+          const formatCurr = (typeof formatCurrency === 'function') ? formatCurrency : (v) => 'R$ ' + v.toFixed(2);
+          
           html.push(`
-            <div class="list-item">
-              <div class="list-item-content">
-                <p class="list-item-title">${s.description || 'Salário'} <span class="text-xs text-slate-400">(${s.frequency || 'mensal'})</span></p>
-                <p class="list-item-subtitle">${s.startDate || ''}${s.endDate ? ' → '+s.endDate : ''}</p>
+            <div class="card rounded-xl p-4 mb-3">
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <p class="list-item-title">${s.description || 'Salário'}</p>
+                  <p class="list-item-subtitle text-xs">${s.startDate || ''}${s.endDate ? ' → '+s.endDate : ''} • ${s.frequency || 'mensal'}</p>
+                </div>
+                <div class="list-item-actions">
+                  <button onclick="editTransaction('${doc.id}', 'salary')" class="list-item-btn" title="Editar">✏️</button>
+                  <button onclick="deleteSalaryItem('${doc.id}')" class="list-item-btn" title="Excluir">🗑️</button>
+                </div>
               </div>
-              <div class="list-item-actions">
-                <button onclick="editTransaction('${doc.id}', 'salary')" class="list-item-btn" title="Editar">✏️</button>
-                <button onclick="deleteSalaryItem('${doc.id}')" class="list-item-btn" title="Excluir">🗑️</button>
+              <div class="border-t border-slate-700 pt-3">
+                <p class="text-sm font-semibold text-white mb-2">Valor Total: ${formatCurr(monthly)}</p>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="p-2 bg-slate-900/50 rounded">
+                    <p class="text-slate-400">💳 ${commitmentLabels.expenses || 'Despesas'}</p>
+                    <p class="text-emerald-400 font-semibold">${formatCurr(expensesAmount)}</p>
+                  </div>
+                  <div class="p-2 bg-slate-900/50 rounded">
+                    <p class="text-slate-400">📈 ${commitmentLabels.invest || 'Investimentos'}</p>
+                    <p class="text-blue-400 font-semibold">${formatCurr(investAmount)}</p>
+                  </div>
+                  ${tithePercent > 0 ? `
+                  <div class="p-2 bg-slate-900/50 rounded">
+                    <p class="text-slate-400">⛪ ${commitmentLabels.tithe || 'Dízimo'}</p>
+                    <p class="text-purple-400 font-semibold">${formatCurr(titheAmount)}</p>
+                  </div>
+                  ` : ''}
+                  ${emergencyPercent > 0 ? `
+                  <div class="p-2 bg-slate-900/50 rounded">
+                    <p class="text-slate-400">🎯 ${commitmentLabels.emergency || 'Reserva'}</p>
+                    <p class="text-amber-400 font-semibold">${formatCurr(emergencyAmount)}</p>
+                  </div>
+                  ` : ''}
+                </div>
               </div>
             </div>
                    `);
@@ -3522,6 +3949,59 @@ async function generateReport() {
       } catch (error) {
         console.error('Error deleting goal:', error);
         if (typeof showToast === 'function') showToast('❌', 'Erro ao excluir meta');
+      }
+    }
+
+    let editingGoalId = null;
+
+    async function editGoal(id) {
+      if (!id || !currentFamily || !currentUser) return;
+      editingGoalId = id;
+      try {
+        const doc = await db.collection('goals').doc(id).get();
+        if (!doc.exists) {
+          if (typeof showToast === 'function') showToast('⚠️', 'Meta não encontrada');
+          return;
+        }
+        const data = doc.data();
+        openModal('edit-goal');
+        document.getElementById('edit-goal-name').value = data.name || '';
+        document.getElementById('edit-goal-target').value = data.targetAmount || '';
+        document.getElementById('edit-goal-progress').value = data.progress || '';
+        document.getElementById('edit-goal-deadline').value = data.deadline || '';
+      } catch (error) {
+        console.error('Error loading goal:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao carregar meta');
+      }
+    }
+
+    async function saveEditedGoal() {
+      if (!editingGoalId || !currentFamily || !currentUser) return;
+      try {
+        const name = document.getElementById('edit-goal-name').value.trim();
+        const target = Number(document.getElementById('edit-goal-target').value) || 0;
+        const progress = Number(document.getElementById('edit-goal-progress').value) || 0;
+        const deadline = document.getElementById('edit-goal-deadline').value || null;
+
+        if (!name || target <= 0) {
+          if (typeof showToast === 'function') showToast('⚠️', 'Preencha nome e valor-alvo');
+          return;
+        }
+
+        await db.collection('goals').doc(editingGoalId).update({
+          name,
+          targetAmount: target,
+          progress,
+          deadline
+        });
+
+        closeModal();
+        if (typeof showToast === 'function') showToast('✅', 'Meta atualizada com sucesso');
+        await loadGoalsList();
+        editingGoalId = null;
+      } catch (error) {
+        console.error('Error saving goal:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar meta');
       }
     }
 
