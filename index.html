@@ -2234,12 +2234,6 @@
               <div class="min-w-0 flex-1 mr-2">
                 <p class="text-white font-medium truncate">${inc.description}</p>
                 <p class="text-slate-400 text-xs">${inc.date || ''}</p>
-                <div class="text-xs mt-1 space-y-0.5">
-                  <p class="text-yellow-400"><span class="font-semibold">📌 ${commitmentLabels.expenses}:</span> ${expensesPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(expensesAmount) : 'R$ '+expensesAmount.toFixed(2)})</p>
-                  <p class="text-emerald-400"><span class="font-semibold">💡 ${commitmentLabels.invest}:</span> ${investPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(investAmount) : 'R$ '+investAmount.toFixed(2)})</p>
-                  ${tithePercent > 0 ? `<p class="text-blue-400"><span class="font-semibold">📕 ${commitmentLabels.tithe}:</span> ${tithePercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(titheAmount) : 'R$ '+titheAmount.toFixed(2)})</p>` : ''}
-                  ${emergencyPercent > 0 ? `<p class="text-red-400"><span class="font-semibold">🚨 ${commitmentLabels.emergency}:</span> ${emergencyPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(emergencyAmount) : 'R$ '+emergencyAmount.toFixed(2)})</p>` : ''}
-                </div>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
                 <p class="font-semibold text-green-400 whitespace-nowrap">+ ${(typeof formatCurrency === 'function') ? formatCurrency(inc.amount) : 'R$ '+inc.amount.toFixed(2)}</p>
@@ -2289,12 +2283,6 @@
               <div class="min-w-0 flex-1 mr-2">
                 <p class="text-white font-medium truncate">${exp.description}</p>
                 <p class="text-slate-400 text-xs">${exp.date || ''}</p>
-                <div class="text-xs mt-1 space-y-0.5">
-                  <p class="text-yellow-400"><span class="font-semibold">📌 ${commitmentLabels.expenses}:</span> ${expensesPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(expensesAmount) : 'R$ '+expensesAmount.toFixed(2)})</p>
-                  <p class="text-emerald-400"><span class="font-semibold">💡 ${commitmentLabels.invest}:</span> ${investPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(investAmount) : 'R$ '+investAmount.toFixed(2)})</p>
-                  ${tithePercent > 0 ? `<p class="text-blue-400"><span class="font-semibold">📕 ${commitmentLabels.tithe}:</span> ${tithePercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(titheAmount) : 'R$ '+titheAmount.toFixed(2)})</p>` : ''}
-                  ${emergencyPercent > 0 ? `<p class="text-red-400"><span class="font-semibold">🚨 ${commitmentLabels.emergency}:</span> ${emergencyPercent}% (${(typeof formatCurrency === 'function') ? formatCurrency(emergencyAmount) : 'R$ '+emergencyAmount.toFixed(2)})</p>` : ''}
-                </div>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
                 <p class="font-semibold text-red-400 whitespace-nowrap">- ${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ '+exp.amount.toFixed(2)}</p>
@@ -2382,7 +2370,7 @@
                   <div class="mt-3 p-3 bg-slate-800/30 rounded-lg">
                     <h5 class="text-sm font-semibold text-slate-200 mb-2">Estimativa com Aportes Mensais</h5>
                     <div class="flex flex-col sm:flex-row gap-2 mb-2 items-start sm:items-center">
-                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-full sm:w-44 goal-monthly" placeholder="Aporte mensal (R$)">
+                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="bg-slate-700 border border-slate-600 px-3 py-2 rounded-lg text-white text-sm w-full sm:w-44 goal-monthly" placeholder="Aporte mensal (R$)">
                       <button onclick="computeEstimatesForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white w-full sm:w-auto">Calcular</button>
                       <button onclick="useAllInvestmentForGoal('${id}')" class="px-3 py-2 rounded-lg text-sm bg-slate-600 text-white w-full sm:w-auto">Usar todo investimento</button>
                     </div>
@@ -2393,7 +2381,7 @@
                   </div>
 
                   <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <input type="number" min="0" step="0.01" id="goal-add-${id}" class="input-dark px-3 py-2 rounded-lg text-white text-sm w-full sm:w-44" placeholder="Adicionar valor"/>
+                    <input type="number" min="0" step="0.01" id="goal-add-${id}" class="bg-slate-700 border border-slate-600 px-3 py-2 rounded-lg text-white text-sm w-full sm:w-44" placeholder="Adicionar valor"/>
                     <button onclick="addToGoalProgress('${id}')" class="px-3 py-2 rounded-lg text-sm bg-emerald-600 text-white w-full sm:w-auto">Adicionar</button>
                   </div>
 
@@ -3438,6 +3426,7 @@ async function generateReport() {
 
     const investmentOptions = [
       { key: 'selic', label: 'SELIC', rate: 0.1075 },
+      { key: 'cdi', label: 'CDI', rate: 0.10 },
       { key: 'ipca', label: 'Tesouro IPCA+', rate: 0.055 },
       { key: 'prefixado', label: 'Tesouro Prefixado', rate: 0.125 },
       { key: 'cdb', label: 'CDB', rate: 0.118 },
