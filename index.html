@@ -1456,6 +1456,16 @@
     let dashboardView = 'individual';
     let deleteCallback = null;
     
+    // Cache de dados para reduzir leituras
+    let transactionCache = {
+      salaries: [],
+      incomes: [],
+      expenses: [],
+      lastUpdate: 0
+    };
+    
+    const CACHE_DURATION = 60000; // 60 segundos
+    
     // Commitment Labels (customizable names)
     let commitmentLabels = {
       expenses: 'Despesas',
