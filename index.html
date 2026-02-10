@@ -1083,25 +1083,7 @@
             </div>
 
             <div class="section">
-              <h2 class="section-title">😊 Satisfação com Renda</h2>
-              <div class="card rounded-2xl p-6">
-                <div class="flex items-center justify-center mb-6">
-                  <div class="relative w-40 h-40">
-                    <svg class="w-full h-full progress-ring" viewBox="0 0 128 128">
-                      <circle cx="64" cy="64" r="56" stroke="#334155" stroke-width="12" fill="none" />
-                      <circle id="satisfaction-ring" cx="64" cy="64" r="56" stroke="#10b981" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="351.86" />
-                    </svg>
-                    <div class="absolute inset-0 flex items-center justify-center flex-col">
-                      <span id="satisfaction-value" class="text-3xl font-bold text-white">0%</span>
-                      <span class="text-xs text-slate-400 mt-1">nível geral</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="section">
-              <h2 class="section-title">📝 Transações Recentes</h2>
+              <h2 class="section-title"> Transações Recentes</h2>
               <div class="space-y-2" id="recent-transactions">
                 <p class="text-slate-400 text-center py-8">Nenhuma transação</p>
               </div>
@@ -1133,18 +1115,6 @@
               </div>
 
               <div class="section">
-                <h2 class="section-title">😊 Satisfação Geral</h2>
-                <div class="card rounded-2xl p-6 space-y-4">
-                  <input type="range" id="salary-satisfaction" min="0" max="100" value="50" class="w-full accent-emerald-500 h-2 rounded-lg cursor-pointer">
-                  <div class="flex justify-between items-center">
-                    <span class="text-slate-400">Qual seu nível de satisfação?</span>
-                    <span id="satisfaction-display" class="text-2xl font-bold text-emerald-400">50%</span>
-                  </div>
-                  <button onclick="saveSatisfaction()" class="btn btn-primary w-full">💾 Salvar</button>
-                </div>
-              </div>
-
-              <div class="section">
                 <h2 class="section-title">➕ Ganho Extra</h2>
                 <div class="card rounded-2xl p-6">
                   <div class="form-row">
@@ -1170,7 +1140,7 @@
                 <h2 class="section-title">➕ Nova Despesa</h2>
                 <div class="card rounded-2xl p-6 space-y-4">
                   <input type="text" id="expense-desc" class="input-field w-full" placeholder="Descrição">
-                  <input type="number" id="expense-amount" class="input-field w-full" placeholder="Valor">
+                  <input type="number" id="expense-amount" class="input-field w-full" placeholder="Valor" oninput="updateInstallmentValue()">
                   
                   <div class="form-row">
                     <select id="expense-category" class="input-field">
@@ -1188,16 +1158,33 @@
                   </div>
 
                   <input type="date" id="expense-date" class="input-field w-full">
+                  
+                  <select id="expense-payment" class="input-field w-full" onchange="togglePaymentInstallments()">
+                    <option value="dinheiro">💵 Dinheiro</option>
+                    <option value="pix">📲 Pix</option>
+                    <option value="cartao">💳 Cartão</option>
+                  </select>
+
+                  <div id="installments-group" class="hidden">
+                    <select id="expense-installments" class="input-field w-full" onchange="updateInstallmentValue()">
+                      <option value="1">À Vista</option>
+                      <option value="2">2x</option>
+                      <option value="3">3x</option>
+                      <option value="4">4x</option>
+                      <option value="5">5x</option>
+                      <option value="6">6x</option>
+                      <option value="7">7x</option>
+                      <option value="8">8x</option>
+                      <option value="9">9x</option>
+                      <option value="10">10x</option>
+                      <option value="11">11x</option>
+                      <option value="12">12x</option>
+                    </select>
+                    <p id="installment-value-display" class="text-sm text-slate-400 mt-2">Valor por parcela: —</p>
+                  </div>
+
                   <input type="file" id="expense-photo" class="input-field w-full" accept="image/*">
                   <div id="expense-photo-preview" class="text-sm text-slate-400"></div>
-
-                  <select id="expense-recurrence" class="input-field w-full">
-                    <option value="once">Uma única vez</option>
-                    <option value="weekly">Semanal</option>
-                    <option value="biweekly">Quinzenal</option>
-                    <option value="monthly">Mensal</option>
-                    <option value="yearly">Anual</option>
-                  </select>
 
                   <textarea id="expense-notes" class="input-field w-full" rows="2" placeholder="Observações..."></textarea>
                   <button onclick="addExpense()" class="btn btn-primary w-full">➕ Adicionar Despesa</button>
@@ -1224,33 +1211,25 @@
             <!-- Report View -->
             <div id="finance-report" class="finance-content hidden">
               <div class="section">
-                <h2 class="section-title">📊 Gerar Relatório</h2>
+                <h2 class="section-title">📊 Relatório de Transações</h2>
                 <div class="card rounded-2xl p-6 space-y-4">
                   <div class="form-row">
                     <input type="date" id="report-start" class="input-field">
                     <input type="date" id="report-end" class="input-field">
                   </div>
-
-                  <div>
-                    <label class="block text-sm font-600 mb-3">Escopo do Relatório</label>
-                    <div class="flex gap-4">
-                      <label class="flex items-center gap-2">
-                        <input type="radio" name="report-scope" value="individual" checked class="w-4 h-4">
-                        <span>Meu Relatório</span>
-                      </label>
-                      <label id="family-scope-option" class="flex items-center gap-2">
-                        <input type="radio" name="report-scope" value="family" class="w-4 h-4">
-                        <span>Relatório Familiar</span>
-                      </label>
-                    </div>
+                  <div class="form-row">
+                    <select id="report-payment-filter" class="input-field">
+                      <option value="todas">💳 Todas as formas</option>
+                      <option value="dinheiro">💵 Dinheiro</option>
+                      <option value="pix">📲 Pix</option>
+                      <option value="cartao">💳 Cartão</option>
+                    </select>
                   </div>
-
                   <button onclick="generateReport()" class="btn btn-primary w-full">📊 Gerar Relatório</button>
                 </div>
               </div>
-
               <div id="report-content" class="section card rounded-2xl p-6">
-                <p class="text-slate-400 text-center py-8">Selecione datas e clique em "Gerar"</p>
+                <p class="text-slate-400 text-center py-8">Selecione datas para gerar o relatório</p>
               </div>
             </div>
           </div>
@@ -1677,7 +1656,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
-              <input type="number" id="edit-exp-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01">
+              <input type="number" id="edit-exp-amount" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="0,00" step="0.01" oninput="updateEditInstallmentValue()">
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label>
@@ -1696,6 +1675,32 @@
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Data</label>
               <input type="date" id="edit-exp-date" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Forma de Pagamento</label>
+              <select id="edit-exp-payment" class="input-dark w-full px-4 py-3 rounded-xl text-white" onchange="toggleEditPaymentInstallments()">
+                <option value="dinheiro">💵 Dinheiro</option>
+                <option value="pix">📲 Pix</option>
+                <option value="cartao">💳 Cartão</option>
+              </select>
+            </div>
+            <div id="edit-installments-group" class="hidden">
+              <label class="block text-sm font-medium text-slate-300 mb-2">Parcelamento</label>
+              <select id="edit-exp-installments" class="input-dark w-full px-4 py-3 rounded-xl text-white" onchange="updateEditInstallmentValue()">
+                <option value="1">À Vista</option>
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+                <option value="6">6x</option>
+                <option value="7">7x</option>
+                <option value="8">8x</option>
+                <option value="9">9x</option>
+                <option value="10">10x</option>
+                <option value="11">11x</option>
+                <option value="12">12x</option>
+              </select>
+              <p id="edit-installment-value-display" class="text-sm text-slate-300 mt-2">Valor por parcela: —</p>
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">📸 Foto da Conta (opcional)</label>
@@ -2029,6 +2034,10 @@
           document.getElementById('edit-exp-amount').value = data.amount || '';
           document.getElementById('edit-exp-category').value = data.category || '';
           document.getElementById('edit-exp-date').value = data.date || '';
+          document.getElementById('edit-exp-payment').value = data.paymentMethod || 'dinheiro';
+          document.getElementById('edit-exp-installments').value = data.installments || '1';
+          // Show/hide installments field based on payment method
+          setTimeout(() => toggleEditPaymentInstallments(), 100);
         } else if (type === 'salary') {
           openModal('edit-salary');
           document.getElementById('edit-sal-desc').value = data.description || '';
@@ -2060,6 +2069,8 @@
           updateData.amount = Number(document.getElementById('edit-exp-amount').value) || 0;
           updateData.category = document.getElementById('edit-exp-category').value;
           updateData.date = document.getElementById('edit-exp-date').value;
+          updateData.paymentMethod = document.getElementById('edit-exp-payment').value;
+          updateData.installments = parseInt(document.getElementById('edit-exp-installments').value) || 1;
           
           // Update photo if new one was selected
           if (editExpensePhotoBase64) {
@@ -2139,8 +2150,8 @@
           customCategories = settingsDoc.data().customCategories || [];
         }
         
-        // Add new category
-        const newCategory = { value, emoji, name };
+        // Add new category with familyId for security
+        const newCategory = { value, emoji, name, familyId: currentFamily };
         const categoryExists = customCategories.some(cat => cat.value === value);
         
         if (!categoryExists) {
@@ -2158,20 +2169,24 @@
             });
           }
           
-          // Add to select elements
+          // Add to select elements if they exist
           const select = document.getElementById('expense-category');
           const editSelect = document.getElementById('edit-exp-category');
           
-          const option = document.createElement('option');
-          option.value = value;
-          option.textContent = `${emoji} ${name}`;
-          select.appendChild(option);
-          select.value = value;
+          if (select) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = `${emoji} ${name}`;
+            select.appendChild(option);
+            select.value = value;
+          }
           
-          const editOption = document.createElement('option');
-          editOption.value = value;
-          editOption.textContent = `${emoji} ${name}`;
-          editSelect.appendChild(editOption);
+          if (editSelect) {
+            const editOption = document.createElement('option');
+            editOption.value = value;
+            editOption.textContent = `${emoji} ${name}`;
+            editSelect.appendChild(editOption);
+          }
           
           closeModal();
           showToast('✅', `Categoria "${name}" criada e salva`);
@@ -2447,6 +2462,13 @@
 
       if (view === 'income' && typeof loadSalariesList === 'function') loadSalariesList();
       else if (view === 'expenses' && typeof loadExpenseHistory === 'function') loadExpenseHistory();
+      else if (view === 'report') {
+        // Reset report display
+        document.getElementById('report-content').innerHTML = '<p class="text-slate-400 text-center py-8">Selecione datas para gerar o relatório</p>';
+        document.getElementById('report-start').value = '';
+        document.getElementById('report-end').value = '';
+        document.getElementById('report-payment-filter').value = 'todas';
+      }
     }
 
     async function updateCategoryChart() {
@@ -2642,22 +2664,25 @@
           return;
         }
         
+        const getPaymentDisplay = (method, installments) => {
+          if (method === 'cartao' && installments > 1) {
+            return `${installments}x no 💳`;
+          }
+          const icons = { dinheiro: '💵', pix: '📲', cartao: '💳' };
+          return icons[method] || method;
+        };
+        
         container.innerHTML = snap.docs.map(doc => {
           const exp = doc.data();
-          const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
-          const investPercent = parseFloat(document.getElementById('commit-invest').value) || 20;
-          const tithePercent = parseFloat(document.getElementById('commit-tithe').value) || 0;
-          const emergencyPercent = parseFloat(document.getElementById('commit-emergency').value) || 0;
-          
-          const expensesAmount = exp.amount * (expensesPercent / 100);
-          const investAmount = exp.amount * (investPercent / 100);
-          const titheAmount = exp.amount * (tithePercent / 100);
-          const emergencyAmount = exp.amount * (emergencyPercent / 100);
+          const paymentDisplay = getPaymentDisplay(exp.paymentMethod || 'dinheiro', exp.installments || 1);
           
           return `
             <div class="flex justify-between items-center p-3 bg-slate-800/30 rounded-lg" data-category="${exp.category || 'outros'}">
               <div class="min-w-0 flex-1 mr-2">
-                <p class="text-white font-medium truncate">${exp.description}</p>
+                <div class="flex items-center gap-2 mb-1">
+                  <p class="text-white font-medium truncate">${exp.description}</p>
+                  <span class="text-xs text-slate-400 flex-shrink-0">${paymentDisplay}</span>
+                </div>
                 <p class="text-slate-400 text-xs">${exp.date || ''}</p>
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
@@ -2799,25 +2824,7 @@
     }
 
     // Income Functions
-    async function saveSatisfaction() {
-      if (!currentFamily || !currentUser) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
-        return;
-      }
-      const satisfaction = document.getElementById('salary-satisfaction').value || 50;
-      try {
-        await db.collection('finances').doc(`${currentFamily}_satisfaction_${currentUser.uid}`).set({
-          familyId: currentFamily,
-          userId: currentUser.uid,
-          satisfaction: Number(satisfaction),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-        if (typeof showToast === 'function') showToast('✅', 'Satisfação salva!');
-      } catch (error) {
-        console.error('Error saving satisfaction:', error);
-        if (typeof showToast === 'function') showToast('❌', 'Erro ao salvar');
-      }
-    }
+    // Satisfaction functionality removed
 
     async function addExtraIncome() {
       if (!currentFamily || !currentUser) {
@@ -2866,6 +2873,8 @@
       const category = document.getElementById('expense-category').value;
       const amount = Number(document.getElementById('expense-amount').value) || 0;
       const date = document.getElementById('expense-date').value;
+      const paymentMethod = document.getElementById('expense-payment').value;
+      const installments = document.getElementById('expense-installments')?.value || '1';
 
       if (!desc || !category || amount <= 0 || !date) {
         if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos');
@@ -2882,6 +2891,8 @@
           category: category,
           amount: amount,
           date: date,
+          paymentMethod: paymentMethod,
+          installments: parseInt(installments),
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         
@@ -2895,6 +2906,8 @@
         document.getElementById('expense-category').value = '';
         document.getElementById('expense-amount').value = '';
         document.getElementById('expense-date').value = '';
+        document.getElementById('expense-payment').value = 'dinheiro';
+        document.getElementById('expense-installments').value = '1';
         document.getElementById('expense-photo').value = '';
         document.getElementById('expense-photo-preview').textContent = '';
         expensePhotoBase64 = null;
@@ -2904,6 +2917,153 @@
       } catch (error) {
         console.error('Error adding expense:', error);
         if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar');
+      }
+    }
+
+    async function generateReport() {
+      const startDate = document.getElementById('report-start').value;
+      const endDate = document.getElementById('report-end').value;
+      const paymentFilter = document.getElementById('report-payment-filter').value;
+
+      if (!startDate || !endDate) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione as datas');
+        return;
+      }
+
+      if (!currentFamily || !currentUser) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        return;
+      }
+
+      try {
+        const reportEl = document.getElementById('report-content');
+        reportEl.innerHTML = '<p class="text-slate-400 text-center py-8">Gerando relatório...</p>';
+
+        const query = db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .where('userId', '==', currentUser.uid);
+
+        const snap = await query.get();
+        const transactions = [];
+
+        snap.forEach(doc => {
+          const data = doc.data();
+          if (data.date >= startDate && data.date <= endDate) {
+            // Apply payment method filter
+            const paymentMethod = (data.paymentMethod || 'dinheiro').toLowerCase();
+            if (paymentFilter !== 'todas' && paymentMethod !== paymentFilter) return;
+            
+            transactions.push({
+              date: data.date,
+              type: data.type,
+              description: data.description,
+              amount: data.amount,
+              category: data.category || '—',
+              paymentMethod: data.paymentMethod || '—',
+              installments: data.installments || 1
+            });
+          }
+        });
+
+        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        if (transactions.length === 0) {
+          reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Nenhuma transação no período</p>';
+          return;
+        }
+
+        const getPaymentDisplay = (method, installments) => {
+          if (method === 'cartao' && installments > 1) return `${installments}x no 💳`;
+          const icons = { dinheiro: '💵', pix: '📲', cartao: '💳' };
+          return icons[method] || method;
+        };
+
+        const typeDisplay = { income: '📥 Entrada', expense: '📤 Despesa', salary: '💼 Salário' };
+
+        const html = `
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Período: ${startDate} a ${endDate}</h3>
+            <p class="text-slate-400">Total de transações: ${transactions.length}</p>
+          </div>
+          <div class="space-y-3 max-h-96 overflow-y-auto">
+            ${transactions.map(t => `
+              <div class="flex justify-between items-start p-4 bg-slate-800/40 rounded-lg gap-4">
+                <div class="flex-1 min-w-0">
+                  <div class="flex gap-2 items-center mb-1">
+                    <span class="font-medium text-white">${t.description}</span>
+                    <span class="text-xs text-slate-500">${typeDisplay[t.type] || t.type}</span>
+                  </div>
+                  <div class="flex gap-2 text-sm text-slate-400 flex-wrap">
+                    <span>${t.date}</span>
+                    <span>•</span>
+                    <span>${t.category}</span>
+                    <span>•</span>
+                    <span>${getPaymentDisplay(t.paymentMethod, t.installments)}</span>
+                  </div>
+                </div>
+                <span class="font-semibold text-right whitespace-nowrap ${t.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
+                  ${t.type === 'expense' ? '-' : '+'} ${(typeof formatCurrency === 'function') ? formatCurrency(t.amount) : 'R$ ' + t.amount.toFixed(2)}
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        reportEl.innerHTML = html;
+      } catch (error) {
+        console.error('Error generating report:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao gerar relatório');
+      }
+    }
+
+    function togglePaymentInstallments() {
+      const paymentMethod = document.getElementById('expense-payment').value;
+      const installmentsGroup = document.getElementById('installments-group');
+      if (paymentMethod === 'cartao') {
+        installmentsGroup.classList.remove('hidden');
+      } else {
+        installmentsGroup.classList.add('hidden');
+        document.getElementById('expense-installments').value = '1';
+      }
+    }
+
+    function toggleEditPaymentInstallments() {
+      const paymentMethod = document.getElementById('edit-exp-payment').value;
+      const installmentsGroup = document.getElementById('edit-installments-group');
+      if (paymentMethod === 'cartao') {
+        installmentsGroup.classList.remove('hidden');
+      } else {
+        installmentsGroup.classList.add('hidden');
+        document.getElementById('edit-exp-installments').value = '1';
+      }
+      updateEditInstallmentValue();
+    }
+
+    function updateInstallmentValue() {
+      const amount = Number(document.getElementById('expense-amount').value) || 0;
+      const installments = Number(document.getElementById('expense-installments').value) || 1;
+      const display = document.getElementById('installment-value-display');
+      if (!display) return;
+      
+      if (amount <= 0) {
+        display.textContent = 'Valor por parcela: —';
+      } else {
+        const perInstallment = amount / installments;
+        display.textContent = `Valor por parcela: ${(typeof formatCurrency === 'function') ? formatCurrency(perInstallment) : 'R$ ' + perInstallment.toFixed(2)}`;
+      }
+    }
+
+    function updateEditInstallmentValue() {
+      const amount = Number(document.getElementById('edit-exp-amount').value) || 0;
+      const installments = Number(document.getElementById('edit-exp-installments').value) || 1;
+      const display = document.getElementById('edit-installment-value-display');
+      if (!display) return;
+      
+      if (amount <= 0) {
+        display.textContent = 'Valor por parcela: —';
+      } else {
+        const perInstallment = amount / installments;
+        display.textContent = `Valor por parcela: ${(typeof formatCurrency === 'function') ? formatCurrency(perInstallment) : 'R$ ' + perInstallment.toFixed(2)}`;
       }
     }
 
@@ -3113,165 +3273,6 @@
     }
 
     // Report export (supports CSV for now)
-async function generateReport() {
-  if (!currentFamily || !currentFamilyData) return;
-
-  const startDate = document.getElementById('report-start').value;
-  const endDate = document.getElementById('report-end').value;
-
-  if (!startDate || !endDate) {
-    showToast('⚠️', 'Selecione as datas');
-    return;
-  }
-
-  const reportEl = document.getElementById('report-content');
-
-  try {
-    reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Gerando relatório...</p>';
-
-    // queries de entradas e despesas com base no escopo selecionado (individual ou familiar)
-    let incomeQuery, expenseQuery;
-    const scope = document.querySelector('input[name="report-scope"]:checked')?.value || 'individual';
-
-    if (scope === 'individual') {
-      incomeQuery = db.collection('transactions')
-        .where('familyId', '==', currentFamily)
-        .where('type', '==', 'income')
-        .where('userId', '==', currentUser.uid);
-
-      expenseQuery = db.collection('transactions')
-        .where('familyId', '==', currentFamily)
-        .where('type', '==', 'expense')
-        .where('userId', '==', currentUser.uid);
-    } else {
-      // family scope requested
-      if (!currentFamilyData || currentFamilyData.ownerId !== currentUser.uid) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Apenas o chefe pode gerar relatório familiar');
-        reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Apenas o chefe da família pode gerar relatório familiar</p>';
-        return;
-      }
-      incomeQuery = db.collection('transactions')
-        .where('familyId', '==', currentFamily)
-        .where('type', '==', 'income');
-      expenseQuery = db.collection('transactions')
-        .where('familyId', '==', currentFamily)
-        .where('type', '==', 'expense');
-    }
-
-    const [incomeSnap, expenseSnap, salarySnap] = await Promise.all([
-      incomeQuery.get(),
-      expenseQuery.get(),
-      db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'salary').get()
-    ]);
-
-    let totalIncome = 0;
-    let totalExpenses = 0;
-    const incomeItems = [];
-    const expenseItems = [];
-    const categoryTotals = {};
-
-    // incluir salários como entradas proporcionais ao período
-    const months = monthsBetweenInclusive(startDate, endDate);
-
-    salarySnap.forEach(doc => {
-      const s = doc.data();
-      // verificar se o salário está ativo dentro do período
-      const startOk = s.startDate <= endDate;
-      const endOk = !s.endDate || s.endDate >= startDate;
-      if (startOk && endOk) {
-        const monthly = calculateMonthlySalary(s.amount, s.frequency);
-        const totalForPeriod = monthly * months;
-        totalIncome += totalForPeriod;
-        incomeItems.push({
-          date: `${startDate} → ${endDate}`,
-          description: `Salário: ${s.description} (${months} mês${months>1?'es':''})`,
-          amount: totalForPeriod,
-          userName: s.userName || s.userId
-        });
-      }
-    });
-
-    incomeSnap.forEach(doc => {
-      const data = doc.data();
-      if (data.date >= startDate && data.date <= endDate) {
-        totalIncome += Number(data.amount);
-        incomeItems.push(data);
-      }
-    });
-
-    expenseSnap.forEach(doc => {
-      const data = doc.data();
-      if (data.date >= startDate && data.date <= endDate) {
-        totalExpenses += Number(data.amount);
-        expenseItems.push(data);
-        categoryTotals[data.category] = (categoryTotals[data.category] || 0) + Number(data.amount);
-      }
-    });
-
-    const balance = totalIncome - totalExpenses;
-
-    // Monta HTML do relatório (manter exportação separada)
-    reportEl.innerHTML = `
-      <h3 class="text-lg font-semibold text-white mb-4">Relatório: ${formatDate(startDate)} a ${formatDate(endDate)}</h3>
-      <button onclick="downloadReport('${startDate}', '${endDate}')" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium mb-4 w-full sm:w-auto">📥 Exportar CSV</button>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
-          <p class="text-slate-400 text-sm">Total de Entradas</p>
-          <p class="text-2xl font-bold text-emerald-400">${formatCurrency(totalIncome)}</p>
-          <p class="text-xs text-slate-500">${incomeItems.length} transações</p>
-        </div>
-        <div class="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
-          <p class="text-slate-400 text-sm">Total de Despesas</p>
-          <p class="text-2xl font-bold text-red-400">${formatCurrency(totalExpenses)}</p>
-          <p class="text-xs text-slate-500">${expenseItems.length} transações</p>
-        </div>
-        <div class="p-4 ${balance >= 0 ? 'bg-blue-500/10 border-blue-500/30' : 'bg-red-500/10 border-red-500/30'} border rounded-xl">
-          <p class="text-slate-400 text-sm">Saldo do Período</p>
-          <p class="text-2xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}">${formatCurrency(balance)}</p>
-          <p class="text-xs text-slate-500">${balance >= 0 ? 'Positivo' : 'Negativo'}</p>
-        </div>
-      </div>
-
-      <h4 class="font-semibold text-white mb-3">Despesas por Categoria</h4>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-        ${Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]).map(([cat, amount]) => `
-          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-            <span class="text-slate-300">${getCategoryLabel(cat)}</span>
-            <span class="font-semibold text-white">${formatCurrency(amount)}</span>
-          </div>
-        `).join('')}
-      </div>
-
-      ${incomeItems.length > 0 ? `
-        <h4 class="font-semibold text-white mb-3">Detalhamento de Entradas</h4>
-        <div class="space-y-2 mb-6 max-h-48 overflow-y-auto scrollbar-thin">
-          ${incomeItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
-            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm flex-col sm:flex-row">
-              <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
-              <span class="text-emerald-400 font-medium">+ ${formatCurrency(item.amount)}</span>
-            </div>
-          `).join('')}
-        </div>
-      ` : ''}
-
-      ${expenseItems.length > 0 ? `
-        <h4 class="font-semibold text-white mb-3">Detalhamento de Despesas</h4>
-        <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
-          ${expenseItems.sort((a,b)=> (new Date(b.date)-new Date(a.date))).map(item => `
-            <div class="flex justify-between p-2 bg-slate-800/30 rounded-lg text-sm flex-col sm:flex-row">
-              <span class="text-slate-300">${item.description} <span class="text-slate-500">(${item.date})</span></span>
-              <span class="text-red-400 font-medium">- ${formatCurrency(item.amount)}</span>
-            </div>
-          `).join('')}
-        </div>
-      ` : ''}
-    `;
-
-  } catch (error) {
-    reportEl.innerHTML = '<p class="text-red-400 text-center py-8">Erro ao gerar relatório</p>';
-    console.error('Error generating report:', error);
-  }
-}
 
 
     function getErrorMessage(code) {
@@ -3455,9 +3456,12 @@ async function generateReport() {
             const editCategorySelect = document.getElementById('edit-exp-category');
             
             if (categorySelect && editCategorySelect) {
+              // Filter categories to only show those belonging to current family
+              const familyCategories = settings.customCategories.filter(cat => !cat.familyId || cat.familyId === familyId);
+              
               // Get existing custom category values
               const defaultCategories = ['moradia', 'alimentacao', 'transporte', 'saude', 'educacao', 'lazer', 'vestuario', 'servicos', 'outros'];
-              const existingCustom = new Set(settings.customCategories.map(c => c.value));
+              const existingCustom = new Set(familyCategories.map(c => c.value));
               
               // Remove old custom categories that are no longer in settings
               Array.from(categorySelect.options).forEach(opt => {
@@ -3473,7 +3477,7 @@ async function generateReport() {
               });
               
               // Add all custom categories
-              settings.customCategories.forEach(category => {
+              familyCategories.forEach(category => {
                 // Check if option already exists
                 const exists1 = Array.from(categorySelect.options).some(opt => opt.value === category.value);
                 if (!exists1) {
@@ -3574,15 +3578,6 @@ async function generateReport() {
         const incomeSnap = await incomeQuery.get();
         const expenseSnap = await expenseQuery.get();
         
-        let satisfaction = 50;
-        if (!isFamily) {
-          const satSnap = await db.collection('finances')
-            .doc(`${currentFamily}_satisfaction_${currentUser.uid}`).get();
-          if (satSnap.exists && satSnap.data().satisfaction !== undefined) {
-            satisfaction = satSnap.data().satisfaction;
-          }
-        }
-        
         let totalIncome = 0, totalExpenses = 0;
         const txList = [];
 
@@ -3630,19 +3625,6 @@ async function generateReport() {
           }
         }
         
-        const satisfactionEl = document.getElementById('satisfaction-value');
-        const satisfactionRing = document.getElementById('satisfaction-ring');
-        if (satisfactionEl) satisfactionEl.textContent = satisfaction + '%';
-        if (satisfactionRing) {
-          const circumference = 2 * Math.PI * 56;
-          const offset = circumference - (satisfaction / 100) * circumference;
-          satisfactionRing.style.strokeDashoffset = offset;
-        }
-        
-        const slider = document.getElementById('salary-satisfaction');
-        if (slider) slider.value = satisfaction;
-        const display = document.getElementById('satisfaction-display');
-        if (display) display.textContent = satisfaction + '%';
         
         // Update category chart
         if (typeof updateCategoryChart === 'function') await updateCategoryChart();
@@ -3672,26 +3654,12 @@ async function generateReport() {
         await loadExpenseHistory();
         await loadGoalsList();
         
-        const familyScopeOption = document.getElementById('family-scope-option');
-        if (familyScopeOption) {
-          if (currentFamilyData && currentFamilyData.ownerId === currentUser.uid) {
-            familyScopeOption.style.display = '';
-          } else {
-            familyScopeOption.style.display = 'none';
-            const ind = document.querySelector('input[name="report-scope"][value="individual"]');
-            if (ind) ind.checked = true;
-          }
-        }
         await updateDashboard();
         await updateCommitmentValues();
       } catch (error) {
         console.error('Error loading family data:', error);
       }
     }
-    
-    document.getElementById('salary-satisfaction').addEventListener('input', function() {
-      document.getElementById('satisfaction-display').textContent = this.value + '%';
-    });
     
     ['commit-expenses', 'commit-invest', 'commit-tithe', 'commit-emergency'].forEach(id => {
       document.getElementById(id).addEventListener('input', updateCommitmentTotal);
@@ -3962,6 +3930,19 @@ async function generateReport() {
       }
     }
 
+    async function deleteCompletedGoal(id) {
+      if (!id || !currentFamily || !currentUser) return;
+      if (!confirm('Deseja realmente remover esse objetivo da lista concluída?')) return;
+      try {
+        await db.collection('goals_history').doc(id).delete();
+        if (typeof showToast === 'function') showToast('✅', 'Objetivo removido');
+        if (typeof loadCompletedGoals === 'function') await loadCompletedGoals();
+      } catch (error) {
+        console.error('Error deleting completed goal:', error);
+        if (typeof showToast === 'function') showToast('❌', 'Erro ao remover objetivo');
+      }
+    }
+
     let editingGoalId = null;
 
     async function editGoal(id) {
@@ -4061,9 +4042,21 @@ async function generateReport() {
 
         histSnap.forEach(doc => {
           const d = doc.data();
+          const id = doc.id;
           const startText = d.startDate ? formatDate((d.startDate || '').split('T')[0]) : '—';
           const endText = d.completedAt ? formatDate((d.completedAt || '').split('T')[0]) : '—';
-          items.push(`<div class="list-item"><div class="list-item-content"><p class="list-item-title">${d.name}</p><p class="list-item-subtitle">Início: ${startText} — Conclusão: ${endText}</p></div><p class="list-item-value">${typeof formatCurrency === 'function' ? formatCurrency(d.progress) : d.progress}</p></div>`);
+          items.push(`
+            <div class="list-item">
+              <div class="list-item-content">
+                <p class="list-item-title">${d.name}</p>
+                <p class="list-item-subtitle">Início: ${startText} — Conclusão: ${endText}</p>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <p class="list-item-value">${typeof formatCurrency === 'function' ? formatCurrency(d.progress) : d.progress}</p>
+                <button onclick="deleteCompletedGoal('${id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
+              </div>
+            </div>
+          `);
         });
 
         if (items.length === 0) {
@@ -4287,76 +4280,6 @@ async function generateReport() {
         'outros': '📦 Outros'
       };
       return labels[cat] || cat;
-    }
-
-    async function downloadReport(startDate, endDate) {
-      if (!currentFamily || !currentUser) {
-        showToast('⚠️', 'Selecione uma família primeiro');
-        return;
-      }
-
-      try {
-        showToast('⏳', 'Gerando relatório...');
-
-        const scope = document.querySelector('input[name="report-scope"]:checked')?.value || 'individual';
-        
-        let queries = {
-          salaries: db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'salary'),
-          incomes: db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'income'),
-          expenses: db.collection('transactions').where('familyId', '==', currentFamily).where('type', '==', 'expense')
-        };
-
-        if (scope === 'individual') {
-          queries.salaries = queries.salaries.where('userId', '==', currentUser.uid);
-          queries.incomes = queries.incomes.where('userId', '==', currentUser.uid);
-          queries.expenses = queries.expenses.where('userId', '==', currentUser.uid);
-        }
-
-        const [salariesSnap, incomesSnap, expensesSnap] = await Promise.all([
-          queries.salaries.get(),
-          queries.incomes.get(),
-          queries.expenses.get()
-        ]);
-
-        let csv = 'Tipo,Data,Descrição,Categoria,Valor,Usuário\n';
-
-        const monthCount = monthsBetweenInclusive(startDate, endDate);
-        salariesSnap.forEach(doc => {
-          const s = doc.data();
-          const startOk = s.startDate <= endDate;
-          const endOk = !s.endDate || s.endDate >= startDate;
-          if (startOk && endOk) {
-            const monthly = calculateMonthlySalary(s.amount, s.frequency);
-            const total = monthly * monthCount;
-            csv += `"Salário","${startDate} a ${endDate}","${s.description}","${s.frequency}","${total.toFixed(2)}","${s.userName || s.userId}"\n`;
-          }
-        });
-
-        incomesSnap.forEach(doc => {
-          const d = doc.data();
-          if (d.date >= startDate && d.date <= endDate) {
-            csv += `"Entrada Extra","${d.date}","${d.description}","","${d.amount}","${d.userName || d.userId}"\n`;
-          }
-        });
-
-        expensesSnap.forEach(doc => {
-          const d = doc.data();
-          if (d.date >= startDate && d.date <= endDate) {
-            csv += `"Despesa","${d.date}","${d.description}","${d.category || 'Outros'}","${d.amount}","${d.userName || d.userId}"\n`;
-          }
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `relatorio_${scope}_${startDate}_${endDate}.csv`;
-        link.click();
-
-        showToast('✅', 'Relatório baixado com sucesso!');
-      } catch (error) {
-        console.error('Download error:', error);
-        showToast('❌', 'Erro ao baixar relatório');
-      }
     }
 
     document.addEventListener('keydown', function(event) {
