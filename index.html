@@ -1457,6 +1457,23 @@
     const defaultConfig = {
       app_title: 'Cash Control'
     };
+
+    // Custom Categories Management
+    let customCategories = [];
+    let categoriesListener = null;
+
+    // Categorias padrão que não podem ser removidas
+    const DEFAULT_CATEGORIES = [
+      { value: 'moradia', label: '🏠 Moradia' },
+      { value: 'alimentacao', label: '🍽️ Alimentação' },
+      { value: 'transporte', label: '🚗 Transporte' },
+      { value: 'saude', label: '🏥 Saúde' },
+      { value: 'educacao', label: '📚 Educação' },
+      { value: 'lazer', label: '🎮 Lazer' },
+      { value: 'vestuario', label: '👕 Vestuário' },
+      { value: 'servicos', label: '📱 Serviços' },
+      { value: 'outros', label: '📦 Outros' }
+    ];
     
     let config = { ...defaultConfig };
     
@@ -2138,65 +2155,168 @@
         return;
       }
       
-      const value = name.toLowerCase().replace(/\s+/g, '_');
+      const value = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_-]/g, '');
+      
+      // Verificar se a categoria já existe (padrão ou customizada)
+      const categoryExists = customCategories.some(cat => cat.value === value) || 
+                           DEFAULT_CATEGORIES.some(cat => cat.value === value);
+      
+      if (categoryExists) {
+        showToast('⚠️', 'Esta categoria já existe');
+        return;
+      }
       
       try {
-        // Get current settings
         const settingsRef = db.collection('familySettings').doc(currentFamily);
         const settingsDoc = await settingsRef.get();
         
-        let customCategories = [];
-        if (settingsDoc.exists) {
-          customCategories = settingsDoc.data().customCategories || [];
-        }
-        
-        // Add new category with familyId for security
-        const newCategory = { value, emoji, name, familyId: currentFamily };
-        const categoryExists = customCategories.some(cat => cat.value === value);
-        
-        if (!categoryExists) {
-          customCategories.push(newCategory);
+        if (settingsDoc.exists && settingsDoc.data().customCategories && Array.isArray(settingsDoc.data().customCategories)) {
+          // Formato antigo: adicionar ao array customCategories
+          const existingCategories = [...settingsDoc.data().customCategories];
+          existingCategories.push({
+            emoji: emoji,
+            name: name,
+            value: value,
+            createdAt: new Date(),
+            createdBy: currentUser.uid
+          });
           
-          // Save to Firestore
-          if (settingsDoc.exists) {
-            await settingsRef.update({
-              customCategories: customCategories
-            });
-          } else {
-            await settingsRef.set({
-              commitmentLabels: commitmentLabels,
-              customCategories: customCategories
-            });
-          }
+          await settingsRef.update({
+            customCategories: existingCategories
+          });
           
-          // Add to select elements if they exist
-          const select = document.getElementById('expense-category');
-          const editSelect = document.getElementById('edit-exp-category');
-          
-          if (select) {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = `${emoji} ${name}`;
-            select.appendChild(option);
-            select.value = value;
-          }
-          
-          if (editSelect) {
-            const editOption = document.createElement('option');
-            editOption.value = value;
-            editOption.textContent = `${emoji} ${name}`;
-            editSelect.appendChild(editOption);
-          }
-          
-          closeModal();
-          showToast('✅', `Categoria "${name}" criada e salva`);
+          // Atualizar array local imediatamente
+          customCategories = existingCategories.map(cat => ({
+            value: cat.value,
+            label: `${cat.emoji || '📦'} ${cat.name || cat.label}`
+          }));
         } else {
-          showToast('⚠️', 'Esta categoria já existe');
+          // Formato novo: salvar em categories.{value}
+          const newCategoryData = {
+            [`categories.${value}`]: {
+              label: `${emoji} ${name}`,
+              value: value,
+              createdAt: new Date(),
+              createdBy: currentUser.uid
+            }
+          };
+          
+          await settingsRef.set(newCategoryData, { merge: true });
+          
+          // Atualizar array local imediatamente
+          customCategories.push({
+            value: value,
+            label: `${emoji} ${name}`
+          });
         }
+        
+        // Atualizar UI imediatamente (não aguardar listener)
+        populateCategorySelects();
+        
+        closeModal();
+        showToast('✅', `Categoria "${name}" criada com sucesso`);
+        
+        // Limpar inputs
+        document.getElementById('modal-category-emoji').value = '';
+        document.getElementById('modal-category-name').value = '';
       } catch (error) {
         console.error('Error saving category:', error);
         showToast('❌', 'Erro ao salvar categoria');
       }
+    }
+
+    // Função para popular dinamicamente os selects com categorias
+    function populateCategorySelects() {
+      // Combinar categorias padrão com customizadas
+      const allCategories = [
+        ...DEFAULT_CATEGORIES,
+        ...customCategories
+      ];
+      
+      // Encontrar todos os selects que precisam ser atualizados
+      const selectElements = [
+        document.getElementById('expense-category'),
+        document.getElementById('edit-exp-category'),
+        document.getElementById('expense-filter')
+      ];
+      
+      selectElements.forEach(select => {
+        if (!select) return;
+        
+        // Guardar valor atual e opção especial "Todas" se existir
+        const currentValue = select.value;
+        const hasAllOption = select.querySelector('option[value="all"]') !== null;
+        
+        // Limpar todas as opções
+        select.innerHTML = '';
+        
+        // Re-adicionar opção "Todas" se existia
+        if (hasAllOption) {
+          const allOption = document.createElement('option');
+          allOption.value = 'all';
+          allOption.textContent = 'Todas';
+          select.appendChild(allOption);
+        }
+        
+        // Adicionar todas as categorias
+        allCategories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat.value;
+          option.textContent = cat.label;
+          select.appendChild(option);
+        });
+        
+        // Restaurar valor se ainda existir
+        if (select.querySelector(`option[value="${currentValue}"]`)) {
+          select.value = currentValue;
+        }
+      });
+    }
+
+    // Função para sincronizar categorias em tempo real
+    function listenToCategoriesRealtime() {
+      if (!currentFamily) return;
+      
+      // Cleanup do listener anterior se existir
+      if (categoriesListener && typeof categoriesListener === 'function') {
+        categoriesListener();
+      }
+      
+      // Criar novo listener para categorias
+      categoriesListener = db.collection('familySettings')
+        .doc(currentFamily)
+        .onSnapshot((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            
+            // Novo formato: categories = { category_id: { label, value, ... } }
+            if (data.categories && typeof data.categories === 'object') {
+              customCategories = Object.values(data.categories)
+                .map(cat => ({
+                  value: cat.value,
+                  label: cat.label
+                }))
+                .filter(cat => cat.value && cat.label);
+            } 
+            // Formato legado: customCategories = [ { name, emoji, value, ... } ]
+            else if (data.customCategories && Array.isArray(data.customCategories)) {
+              customCategories = data.customCategories.map(cat => ({
+                value: cat.value,
+                label: `${cat.emoji || '📦'} ${cat.name || cat.label}`
+              }));
+            } 
+            else {
+              customCategories = [];
+            }
+          } else {
+            customCategories = [];
+          }
+          
+          // Atualizar os selects com as novas categorias
+          populateCategorySelects();
+        }, (error) => {
+          console.error('Error listening to categories:', error);
+        });
     }
     
     // Element SDK Integration
@@ -2264,8 +2384,15 @@
     }
     
     function goToFamilySelection() {
+      // Cleanup: unsubscribe from categories listener
+      if (categoriesListener && typeof categoriesListener === 'function') {
+        categoriesListener();
+        categoriesListener = null;
+      }
+      
       currentFamily = null;
       currentFamilyData = null;
+      customCategories = [];
       showFamilySelection();
     }
     
@@ -3450,53 +3577,27 @@
           if (titheLabel) titheLabel.textContent = commitmentLabels.tithe;
           if (emergencyLabel) emergencyLabel.textContent = commitmentLabels.emergency;
           
-          // Load custom categories
-          if (settings.customCategories && Array.isArray(settings.customCategories)) {
-            const categorySelect = document.getElementById('expense-category');
-            const editCategorySelect = document.getElementById('edit-exp-category');
-            
-            if (categorySelect && editCategorySelect) {
-              // Filter categories to only show those belonging to current family
-              const familyCategories = settings.customCategories.filter(cat => !cat.familyId || cat.familyId === familyId);
-              
-              // Get existing custom category values
-              const defaultCategories = ['moradia', 'alimentacao', 'transporte', 'saude', 'educacao', 'lazer', 'vestuario', 'servicos', 'outros'];
-              const existingCustom = new Set(familyCategories.map(c => c.value));
-              
-              // Remove old custom categories that are no longer in settings
-              Array.from(categorySelect.options).forEach(opt => {
-                if (!defaultCategories.includes(opt.value) && !existingCustom.has(opt.value)) {
-                  categorySelect.remove(opt.index);
-                }
-              });
-              
-              Array.from(editCategorySelect.options).forEach(opt => {
-                if (!defaultCategories.includes(opt.value) && !existingCustom.has(opt.value)) {
-                  editCategorySelect.remove(opt.index);
-                }
-              });
-              
-              // Add all custom categories
-              familyCategories.forEach(category => {
-                // Check if option already exists
-                const exists1 = Array.from(categorySelect.options).some(opt => opt.value === category.value);
-                if (!exists1) {
-                  const option1 = document.createElement('option');
-                  option1.value = category.value;
-                  option1.textContent = `${category.emoji} ${category.name}`;
-                  categorySelect.appendChild(option1);
-                }
-                
-                const exists2 = Array.from(editCategorySelect.options).some(opt => opt.value === category.value);
-                if (!exists2) {
-                  const option2 = document.createElement('option');
-                  option2.value = category.value;
-                  option2.textContent = `${category.emoji} ${category.name}`;
-                  editCategorySelect.appendChild(option2);
-                }
-              });
-            }
+          // Load custom categories - suportar novo formato (objeto aninhado)
+          if (settings.categories && typeof settings.categories === 'object') {
+            // Novo formato: categories = { category_id: { label, value, ... } }
+            customCategories = Object.values(settings.categories)
+              .map(cat => ({
+                value: cat.value,
+                label: cat.label
+              }))
+              .filter(cat => cat.value && cat.label);
+          } else if (settings.customCategories && Array.isArray(settings.customCategories)) {
+            // Formato legado: customCategories = [ { name, emoji, value, ... } ]
+            customCategories = settings.customCategories.map(cat => ({
+              value: cat.value,
+              label: `${cat.emoji || '📦'} ${cat.name || cat.label}`
+            }));
+          } else {
+            customCategories = [];
           }
+          
+          // Atualizar os selects com as categorias carregadas
+          populateCategorySelects();
         }
       } catch (error) {
         console.error('Error loading family settings:', error);
@@ -3646,6 +3747,9 @@
           document.getElementById('commit-tithe').value = data.tithe || 10;
           document.getElementById('commit-emergency').value = data.emergency || 0;
         }
+        
+        // Setup real-time listener para categorias personalizadas
+        listenToCategoriesRealtime();
         
         await loadCommitmentLabels();
         
