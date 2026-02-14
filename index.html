@@ -1036,9 +1036,19 @@
           <!-- Dashboard Tab -->
           <div id="tab-dashboard" class="tab-content">
             <div class="section">
-              <div class="flex gap-3 mb-6 flex-wrap">
-                <button onclick="setDashboardView('individual')" class="btn btn-primary" data-view="individual">👤 Individual</button>
-                <button onclick="setDashboardView('family')" class="btn btn-outline" data-view="family">👨‍👩‍👧‍👦 Familiar</button>
+              <div class="flex gap-3 mb-6 flex-wrap items-center">
+                <div class="flex gap-3">
+                  <button onclick="setDashboardView('individual')" class="btn btn-primary" data-view="individual">👤 Individual</button>
+                  <button onclick="setDashboardView('family')" class="btn btn-outline" data-view="family">👨‍👩‍👧‍👦 Familiar</button>
+                </div>
+                <div class="flex items-center gap-3 ml-auto">
+                  <label for="dashboard-period" class="text-sm font-semibold text-slate-300">Período:</label>
+                  <select id="dashboard-period" onchange="updateDashboardByPeriod()" class="input-field py-2 px-3 text-sm">
+                    <option value="month" selected>📅 Mês Atual</option>
+                    <option value="week">📅 Semana Atual</option>
+                    <option value="year">📅 Ano Atual</option>
+                  </select>
+                </div>
               </div>
 
               <!-- Summary Cards -->
@@ -1049,7 +1059,7 @@
                     <span class="summary-card-icon">💵</span>
                   </div>
                   <p class="summary-card-value" id="dash-total-income">R$ 0,00</p>
-                  <p class="summary-card-subtitle">Este mês</p>
+                  <p class="summary-card-subtitle" id="dash-income-period">Este mês</p>
                 </div>
 
                 <div class="summary-card">
@@ -1058,7 +1068,7 @@
                     <span class="summary-card-icon">💸</span>
                   </div>
                   <p class="summary-card-value" id="dash-total-expenses">R$ 0,00</p>
-                  <p class="summary-card-subtitle">Este mês</p>
+                  <p class="summary-card-subtitle" id="dash-expenses-period">Este mês</p>
                 </div>
 
                 <div class="summary-card">
@@ -1067,7 +1077,7 @@
                     <span class="summary-card-icon">💰</span>
                   </div>
                   <p class="summary-card-value" id="dash-balance">R$ 0,00</p>
-                  <p class="summary-card-subtitle">Disponível</p>
+                  <p class="summary-card-subtitle" id="dash-balance-period">Disponível</p>
                 </div>
               </div>
             </div>
@@ -1433,6 +1443,7 @@
     let currentFamily = null;
     let currentFamilyData = null;
     let dashboardView = 'individual';
+    let dashboardPeriod = 'month';
     let deleteCallback = null;
     
     // Cache de dados para reduzir leituras
@@ -2601,17 +2612,27 @@
     async function updateCategoryChart() {
       if (!currentFamily || !currentUser) return;
       try {
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'expense')
-          .where('userId', '==', currentUser.uid);
+        const { startISO, endISO } = getPeriodLimits(dashboardPeriod);
+        const isFamily = (window.dashboardView === 'family');
         
-        const snap = await query.get();
+        // Query simples - apenas por familyId (usa índice automático)
+        const snap = await db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .get();
+        
         const categoryTotals = {};
         let total = 0;
 
         snap.forEach(doc => {
           const data = doc.data();
+          
+          // Filtrar em código: type, userId, date
+          const isMatchingUser = isFamily || data.userId === currentUser.uid;
+          const isInPeriod = (data.date || '') >= startISO && (data.date || '') <= endISO;
+          const isExpense = data.type === 'expense';
+          
+          if (!isMatchingUser || !isInPeriod || !isExpense) return;
+          
           const category = data.category || 'outros';
           const amount = Number(data.amount) || 0;
           categoryTotals[category] = (categoryTotals[category] || 0) + amount;
@@ -3652,53 +3673,98 @@
       }, 3000);
     }
 
+    // Dashboard Period Functions
+    function getPeriodLimits(periodType) {
+      const now = new Date();
+      let startDate = new Date();
+      let endDate = new Date();
+
+      switch (periodType) {
+        case 'week':
+          // Semana atual: Domingo a Sábado (ou Segunda a Domingo dependendo)
+          const day = now.getDay();
+          startDate.setDate(now.getDate() - day);
+          startDate.setHours(0, 0, 0, 0);
+          endDate.setDate(startDate.getDate() + 6);
+          endDate.setHours(23, 59, 59, 999);
+          break;
+
+        case 'year':
+          // Ano atual: 1º de Janeiro a 31 de Dezembro
+          startDate = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+          endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+          break;
+
+        case 'month':
+        default:
+          // Mês atual: 1º ao último dia do mês
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+          break;
+      }
+
+      // Converter para strings no formato YYYY-MM-DD
+      const startISO = startDate.toISOString().split('T')[0];
+      const endISO = endDate.toISOString().split('T')[0];
+
+      return { startDate, endDate, startISO, endISO, displayPeriod: new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(startDate) };
+    }
+
+    function updateDashboardByPeriod() {
+      const periodSelect = document.getElementById('dashboard-period');
+      if (periodSelect) {
+        dashboardPeriod = periodSelect.value;
+      }
+      updateDashboard();
+    }
+
     async function updateDashboard() {
       if (!currentFamily || !currentUser) return;
       try {
         const isFamily = (window.dashboardView === 'family');
-        let incomeQuery, expenseQuery;
+        const { startISO, endISO } = getPeriodLimits(dashboardPeriod);
         
-        if (isFamily) {
-          incomeQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', 'in', ['income', 'salary']);
-          expenseQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'expense');
-        } else {
-          incomeQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', 'in', ['income', 'salary'])
-            .where('userId', '==', currentUser.uid);
-          expenseQuery = db.collection('transactions')
-            .where('familyId', '==', currentFamily)
-            .where('type', '==', 'expense')
-            .where('userId', '==', currentUser.uid);
-        }
-
-        const incomeSnap = await incomeQuery.get();
-        const expenseSnap = await expenseQuery.get();
+        // Query simples - apenas por familyId (usa índice automático)
+        const allTransactionsSnap = await db.collection('transactions')
+          .where('familyId', '==', currentFamily)
+          .get();
         
         let totalIncome = 0, totalExpenses = 0;
         const txList = [];
 
-        incomeSnap.forEach(doc => {
+        // Filtrar em código: type, userId, date
+        allTransactionsSnap.forEach(doc => {
           const data = doc.data();
-          totalIncome += Number(data.amount || 0);
-          txList.push({ ...data, id: doc.id });
-        });
-
-        expenseSnap.forEach(doc => {
-          const data = doc.data();
-          totalExpenses += Number(data.amount || 0);
-          txList.push({ ...data, id: doc.id });
+          const isMatchingUser = isFamily || data.userId === currentUser.uid;
+          const isInPeriod = (data.date || '') >= startISO && (data.date || '') <= endISO;
+          
+          if (!isMatchingUser || !isInPeriod) return;
+          
+          if (data.type === 'income' || data.type === 'salary') {
+            totalIncome += Number(data.amount || 0);
+            txList.push({ ...data, id: doc.id });
+          } else if (data.type === 'expense') {
+            totalExpenses += Number(data.amount || 0);
+            txList.push({ ...data, id: doc.id });
+          }
         });
 
         const balance = totalIncome - totalExpenses;
 
+        // Atualizar período nos subtítulos
+        const { displayPeriod } = getPeriodLimits(dashboardPeriod);
+        const periodLabel = dashboardPeriod === 'week' 
+          ? 'Esta semana' 
+          : dashboardPeriod === 'year' 
+          ? 'Este ano' 
+          : 'Este mês';
+
         const incomeEl = document.getElementById('dash-total-income');
         const expenseEl = document.getElementById('dash-total-expenses');
         const balanceEl = document.getElementById('dash-balance');
+        const incomePeriodEl = document.getElementById('dash-income-period');
+        const expensesPeriodEl = document.getElementById('dash-expenses-period');
+        const balancePeriodEl = document.getElementById('dash-balance-period');
 
         if (incomeEl) incomeEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(totalIncome) : 'R$ '+totalIncome.toFixed(2);
         if (expenseEl) expenseEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(totalExpenses) : 'R$ '+totalExpenses.toFixed(2);
@@ -3706,6 +3772,10 @@
           balanceEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(balance) : 'R$ '+balance.toFixed(2);
           balanceEl.className = 'text-2xl font-bold ' + (balance >= 0 ? 'text-blue-400' : 'text-red-400');
         }
+
+        if (incomePeriodEl) incomePeriodEl.textContent = periodLabel;
+        if (expensesPeriodEl) expensesPeriodEl.textContent = periodLabel;
+        if (balancePeriodEl) balancePeriodEl.textContent = periodLabel;
 
         const txContainer = document.getElementById('recent-transactions');
         if (txContainer) {
@@ -4135,18 +4205,22 @@
     async function loadCompletedGoals() {
       if (!currentFamily || !currentUser) return;
       try {
-        const histQuery = db.collection('goals_history')
+        // Query simples - apenas familyId (usa índice automático)
+        const histSnap = await db.collection('goals_history')
           .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .orderBy('completedAt', 'desc')
-          .limit(50);
-        const histSnap = await histQuery.get();
+          .get();
+        
         const container = document.getElementById('completed-goals-list');
         const items = [];
 
-        histSnap.forEach(doc => {
-          const d = doc.data();
-          const id = doc.id;
+        // Filtrar em código: userId, ordenar por completedAt descendente
+        const filtered = histSnap.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter(d => d.userId === currentUser.uid)
+          .sort((a, b) => (b.completedAt || '').localeCompare(a.completedAt || ''))
+          .slice(0, 50);
+
+        filtered.forEach(d => {
           const startText = d.startDate ? formatDate((d.startDate || '').split('T')[0]) : '—';
           const endText = d.completedAt ? formatDate((d.completedAt || '').split('T')[0]) : '—';
           items.push(`
@@ -4157,7 +4231,7 @@
               </div>
               <div class="flex items-center gap-2 flex-shrink-0">
                 <p class="list-item-value">${typeof formatCurrency === 'function' ? formatCurrency(d.progress) : d.progress}</p>
-                <button onclick="deleteCompletedGoal('${id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
+                <button onclick="deleteCompletedGoal('${d.id}')" class="text-red-400 hover:text-red-300 font-semibold text-sm">🗑️</button>
               </div>
             </div>
           `);
