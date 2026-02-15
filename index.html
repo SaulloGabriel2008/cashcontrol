@@ -3514,8 +3514,23 @@
         return grouped;
       };
 
+      // Função auxiliar: agrupar por método de pagamento (apenas para despesas)
+      const groupByPaymentMethod = (items) => {
+        const grouped = {};
+        items.forEach(item => {
+          const method = item.paymentMethod || 'dinheiro';
+          if (!grouped[method]) {
+            grouped[method] = { total: 0, items: [] };
+          }
+          grouped[method].total += item.amount;
+          grouped[method].items.push(item);
+        });
+        return grouped;
+      };
+
       const breakdownEntradas = groupByCategory(entradas);
       const breakdownSaidas = groupByCategory(saidas);
+      const breakdownSaidasByPayment = groupByPaymentMethod(saidas);
       
       return {
         entradas,
@@ -3525,6 +3540,7 @@
         saldoLiquido,
         breakdownEntradas,
         breakdownSaidas,
+        breakdownSaidasByPayment,
         selected
       };
     }
@@ -3608,6 +3624,21 @@
         csvLines.push('RESUMO POR CATEGORIA (SAÍDAS)');
         Object.entries(data.breakdownSaidas).forEach(([catValue, catData]) => {
           csvLines.push(`${getCategoryLabel(catValue)};${catData.total.toFixed(2).replace('.', ',')}`);
+        });
+        csvLines.push(`TOTAL SAÍDAS;${data.totalSaidas.toFixed(2).replace('.', ',')}`);
+        csvLines.push('');
+        csvLines.push('');
+
+        // Breakdown por método de pagamento para saídas
+        csvLines.push('RESUMO POR MÉTODO DE PAGAMENTO (SAÍDAS)');
+        const paymentMethodLabels = {
+          'dinheiro': 'Dinheiro',
+          'pix': 'Pix',
+          'cartao': 'Cartão'
+        };
+        Object.entries(data.breakdownSaidasByPayment).forEach(([method, methodData]) => {
+          const methodLabel = paymentMethodLabels[method] || method;
+          csvLines.push(`${methodLabel};${methodData.total.toFixed(2).replace('.', ',')}`);
         });
         csvLines.push(`TOTAL SAÍDAS;${data.totalSaidas.toFixed(2).replace('.', ',')}`);
       }
@@ -3820,6 +3851,51 @@
           doc.autoTable({
             head: [['Categoria', 'Subtotal']],
             body: breakdownLines,
+            startY: yPos,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [252, 165, 165], // Vermelho bem claro
+              textColor: 120,
+              fontStyle: 'bold',
+              fontSize: 8
+            },
+            bodyStyles: {
+              fontSize: 8,
+              textColor: 40
+            },
+            margin: { left: 12, right: 12 },
+            columnStyles: {
+              0: { cellWidth: 'auto' },
+              1: { halign: 'right' }
+            }
+          });
+
+          yPos = doc.lastAutoTable.finalY + 10;
+
+          // Detalhamento por método de pagamento
+          doc.setFontSize(9);
+          doc.setTextColor(150, 20, 20);
+          doc.text('Detalhamento por Método de Pagamento:', 12, yPos);
+          yPos += 6;
+
+          const paymentMethodLabels = {
+            'dinheiro': 'Dinheiro',
+            'pix': 'Pix',
+            'cartao': 'Cartão'
+          };
+
+          const paymentBreakdownLines = [];
+          Object.entries(data.breakdownSaidasByPayment).forEach(([method, methodData]) => {
+            const methodLabel = paymentMethodLabels[method] || method;
+            paymentBreakdownLines.push([
+              methodLabel,
+              methodData.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            ]);
+          });
+
+          doc.autoTable({
+            head: [['Método', 'Subtotal']],
+            body: paymentBreakdownLines,
             startY: yPos,
             theme: 'grid',
             headStyles: {
