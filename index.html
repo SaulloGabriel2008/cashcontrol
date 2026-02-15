@@ -890,6 +890,111 @@
         scrollbar-gutter: stable;
       }
     }
+
+    /* Bottom Navigation Bar */
+    /* Navegação mantida no topo em todas as resoluções */
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 16px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      transition: var(--transition);
+      z-index: 45;
+    }
+    .fab:hover { transform: scale(1.08); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6); }
+    @media (max-width: 768px) {
+      .fab { bottom: 20px; right: 12px; width: 52px; height: 52px; font-size: 24px; }
+    }
+
+    /* Bottom Sheet */
+    .bottom-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-top: 1px solid rgba(71, 85, 105, 0.2);
+      border-radius: 20px 20px 0 0;
+      max-height: 70vh;
+      overflow-y: auto;
+      z-index: 60;
+      display: none;
+      animation: slideUpSheet 0.35s ease-out;
+    }
+    .bottom-sheet.active { display: flex; flex-direction: column; }
+    @keyframes slideUpSheet {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .bottom-sheet-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid rgba(71, 85, 105, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .bottom-sheet-content { padding: 20px; overflow-y: auto; flex: 1; }
+    .bottom-sheet-actions { display: flex; flex-direction: column; gap: 8px; }
+    .bottom-sheet-action {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bottom-sheet-action:hover { background: #6366f1; color: white; }
+    .bottom-sheet-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 59;
+      display: none;
+    }
+    .bottom-sheet-overlay.active { display: block; }
+
+    /* Report Styles */
+    .report-item-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--color-primary);
+    }
+    .report-item.selected { background: rgba(16, 185, 129, 0.15) !important; }
+    .report-stats {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border-top: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      border-radius: 12px;
+    }
+    .report-export-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
   </style>
  </head>
  <body class="gradient-bg text-slate-100">
@@ -1030,6 +1135,26 @@
         </div>
       </nav>
 
+      <!-- FAB -->
+      <button onclick="openBottomSheet()" class="fab">➕</button>
+
+      <!-- Bottom Sheet Modal -->
+      <div class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
+      <div id="bottom-sheet" class="bottom-sheet">
+        <div class="bottom-sheet-header">
+          <h3 class="text-white font-bold">Nova Transação</h3>
+          <button onclick="closeBottomSheet()" class="modal-close">✕</button>
+        </div>
+        <div class="bottom-sheet-content">
+          <div class="bottom-sheet-actions">
+            <button onclick="switchTab('finances'); setFinanceView('expenses'); closeBottomSheet()" class="bottom-sheet-action">📤 Nova Despesa</button>
+            <button onclick="switchTab('finances'); setFinanceView('income'); closeBottomSheet()" class="bottom-sheet-action">📥 Novo Ganho</button>
+            <button onclick="switchTab('finances'); setFinanceView('income'); openModal('salary'); closeBottomSheet()" class="bottom-sheet-action">💼 Novo Salário</button>
+            <button onclick="switchTab('projections'); openModal('goal'); closeBottomSheet()" class="bottom-sheet-action">🎯 Nova Meta</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Main Content -->
       <main class="flex-1">
         <div class="container">
@@ -1129,6 +1254,9 @@
                 <div class="card rounded-2xl p-6">
                   <div class="form-row">
                     <input type="text" id="extra-income-desc" class="input-field" placeholder="Descrição">
+                    <select id="income-category" class="input-field">
+                      <option value="salario">💰 Salário</option>
+                    </select>
                     <input type="number" id="extra-income-amount" class="input-field" placeholder="Valor">
                     <input type="date" id="extra-income-date" class="input-field">
                   </div>
@@ -1240,6 +1368,12 @@
               </div>
               <div id="report-content" class="section card rounded-2xl p-6">
                 <p class="text-slate-400 text-center py-8">Selecione datas para gerar o relatório</p>
+              </div>
+              <div id="report-export-section" class="section hidden">
+                <div class="report-export-buttons">
+                  <button onclick="exportReportCSV()" class="btn btn-secondary flex-1">📥 CSV</button>
+                  <button onclick="exportReportPDF()" class="btn btn-secondary flex-1">📄 PDF</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1473,23 +1607,70 @@
     let customCategories = [];
     let categoriesListener = null;
 
-    // Categorias padrão que não podem ser removidas
+    // Categorias padrão que não podem ser removidas (com tipos)
     const DEFAULT_CATEGORIES = [
-      { value: 'moradia', label: '🏠 Moradia' },
-      { value: 'alimentacao', label: '🍽️ Alimentação' },
-      { value: 'transporte', label: '🚗 Transporte' },
-      { value: 'saude', label: '🏥 Saúde' },
-      { value: 'educacao', label: '📚 Educação' },
-      { value: 'lazer', label: '🎮 Lazer' },
-      { value: 'vestuario', label: '👕 Vestuário' },
-      { value: 'servicos', label: '📱 Serviços' },
-      { value: 'outros', label: '📦 Outros' }
+      // DESPESAS
+      { value: 'moradia', label: '🏠 Moradia', type: 'expense' },
+      { value: 'alimentacao', label: '🍽️ Alimentação', type: 'expense' },
+      { value: 'transporte', label: '🚗 Transporte', type: 'expense' },
+      { value: 'saude', label: '🏥 Saúde', type: 'expense' },
+      { value: 'educacao', label: '📚 Educação', type: 'expense' },
+      { value: 'lazer', label: '🎮 Lazer', type: 'expense' },
+      { value: 'vestuario', label: '👕 Vestuário', type: 'expense' },
+      { value: 'servicos', label: '📱 Serviços', type: 'expense' },
+      { value: 'outros', label: '📦 Outros', type: 'expense' },
+      // ENTRADAS
+      { value: 'salario', label: '💰 Salário', type: 'income' },
+      { value: 'freelancer', label: '💻 Freelancer', type: 'income' },
+      { value: 'bonus', label: '🎁 Bônus', type: 'income' },
+      { value: 'venda', label: '📦 Venda', type: 'income' },
+      { value: 'investimento', label: '📈 Investimento', type: 'income' },
+      { value: 'outro_income', label: '💳 Outro', type: 'income' }
     ];
     
     let config = { ...defaultConfig };
     
     // Variável para rastrear qual foto está sendo visualizada
     let currentViewingPhotoDocId = null;
+
+    // ========== FUNÇÃO UNIFICADA: Renderizar Categorias Dinâmicas ==========
+    function populateCategoryDropdown(type, elementId) {
+      const selectElement = document.getElementById(elementId);
+      if (!selectElement) return;
+
+      // Combinar categorias padrão e customizadas, depois filtrar por tipo
+      const allCategories = [...DEFAULT_CATEGORIES, ...customCategories];
+      const filtered = allCategories.filter(cat => cat.type === type);
+
+      // Guardar valor atual
+      const currentValue = selectElement.value;
+      selectElement.innerHTML = '';
+
+      // Adicionar opções
+      filtered.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.value;
+        option.textContent = cat.label;
+        selectElement.appendChild(option);
+      });
+
+      // Restaurar valor se existir
+      if (selectElement.querySelector(`option[value="${currentValue}"]`)) {
+        selectElement.value = currentValue;
+      } else if (filtered.length > 0) {
+        selectElement.value = filtered[0].value;
+      }
+    }
+
+    // Inicializar dropdowns de categorias após carregar dados
+    function initializeAllCategoryDropdowns() {
+      populateCategoryDropdown('expense', 'expense-category');
+      populateCategoryDropdown('expense', 'edit-exp-category');
+      populateCategoryDropdown('expense', 'expense-filter');
+      populateCategoryDropdown('income', 'income-category');
+      populateCategoryDropdown('income', 'edit-inc-category');
+      populateCategoryDropdown('income', 'modal-salary-category');
+    }
     
     // Função centralizada para fechar todos os modais
     function closeAllModals() {
@@ -1514,6 +1695,20 @@
     function closeModal() {
       document.getElementById('generic-modal').classList.remove('active');
     }
+
+    function openBottomSheet() {
+      const sheet = document.getElementById('bottom-sheet');
+      const overlay = document.querySelector('.bottom-sheet-overlay');
+      if (sheet) sheet.classList.add('active');
+      if (overlay) overlay.classList.add('active');
+    }
+
+    function closeBottomSheet() {
+      const sheet = document.getElementById('bottom-sheet');
+      const overlay = document.querySelector('.bottom-sheet-overlay');
+      if (sheet) sheet.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+    }
     
     function openModal(type) {
       closeAllModals();
@@ -1528,6 +1723,12 @@
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Nome/Descrição</label>
               <input type="text" id="modal-salary-name" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Salário Principal">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label>
+              <select id="modal-salary-category" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="salario">💰 Salário</option>
+              </select>
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
@@ -1638,8 +1839,15 @@
           `
         },
         newcategory: {
-          title: 'Nova Categoria de Despesa',
+          title: 'Nova Categoria',
           html: `
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Tipo</label>
+              <select id="modal-category-type" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="expense">📤 Despesa</option>
+                <option value="income">📥 Entrada</option>
+              </select>
+            </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Emoji</label>
               <input type="text" id="modal-category-emoji" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: 🎬" maxlength="2">
@@ -1660,6 +1868,12 @@
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Descrição</label>
               <input type="text" id="edit-inc-desc" class="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-slate-500" placeholder="Ex: Freelance">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Categoria</label>
+              <select id="edit-inc-category" class="input-dark w-full px-4 py-3 rounded-xl text-white">
+                <option value="salario">💰 Salário</option>
+              </select>
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Valor</label>
@@ -1792,6 +2006,7 @@
       }
       
       const description = document.getElementById('modal-salary-name').value.trim();
+      const category = document.getElementById('modal-salary-category').value || 'salario';
       const amount = Number(document.getElementById('modal-salary-amount').value) || 0;
       const frequency = document.getElementById('modal-salary-frequency').value;
       const startDate = document.getElementById('modal-salary-start').value || '';
@@ -1806,7 +2021,8 @@
           familyId: currentFamily,
           userId: currentUser.uid,
           userName: currentUser.displayName || currentUser.email,
-          type: 'salary',
+          type: 'income',
+          category: category,
           description,
           amount,
           frequency,
@@ -2054,8 +2270,11 @@
         if (type === 'income') {
           openModal('edit-income');
           document.getElementById('edit-inc-desc').value = data.description || '';
+          document.getElementById('edit-inc-category').value = data.category || 'salario';
           document.getElementById('edit-inc-amount').value = data.amount || '';
           document.getElementById('edit-inc-date').value = data.date || '';
+          // Atualizar dropdowns de categoria
+          setTimeout(() => populateCategoryDropdown('income', 'edit-inc-category'), 100);
         } else if (type === 'expense') {
           openModal('edit-expense');
           document.getElementById('edit-exp-desc').value = data.description || '';
@@ -2090,6 +2309,7 @@
         
         if (editingTransactionType === 'income') {
           updateData.description = document.getElementById('edit-inc-desc').value.trim();
+          updateData.category = document.getElementById('edit-inc-category').value;
           updateData.amount = Number(document.getElementById('edit-inc-amount').value) || 0;
           updateData.date = document.getElementById('edit-inc-date').value;
         } else if (editingTransactionType === 'expense') {
@@ -2158,11 +2378,12 @@
         return;
       }
       
+      const type = document.getElementById('modal-category-type').value;
       const emoji = document.getElementById('modal-category-emoji').value.trim();
       const name = document.getElementById('modal-category-name').value.trim();
       
-      if (!emoji || !name) {
-        showToast('⚠️', 'Preencha emoji e nome');
+      if (!type || !emoji || !name) {
+        showToast('⚠️', 'Preencha tipo, emoji e nome');
         return;
       }
       
@@ -2188,6 +2409,7 @@
             emoji: emoji,
             name: name,
             value: value,
+            type: type,
             createdAt: new Date(),
             createdBy: currentUser.uid
           });
@@ -2199,7 +2421,8 @@
           // Atualizar array local imediatamente
           customCategories = existingCategories.map(cat => ({
             value: cat.value,
-            label: `${cat.emoji || '📦'} ${cat.name || cat.label}`
+            label: `${cat.emoji || '📦'} ${cat.name || cat.label}`,
+            type: cat.type || 'expense'
           }));
         } else {
           // Formato novo: salvar em categories.{value}
@@ -2207,6 +2430,7 @@
             [`categories.${value}`]: {
               label: `${emoji} ${name}`,
               value: value,
+              type: type,
               createdAt: new Date(),
               createdBy: currentUser.uid
             }
@@ -2217,17 +2441,19 @@
           // Atualizar array local imediatamente
           customCategories.push({
             value: value,
-            label: `${emoji} ${name}`
+            label: `${emoji} ${name}`,
+            type: type
           });
         }
         
         // Atualizar UI imediatamente (não aguardar listener)
-        populateCategorySelects();
+        initializeAllCategoryDropdowns();
         
         closeModal();
         showToast('✅', `Categoria "${name}" criada com sucesso`);
         
         // Limpar inputs
+        document.getElementById('modal-category-type').value = 'expense';
         document.getElementById('modal-category-emoji').value = '';
         document.getElementById('modal-category-name').value = '';
       } catch (error) {
@@ -2269,8 +2495,9 @@
           select.appendChild(allOption);
         }
         
-        // Adicionar todas as categorias
+        // Adicionar todas as categorias (apenas despesas para esses selects)
         allCategories.forEach(cat => {
+          if (cat.type !== 'expense') return;
           const option = document.createElement('option');
           option.value = cat.value;
           option.textContent = cat.label;
@@ -2300,20 +2527,22 @@
           if (doc.exists) {
             const data = doc.data();
             
-            // Novo formato: categories = { category_id: { label, value, ... } }
+            // Novo formato: categories = { category_id: { label, value, type, ... } }
             if (data.categories && typeof data.categories === 'object') {
               customCategories = Object.values(data.categories)
                 .map(cat => ({
                   value: cat.value,
-                  label: cat.label
+                  label: cat.label,
+                  type: cat.type || 'expense'
                 }))
                 .filter(cat => cat.value && cat.label);
             } 
-            // Formato legado: customCategories = [ { name, emoji, value, ... } ]
+            // Formato legado: customCategories = [ { name, emoji, value, type, ... } ]
             else if (data.customCategories && Array.isArray(data.customCategories)) {
               customCategories = data.customCategories.map(cat => ({
                 value: cat.value,
-                label: `${cat.emoji || '📦'} ${cat.name || cat.label}`
+                label: `${cat.emoji || '📦'} ${cat.name || cat.label}`,
+                type: cat.type || 'expense'
               }));
             } 
             else {
@@ -2747,6 +2976,10 @@
           const titheAmount = inc.amount * (tithePercent / 100);
           const emergencyAmount = inc.amount * (emergencyPercent / 100);
           
+          // Obter label da categoria
+          const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
+          const catLabel = allCats.find(c => c.value === inc.category)?.label || inc.category || 'Outro';
+          
           const formatCurr = (typeof formatCurrency === 'function') ? formatCurrency : (v) => 'R$ ' + v.toFixed(2);
           
           return `
@@ -2754,7 +2987,7 @@
               <div class="flex justify-between items-start gap-2 mb-2">
                 <div class="flex-1 min-w-0">
                   <p class="text-white font-medium">${inc.description}</p>
-                  <p class="text-slate-400 text-xs">${inc.date || ''}</p>
+                  <p class="text-slate-400 text-xs">${catLabel} • ${inc.date || ''}</p>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                   <p class="font-semibold text-emerald-400 whitespace-nowrap text-sm">+ ${formatCurr(inc.amount)}</p>
@@ -2980,10 +3213,11 @@
         return;
       }
       const desc = document.getElementById('extra-income-desc').value.trim();
+      const category = document.getElementById('income-category').value;
       const amount = Number(document.getElementById('extra-income-amount').value) || 0;
       const date = document.getElementById('extra-income-date').value;
 
-      if (!desc || amount <= 0 || !date) {
+      if (!desc || !category || amount <= 0 || !date) {
         if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos');
         return;
       }
@@ -2995,11 +3229,13 @@
           userName: currentUser.displayName || currentUser.email,
           type: 'income',
           description: desc,
+          category: category,
           amount: amount,
           date: date,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         document.getElementById('extra-income-desc').value = '';
+        document.getElementById('income-category').value = 'salario';
         document.getElementById('extra-income-amount').value = '';
         document.getElementById('extra-income-date').value = '';
         if (typeof showToast === 'function') showToast('✅', 'Ganho extra adicionado!');
@@ -3074,12 +3310,12 @@
       const paymentFilter = document.getElementById('report-payment-filter').value;
 
       if (!startDate || !endDate) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Selecione as datas');
+        showToast('⚠️', 'Selecione as datas');
         return;
       }
 
       if (!currentFamily || !currentUser) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
+        showToast('⚠️', 'Selecione uma família');
         return;
       }
 
@@ -3097,11 +3333,14 @@
         snap.forEach(doc => {
           const data = doc.data();
           if (data.date >= startDate && data.date <= endDate) {
-            // Apply payment method filter
-            const paymentMethod = (data.paymentMethod || 'dinheiro').toLowerCase();
-            if (paymentFilter !== 'todas' && paymentMethod !== paymentFilter) return;
+            // Filtro de métodode pagamento (apenas para despesas)
+            if (data.type === 'expense' && paymentFilter !== 'todas') {
+              const paymentMethod = (data.paymentMethod || 'dinheiro').toLowerCase();
+              if (paymentMethod !== paymentFilter) return;
+            }
             
             transactions.push({
+              id: doc.id,
               date: data.date,
               type: data.type,
               description: data.description,
@@ -3117,8 +3356,24 @@
 
         if (transactions.length === 0) {
           reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Nenhuma transação no período</p>';
+          document.getElementById('report-export-section').classList.add('hidden');
           return;
         }
+
+        // Initialize global state for report selection
+        window._reportTransactions = transactions;
+        window._selectedTransactionIds = new Set();
+
+        // Separar entradas e despesas (agora sem 'salary', tudo é 'income')
+        const incomes = transactions.filter(t => t.type === 'income');
+        const expenses = transactions.filter(t => t.type === 'expense');
+
+        // Função auxiliar para obter label da categoria
+        const getCategoryLabel = (catValue) => {
+          const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
+          const found = allCats.find(c => c.value === catValue);
+          return found ? found.label : catValue;
+        };
 
         const getPaymentDisplay = (method, installments) => {
           if (method === 'cartao' && installments > 1) return `${installments}x no 💳`;
@@ -3126,41 +3381,479 @@
           return icons[method] || method;
         };
 
-        const typeDisplay = { income: '📥 Entrada', expense: '📤 Despesa', salary: '💼 Salário' };
-
-        const html = `
-          <div class="mb-6">
-            <h3 class="text-lg font-semibold text-white mb-4">Período: ${startDate} a ${endDate}</h3>
-            <p class="text-slate-400">Total de transações: ${transactions.length}</p>
-          </div>
-          <div class="space-y-3 max-h-96 overflow-y-auto">
-            ${transactions.map(t => `
-              <div class="flex justify-between items-start p-4 bg-slate-800/40 rounded-lg gap-4">
-                <div class="flex-1 min-w-0">
-                  <div class="flex gap-2 items-center mb-1">
-                    <span class="font-medium text-white">${t.description}</span>
-                    <span class="text-xs text-slate-500">${typeDisplay[t.type] || t.type}</span>
-                  </div>
-                  <div class="flex gap-2 text-sm text-slate-400 flex-wrap">
-                    <span>${t.date}</span>
-                    <span>•</span>
-                    <span>${t.category}</span>
-                    <span>•</span>
-                    <span>${getPaymentDisplay(t.paymentMethod, t.installments)}</span>
-                  </div>
-                </div>
-                <span class="font-semibold text-right whitespace-nowrap ${t.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
-                  ${t.type === 'expense' ? '-' : '+'} ${(typeof formatCurrency === 'function') ? formatCurrency(t.amount) : 'R$ ' + t.amount.toFixed(2)}
+        const renderSection = (title, icon, items, bgColor) => {
+          if (items.length === 0) return '';
+          
+          const total = items.reduce((sum, t) => sum + t.amount, 0);
+          return `
+            <div class="mb-6">
+              <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700">
+                <span class="text-xl">${icon}</span>
+                <h3 class="font-bold text-white text-lg flex-1">${title}</h3>
+                <span class="text-sm font-semibold ${title.includes('Entrada') ? 'text-emerald-400' : 'text-red-400'}">
+                  ${formatCurrency(total)}
                 </span>
               </div>
-            `).join('')}
+              <div class="space-y-2">
+                ${items.map(t => `
+                  <label class="report-item flex items-center gap-3 p-3 bg-slate-800/40 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors">
+                    <input type="checkbox" class="transaction-checkbox" value="${t.id}" onchange="updateReportSelection()">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex gap-2 items-center">
+                        <span class="font-medium text-white truncate">${t.description}</span>
+                        <span class="text-xs text-slate-500 flex-shrink-0">${getCategoryLabel(t.category)}</span>
+                      </div>
+                      <div class="text-sm text-slate-400">${t.date} • ${getPaymentDisplay(t.paymentMethod, t.installments)}</div>
+                    </div>
+                    <span class="font-semibold text-right flex-shrink-0 ${t.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
+                      ${t.type === 'expense' ? '-' : '+'} ${formatCurrency(t.amount)}
+                    </span>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        };
+
+        const html = `
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-4">
+              <label class="flex items-center gap-2 cursor-pointer text-white font-semibold">
+                <input type="checkbox" id="select-all-transactions" onchange="toggleSelectAllTransactions()" style="width:18px;height:18px;">
+                Selecionar Todos
+              </label>
+              <button onclick="filterReportByPayment('todas')" class="text-xs px-2 py-1 bg-slate-700 rounded hover:bg-slate-600">✓ Todas</button>
+            </div>
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+              ${renderSection('📥 Entradas', '💵', incomes, 'emerald')}
+              ${renderSection('📤 Despesas', '💸', expenses, 'red')}
+            </div>
+          </div>
+          <div class="report-stats">
+            <div>
+              <p class="text-sm text-slate-400">Selecionados</p>
+              <p class="text-lg font-bold text-white" id="report-selected-count">0</p>
+            </div>
+            <div>
+              <p class="text-sm text-slate-400">Total Selecionado</p>
+              <p class="text-lg font-bold text-emerald-400" id="report-selected-total">R$ 0,00</p>
+            </div>
           </div>
         `;
 
         reportEl.innerHTML = html;
+        document.getElementById('report-export-section').classList.remove('hidden');
+        updateReportSelection();
       } catch (error) {
         console.error('Error generating report:', error);
-        if (typeof showToast === 'function') showToast('❌', 'Erro ao gerar relatório');
+        showToast('❌', 'Erro ao gerar relatório');
+      }
+    }
+
+    function updateReportSelection() {
+      const checkboxes = document.querySelectorAll('.transaction-checkbox:checked');
+      window._selectedTransactionIds = new Set(Array.from(checkboxes).map(cb => cb.value));
+      
+      let total = 0;
+      window._selectedTransactionIds.forEach(id => {
+        const tx = window._reportTransactions.find(t => t.id === id);
+        if (tx) total += tx.amount;
+      });
+
+      document.getElementById('report-selected-count').textContent = window._selectedTransactionIds.size;
+      document.getElementById('report-selected-total').textContent = formatCurrency(total);
+
+      const selectAllCheckbox = document.getElementById('select-all-transactions');
+      if (selectAllCheckbox) {
+        selectAllCheckbox.checked = window._selectedTransactionIds.size === window._reportTransactions.length;
+      }
+    }
+
+    function toggleSelectAllTransactions() {
+      const selectAllCheckbox = document.getElementById('select-all-transactions');
+      const checkboxes = document.querySelectorAll('.transaction-checkbox');
+      checkboxes.forEach(cb => {
+        cb.checked = selectAllCheckbox.checked;
+      });
+      updateReportSelection();
+    }
+
+    function filterReportByPayment(method) {
+      const checkboxes = document.querySelectorAll('.transaction-checkbox');
+      checkboxes.forEach(cb => {
+        const tx = window._reportTransactions.find(t => t.id === cb.value);
+        if (!tx) return;
+        cb.checked = method === 'todas' || tx.paymentMethod.toLowerCase() === method;
+      });
+      updateReportSelection();
+    }
+
+    // Função auxiliar: Preparar dados bifurcados
+    function prepareReportData() {
+      const selected = window._reportTransactions.filter(t => window._selectedTransactionIds.has(t.id));
+      
+      // Bifurcação clara: income vs expense
+      const entradas = selected.filter(t => t.type === 'income');
+      const saidas = selected.filter(t => t.type === 'expense');
+      
+      const totalEntradas = entradas.reduce((sum, t) => sum + t.amount, 0);
+      const totalSaidas = saidas.reduce((sum, t) => sum + t.amount, 0);
+      const saldoLiquido = totalEntradas - totalSaidas;
+
+      // Função auxiliar: agrupar por categoria e calcular breakdown
+      const groupByCategory = (items) => {
+        const grouped = {};
+        items.forEach(item => {
+          const cat = item.category || 'outros';
+          if (!grouped[cat]) {
+            grouped[cat] = { total: 0, items: [] };
+          }
+          grouped[cat].total += item.amount;
+          grouped[cat].items.push(item);
+        });
+        return grouped;
+      };
+
+      const breakdownEntradas = groupByCategory(entradas);
+      const breakdownSaidas = groupByCategory(saidas);
+      
+      return {
+        entradas,
+        saidas,
+        totalEntradas,
+        totalSaidas,
+        saldoLiquido,
+        breakdownEntradas,
+        breakdownSaidas,
+        selected
+      };
+    }
+
+    function exportReportCSV() {
+      if (!window._reportTransactions || window._selectedTransactionIds.size === 0) {
+        showToast('⚠️', 'Selecione transações para exportar');
+        return;
+      }
+
+      const data = prepareReportData();
+      const now = new Date();
+      const dataGerada = now.toLocaleDateString('pt-BR');
+      const horaGerada = now.toLocaleTimeString('pt-BR');
+
+      // Função auxiliar para obter label da categoria (sem emoji para CSV)
+      const getCategoryLabel = (catValue) => {
+        const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
+        const found = allCats.find(c => c.value === catValue);
+        const label = found ? found.label : catValue;
+        // Remove emoji mantendo apenas o texto
+        return label.replace(/^[^\s]*\s+/, '');
+      };
+
+      // Blocos estruturados
+      const csvLines = [];
+
+      // Bloco 1: Cabeçalho
+      csvLines.push('RELATÓRIO DE TRANSAÇÕES');
+      csvLines.push(`Gerado em:;${dataGerada} ${horaGerada}`);
+      csvLines.push('Filtro:;Itens Selecionados');
+      csvLines.push('');
+
+      // Bloco 2: Resumo Geral
+      csvLines.push('RESUMO GERAL');
+      csvLines.push(`Total Entradas:;${data.totalEntradas.toFixed(2).replace('.', ',')}`);
+      csvLines.push(`Total Saídas:;${data.totalSaidas.toFixed(2).replace('.', ',')}`);
+      csvLines.push(`SALDO LÍQUIDO:;${data.saldoLiquido.toFixed(2).replace('.', ',')}`);
+      csvLines.push('');
+      csvLines.push('');
+
+      // Bloco 3: Entradas com breakdown por categoria
+      if (data.entradas.length > 0) {
+        csvLines.push('=== ENTRADAS ===');
+        csvLines.push('Data;Descrição;Categoria;Valor');
+        data.entradas.forEach(t => {
+          csvLines.push([
+            t.date,
+            t.description,
+            getCategoryLabel(t.category || 'outro_income'),
+            t.amount.toFixed(2).replace('.', ',')
+          ].map(cell => `"${cell}"`).join(';'));
+        });
+        csvLines.push('');
+        
+        // Breakdown por categoria para entradas
+        csvLines.push('RESUMO POR CATEGORIA (ENTRADAS)');
+        Object.entries(data.breakdownEntradas).forEach(([catValue, catData]) => {
+          csvLines.push(`${getCategoryLabel(catValue)};${catData.total.toFixed(2).replace('.', ',')}`);
+        });
+        csvLines.push(`TOTAL ENTRADAS;${data.totalEntradas.toFixed(2).replace('.', ',')}`);
+        csvLines.push('');
+        csvLines.push('');
+      }
+
+      // Bloco 4: Saídas com breakdown por categoria
+      if (data.saidas.length > 0) {
+        csvLines.push('=== SAÍDAS ===');
+        csvLines.push('Data;Descrição;Categoria;Valor');
+        data.saidas.forEach(t => {
+          csvLines.push([
+            t.date,
+            t.description,
+            getCategoryLabel(t.category || 'outros'),
+            t.amount.toFixed(2).replace('.', ',')
+          ].map(cell => `"${cell}"`).join(';'));
+        });
+        csvLines.push('');
+        
+        // Breakdown por categoria para saídas
+        csvLines.push('RESUMO POR CATEGORIA (SAÍDAS)');
+        Object.entries(data.breakdownSaidas).forEach(([catValue, catData]) => {
+          csvLines.push(`${getCategoryLabel(catValue)};${catData.total.toFixed(2).replace('.', ',')}`);
+        });
+        csvLines.push(`TOTAL SAÍDAS;${data.totalSaidas.toFixed(2).replace('.', ',')}`);
+      }
+
+      const csv = csvLines.join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `relatorio_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      showToast('✅', 'CSV exportado com sucesso');
+    }
+
+    async function exportReportPDF() {
+      if (!window._reportTransactions || window._selectedTransactionIds.size === 0) {
+        showToast('⚠️', 'Selecione transações para exportar');
+        return;
+      }
+
+      try {
+        // Load jsPDF and AutoTable if not already loaded
+        if (!window.jspdf) {
+          const script1 = document.createElement('script');
+          script1.src = 'https://cdn.jsdelivr.net/npm/jspdf/dist/jspdf.umd.min.js';
+          document.head.appendChild(script1);
+          
+          await new Promise(resolve => { script1.onload = resolve; });
+
+          const script2 = document.createElement('script');
+          script2.src = 'https://cdn.jsdelivr.net/npm/jspdf-autotable/dist/jspdf.plugin.autotable.min.js';
+          document.head.appendChild(script2);
+          
+          await new Promise(resolve => { script2.onload = resolve; });
+        }
+
+        const { jsPDF } = window.jspdf;
+        const data = prepareReportData();
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        // Função auxiliar para obter label da categoria (sem emoji para PDF)
+        const getCategoryLabel = (catValue) => {
+          const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
+          const found = allCats.find(c => c.value === catValue);
+          const label = found ? found.label : catValue;
+          // Remove emoji mantendo apenas o texto
+          return label.replace(/^[^\s]*\s+/, '');
+        };
+
+        // ========== CABEÇALHO GERAL ==========
+        doc.setFontSize(18);
+        doc.setTextColor(16, 185, 129);
+        doc.text('RELATÓRIO FINANCEIRO', pageWidth / 2, 15, { align: 'center' });
+
+        // Período
+        const startDate = document.getElementById('report-start').value;
+        const endDate = document.getElementById('report-end').value;
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Período: ${startDate} a ${endDate}`, pageWidth / 2, 22, { align: 'center' });
+
+        // Saldo Líquido Total (Grande destaque)
+        doc.setFontSize(12);
+        doc.setTextColor(16, 185, 129);
+        const saldoText = `Saldo Líquido: ${data.saldoLiquido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`;
+        doc.text(saldoText, pageWidth / 2, 29, { align: 'center' });
+
+        let yPos = 35; // Posição Y para começar as tabelas
+
+        // ========== TABELA 1: ENTRADAS (Verde) ==========
+        if (data.entradas.length > 0) {
+          const tableDataEntradas = data.entradas.map(t => [
+            t.date,
+            t.description,
+            getCategoryLabel(t.category || 'outro_income'),
+            t.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+          ]);
+
+          // Adicionar linha de total
+          tableDataEntradas.push([
+            '',
+            '',
+            'TOTAL ENTRADAS',
+            data.totalEntradas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+          ]);
+
+          doc.autoTable({
+            head: [['Data', 'Descrição', 'Categoria', 'Valor']],
+            body: tableDataEntradas,
+            startY: yPos,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [22, 163, 74], // Verde Tailwind Emerald-700
+              textColor: 255,
+              fontStyle: 'bold',
+              fontSize: 10
+            },
+            bodyStyles: {
+              fontSize: 9,
+              textColor: 40
+            },
+            alternateRowStyles: {
+              fillColor: [240, 253, 250] // Verde bem claro
+            },
+            margin: { left: 10, right: 10 }
+          });
+
+          yPos = doc.lastAutoTable.finalY + 5;
+
+          // Breakdown detalhado por categoria
+          doc.setFontSize(9);
+          doc.setTextColor(20, 100, 50);
+          doc.text('Detalhamento por Categoria:', 12, yPos);
+          yPos += 6;
+
+          const breakdownLines = [];
+          Object.entries(data.breakdownEntradas).forEach(([catValue, catData]) => {
+            breakdownLines.push([
+              getCategoryLabel(catValue),
+              catData.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            ]);
+          });
+
+          doc.autoTable({
+            head: [['Categoria', 'Subtotal']],
+            body: breakdownLines,
+            startY: yPos,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [167, 243, 208], // Verde bem claro
+              textColor: 20,
+              fontStyle: 'bold',
+              fontSize: 8
+            },
+            bodyStyles: {
+              fontSize: 8,
+              textColor: 40
+            },
+            margin: { left: 12, right: 12 },
+            columnStyles: {
+              0: { cellWidth: 'auto' },
+              1: { halign: 'right' }
+            }
+          });
+
+          yPos = doc.lastAutoTable.finalY + 15;
+        }
+
+        // ========== VERIFICAÇÃO DE PÁGINA ==========
+        if (yPos > pageHeight - 60 && data.saidas.length > 0) {
+          doc.addPage();
+          yPos = 20;
+        }
+
+        // ========== TABELA 2: SAÍDAS (Vermelho) ==========
+        if (data.saidas.length > 0) {
+          const tableDataSaidas = data.saidas.map(t => [
+            t.date,
+            t.description,
+            getCategoryLabel(t.category || 'outros'),
+            t.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+          ]);
+
+          // Adicionar linha de total
+          tableDataSaidas.push([
+            '',
+            '',
+            'TOTAL SAÍDAS',
+            data.totalSaidas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+          ]);
+
+          doc.autoTable({
+            head: [['Data', 'Descrição', 'Categoria', 'Valor']],
+            body: tableDataSaidas,
+            startY: yPos,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [220, 38, 38], // Vermelho Tailwind Red-600
+              textColor: 255,
+              fontStyle: 'bold',
+              fontSize: 10
+            },
+            bodyStyles: {
+              fontSize: 9,
+              textColor: 40
+            },
+            alternateRowStyles: {
+              fillColor: [254, 242, 242] // Vermelho bem claro
+            },
+            margin: { left: 10, right: 10 }
+          });
+
+          yPos = doc.lastAutoTable.finalY + 5;
+
+          // Breakdown detalhado por categoria
+          doc.setFontSize(9);
+          doc.setTextColor(150, 20, 20);
+          doc.text('Detalhamento por Categoria:', 12, yPos);
+          yPos += 6;
+
+          const breakdownLines = [];
+          Object.entries(data.breakdownSaidas).forEach(([catValue, catData]) => {
+            breakdownLines.push([
+              getCategoryLabel(catValue),
+              catData.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+            ]);
+          });
+
+          doc.autoTable({
+            head: [['Categoria', 'Subtotal']],
+            body: breakdownLines,
+            startY: yPos,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [252, 165, 165], // Vermelho bem claro
+              textColor: 120,
+              fontStyle: 'bold',
+              fontSize: 8
+            },
+            bodyStyles: {
+              fontSize: 8,
+              textColor: 40
+            },
+            margin: { left: 12, right: 12 },
+            columnStyles: {
+              0: { cellWidth: 'auto' },
+              1: { halign: 'right' }
+            }
+          });
+
+          yPos = doc.lastAutoTable.finalY;
+        }
+
+        // ========== RODAPÉ COM TIMESTAMP ==========
+        const finalPageHeight = doc.internal.pageSize.getHeight();
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        const now = new Date();
+        doc.text(`Gerado em: ${now.toLocaleString('pt-BR')}`, pageWidth / 2, finalPageHeight - 10, { align: 'center' });
+
+        doc.save(`relatorio_${new Date().toISOString().split('T')[0]}.pdf`);
+        showToast('✅', 'PDF exportado com sucesso');
+      } catch (error) {
+        console.error('Error exporting PDF:', error);
+        showToast('❌', 'Erro ao gerar PDF');
       }
     }
 
@@ -3821,6 +4514,9 @@
         // Setup real-time listener para categorias personalizadas
         listenToCategoriesRealtime();
         
+        // Inicializar dropdowns de categorias
+        initializeAllCategoryDropdowns();
+        
         await loadCommitmentLabels();
         
         await loadSalariesList();
@@ -4446,18 +5142,15 @@
     }
 
     function getCategoryLabel(cat) {
-      const labels = {
-        'moradia': '🏠 Moradia',
-        'alimentacao': '🍽️ Alimentação',
-        'transporte': '🚗 Transporte',
-        'saude': '🏥 Saúde',
-        'educacao': '📚 Educação',
-        'lazer': '🎮 Lazer',
-        'vestuario': '👕 Vestuário',
-        'servicos': '📱 Serviços',
-        'outros': '📦 Outros'
-      };
-      return labels[cat] || cat;
+      const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
+      const found = allCats.find(c => c.value === cat);
+      return found ? found.label : cat;
+    }
+
+    // Remove emoji do label para uso em CSV/PDF
+    function getCategoryLabelPlain(label) {
+      // Remove emoji mantendo apenas o texto
+      return label.replace(/^[^\s]*\s+/, ''); // Remove tudo até o primeiro espaço (emoji e espaço)
     }
 
     document.addEventListener('keydown', function(event) {
