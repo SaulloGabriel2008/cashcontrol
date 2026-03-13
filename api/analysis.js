@@ -1,4 +1,9 @@
-import { aggregateTransactions, fetchTransactionsForScope, saveAiReport } from "./_lib/analytics.js";
+import {
+  aggregateTransactions,
+  buildStructuredAnalysis,
+  fetchTransactionsForScope,
+  saveAiReport,
+} from "./_lib/analytics.js";
 import { getGeminiModel } from "./_lib/gemini.js";
 import { resolveFamilyId, verifyRequest } from "./_lib/firebase.js";
 
@@ -16,8 +21,10 @@ export default async function handler(req, res) {
     });
 
     const summary = aggregateTransactions(transactions);
-    const model = getGeminiModel();
-    const prompt = `Voce e um analista financeiro de uma plataforma familiar.
+    let narrative = "";
+    try {
+      const model = getGeminiModel();
+      const prompt = `Voce e um analista financeiro de uma plataforma familiar.
 
 Dados resumidos:
 ${JSON.stringify(summary, null, 2)}
@@ -30,18 +37,22 @@ Retorne:
 
 Responda em portugues claro e objetivo.`;
 
-    const result = await model.generateContent(prompt);
-    const analysis = result.response.text();
+      const result = await model.generateContent(prompt);
+      narrative = result.response.text();
+    } catch (error) {
+      narrative = "Resumo gerado com base nas transações estruturadas salvas no sistema.";
+    }
+
+    const responsePayload = buildStructuredAnalysis(summary, narrative);
     const reportId = await saveAiReport({
       familyId,
       uid: context.uid,
-      summary,
-      analysis,
+      summary: responsePayload,
+      analysis: narrative,
     });
 
     return res.status(200).json({
-      analysis,
-      summary,
+      ...responsePayload,
       reportId,
     });
   } catch (error) {

@@ -2470,8 +2470,8 @@
                 <!-- Chat Box -->
                 <div class="ai-chat-container">
                   <div class="ai-chat-box" id="ai-chat-box">
-                    <div class="ai-message bot">Olá! Eu sou o assistente do Cash Control. Recebi o seu extrato e estou
-                      pronto para responder suas perguntas sobre ele. O que você gostaria de saber?</div>
+                    <div class="ai-message bot">Olá! Eu sou o assistente do Cash Control. Posso responder com base nas
+                      transações salvas da família selecionada. O que você gostaria de saber?</div>
                   </div>
                   <div class="ai-chat-input-area">
                     <input type="text" id="ai-chat-input" class="ai-chat-input"
@@ -8302,6 +8302,179 @@ Exemplo:
       }
     }
 
+    function formatCurrencyBRL(value) {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(Number(value || 0));
+    }
+
+    function escapeHTML(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderFallbackAnalysisCard(text) {
+      return `
+        <div class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-5">
+          <div class="flex items-center gap-2 mb-3 text-slate-200 font-semibold">
+            <span class="text-indigo-400">🧾</span>
+            <span>Resumo da IA</span>
+          </div>
+          <div class="text-slate-300 leading-7 whitespace-pre-line">${escapeHTML(text || 'Sem resposta da IA')}</div>
+        </div>
+      `;
+    }
+
+    function renderAIAnalysis(data) {
+      const outputDiv = document.getElementById('ai-insights-output');
+      if (!outputDiv) return;
+
+      const hasStructuredData = data && typeof data === 'object' && data.summary && typeof data.summary === 'object';
+      if (!hasStructuredData) {
+        const fallbackText = typeof data === 'string' ? data : (data && (data.analysis || data.narrative)) || 'Sem resposta da IA';
+        outputDiv.innerHTML = renderFallbackAnalysisCard(fallbackText);
+        return;
+      }
+
+      const summary = data.summary || {};
+      const topCategories = Array.isArray(data.topCategories) ? data.topCategories : [];
+      const riskAlerts = Array.isArray(data.riskAlerts) ? data.riskAlerts : [];
+      const savingTips = Array.isArray(data.savingTips) ? data.savingTips : [];
+      const investmentTips = Array.isArray(data.investmentTips) ? data.investmentTips : [];
+      const narrative = data.narrative || data.analysis || '';
+      const balance = Number(summary.balance || 0);
+      const balanceClass = balance >= 0 ? 'text-emerald-400' : 'text-red-400';
+
+      const categoryHtml = (topCategories.length ? topCategories : [{ name: 'Sem dados', amount: 0 }])
+        .map((item) => `
+          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 px-4 py-3 flex items-center justify-between gap-3">
+            <div class="text-slate-200 font-medium">${escapeHTML(item.name || 'Outros')}</div>
+            <div class="text-slate-100 font-semibold">${formatCurrencyBRL(item.amount)}</div>
+          </div>
+        `)
+        .join('');
+
+      const renderItemCards = (items, accentClass, icon) => {
+        if (!items.length) {
+          return `<div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 px-4 py-3 text-slate-400">Sem itens para este bloco.</div>`;
+        }
+
+        return items.map((item) => `
+          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 px-4 py-3 flex items-start gap-3">
+            <span class="${accentClass} mt-0.5">${icon}</span>
+            <span class="text-slate-200 leading-6">${escapeHTML(item)}</span>
+          </div>
+        `).join('');
+      };
+
+      outputDiv.innerHTML = `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+              <div class="text-emerald-300 text-sm font-medium mb-2">📈 Entradas</div>
+              <div class="text-2xl font-bold text-emerald-400">${formatCurrencyBRL(summary.income)}</div>
+            </div>
+            <div class="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4">
+              <div class="text-rose-300 text-sm font-medium mb-2">📉 Saídas</div>
+              <div class="text-2xl font-bold text-rose-400">${formatCurrencyBRL(summary.expense)}</div>
+            </div>
+            <div class="rounded-2xl border border-slate-600/60 bg-slate-900/40 p-4">
+              <div class="text-slate-300 text-sm font-medium mb-2">💰 Saldo</div>
+              <div class="text-2xl font-bold ${balanceClass}">${formatCurrencyBRL(balance)}</div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="text-indigo-400">🧩</span>
+              <span>Onde você mais gasta</span>
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${categoryHtml}</div>
+          </div>
+
+          <div>
+            <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="text-red-400">🚨</span>
+              <span>Alertas financeiros</span>
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${renderItemCards(riskAlerts, 'text-red-400', '•')}</div>
+          </div>
+
+          <div>
+            <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="text-amber-400">💡</span>
+              <span>Dicas para economizar</span>
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${renderItemCards(savingTips, 'text-amber-400', '•')}</div>
+          </div>
+
+          <div>
+            <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+              <span class="text-emerald-400">✅</span>
+              <span>Próximos passos</span>
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${renderItemCards(investmentTips, 'text-emerald-400', '•')}</div>
+          </div>
+
+          ${narrative ? `
+            <div class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-5">
+              <div class="text-slate-200 font-semibold mb-2 flex items-center gap-2">
+                <span class="text-cyan-400">🧠</span>
+                <span>Leitura da IA</span>
+              </div>
+              <div class="text-slate-300 leading-7 whitespace-pre-line">${escapeHTML(narrative)}</div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function setAIChatLoading(isLoading) {
+      const input = document.getElementById('ai-chat-input');
+      const button = document.querySelector('.ai-chat-send-btn');
+      if (input) input.disabled = isLoading;
+      if (button) button.disabled = isLoading;
+    }
+
+    function renderChatEvidence(evidence) {
+      if (!Array.isArray(evidence) || evidence.length === 0) return '';
+
+      const items = evidence.map((item) => {
+        const amountClass = item.type === 'income' ? 'text-emerald-400' : 'text-red-400';
+        const sign = item.type === 'income' ? '+' : '-';
+        const date = item.date ? item.date.split('-').reverse().join('/') : '';
+        return `
+          <div class="rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 py-2">
+            <div class="text-slate-100 text-sm font-medium">${escapeHTML(item.description || 'Sem descrição')}</div>
+            <div class="text-slate-400 text-xs mt-1">${escapeHTML(date)} • ${escapeHTML(item.bank || 'Outros')} • ${escapeHTML(item.category || 'outros')}</div>
+            <div class="${amountClass} text-sm font-semibold mt-2">${sign}${formatCurrencyBRL(item.amount)}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="mt-3">
+          <div class="text-xs uppercase tracking-wide text-slate-400 mb-2">Evidências encontradas</div>
+          <div class="grid grid-cols-1 gap-2">${items}</div>
+        </div>
+      `;
+    }
+
+    function renderBotChatMessage(payload) {
+      const answer = escapeHTML(payload.answer || payload.analysis || 'Sem resposta').replace(/\n/g, '<br>');
+      const evidenceHtml = renderChatEvidence(payload.evidence);
+      const badge = payload.deterministic
+        ? '<span class="inline-flex items-center rounded-full bg-emerald-500/15 text-emerald-300 text-[11px] px-2 py-1 mb-3">Baseado nos dados salvos</span>'
+        : '<span class="inline-flex items-center rounded-full bg-indigo-500/15 text-indigo-300 text-[11px] px-2 py-1 mb-3">Resposta assistida por IA</span>';
+
+      return `${badge}<div class="leading-6">${answer}</div>${evidenceHtml}`;
+    }
+
     async function fetchAIAnalysis() {
       const outputDiv = document.getElementById('ai-insights-output');
 
@@ -8351,8 +8524,10 @@ Exemplo:
           throw new Error('Resposta inesperada (não-JSON): ' + raw);
         }
 
-        if (!data || !data.analysis) throw new Error(data && data.error ? data.error : 'Sem resposta da IA');
-        outputDiv.innerHTML = '<p class="mb-2">' + data.analysis.replace(/\n/g, '<br>') + '</p>';
+        if (!data || (!data.summary && !data.analysis && !data.narrative)) {
+          throw new Error(data && data.error ? data.error : 'Sem resposta da IA');
+        }
+        renderAIAnalysis(data);
       } catch (error) {
         console.error('Erro fetchAIAnalysis:', error);
         outputDiv.innerHTML = '<p class="text-red-400 text-center p-4">❌ ' + error.message + '</p>';
@@ -8382,6 +8557,7 @@ Exemplo:
 
       input.value = '';
       appendAIMessage('user', question);
+      setAIChatLoading(true);
 
       const chatBox = document.getElementById('ai-chat-box');
       const loadingId = 'loading-' + Date.now();
@@ -8389,33 +8565,44 @@ Exemplo:
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        const contextData = await buildFinancialContext();
-
-        const prompt = `Você é o assistente financeiro inteligente do app Cash Control.
-Responda de forma objetiva e amigável à pergunta do usuário com base nos dados abaixo.
-
-${contextData}
-${aiSessionPdfText ? `\nEXTRATO BANCÁRIO ADICIONAL (PDF CARREGADO):\n${aiSessionPdfText}` : ''}
-
-PERGUNTA DO USUÁRIO: ${question}`;
-
-        const answer = await callGeminiDirect(prompt);
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch(`${getApiBaseUrl()}/askPDF`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            familyId: currentFamily || null,
+            question
+          })
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(data && data.error ? data.error : `Erro ${res.status} ao consultar o chat`);
+        }
 
         document.getElementById(loadingId)?.remove();
-        appendAIMessage('bot', answer);
+        appendAIMessage('bot', data);
       } catch (error) {
         console.error('Erro sendAIChatMessage:', error);
         document.getElementById(loadingId)?.remove();
         appendAIMessage('bot', '❌ Erro ao chamar a IA: ' + error.message);
+      } finally {
+        setAIChatLoading(false);
       }
     }
 
-    function appendAIMessage(sender, text) {
+    function appendAIMessage(sender, payload) {
       const chatBox = document.getElementById('ai-chat-box');
       const msgDiv = document.createElement('div');
       msgDiv.className = `ai-message ${sender}`;
-      let html = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-      msgDiv.innerHTML = html;
+      if (sender === 'bot' && payload && typeof payload === 'object') {
+        msgDiv.innerHTML = renderBotChatMessage(payload);
+      } else {
+        const text = String(payload || '');
+        msgDiv.innerHTML = escapeHTML(text).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+      }
       chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     }

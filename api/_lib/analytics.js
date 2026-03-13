@@ -1,5 +1,19 @@
 import { admin, db } from "./firebase.js";
 
+const CATEGORY_LABELS = {
+  alimentacao: "Alimentação",
+  transporte: "Transporte",
+  moradia: "Moradia",
+  compras: "Compras",
+  assinaturas: "Assinaturas",
+  saude: "Saúde",
+  educacao: "Educação",
+  lazer: "Lazer",
+  outros: "Outros",
+  salario: "Salário",
+  servicos: "Serviços",
+};
+
 function toNumber(value) {
   const amount = Number(value || 0);
   return Number.isFinite(amount) ? amount : 0;
@@ -58,6 +72,100 @@ function aggregateTransactions(transactions) {
   };
 }
 
+function formatCategoryLabel(category) {
+  return CATEGORY_LABELS[category] || category || "Outros";
+}
+
+function buildRiskAlerts(summary) {
+  const alerts = [];
+  if (summary.balance < 0) {
+    alerts.push("Saldo negativo no período");
+  }
+
+  const topCategory = summary.topCategories[0];
+  if (topCategory && topCategory.category === "outros" && topCategory.amount > summary.totalExpenses * 0.35) {
+    alerts.push("Gastos excessivos concentrados em 'Outros'");
+  }
+
+  if (!summary.recurringSubscriptions.length) {
+    alerts.push("Ausência de despesas recorrentes mapeadas pode indicar categorização incompleta");
+  }
+
+  if (summary.totalIncome > 0 && summary.totalExpenses > summary.totalIncome * 0.9) {
+    alerts.push("Comprometimento elevado da renda no período");
+  }
+
+  if (alerts.length === 0) {
+    alerts.push("Sem alertas críticos no período analisado");
+  }
+
+  return alerts;
+}
+
+function buildSavingTips(summary) {
+  const tips = [];
+  const topCategory = summary.topCategories[0];
+
+  if (topCategory && topCategory.category === "outros") {
+    tips.push("Detalhar melhor a categoria Outros");
+  }
+
+  if (summary.topCategories.some((item) => item.category === "lazer")) {
+    tips.push("Reduzir gastos com lazer");
+  }
+
+  if (summary.totalExpenses > summary.totalIncome) {
+    tips.push("Criar um orçamento por categoria");
+  }
+
+  if (summary.recurringSubscriptions.length > 2) {
+    tips.push("Revisar assinaturas recorrentes e cancelar o que nao usa");
+  }
+
+  if (tips.length === 0) {
+    tips.push("Manter acompanhamento semanal das categorias para preservar o equilibrio");
+  }
+
+  return tips;
+}
+
+function buildInvestmentTips(summary) {
+  const tips = [];
+
+  if (summary.balance <= 0) {
+    tips.push("Montar reserva de emergência");
+    tips.push("Equilibrar orçamento antes de assumir mais risco");
+  } else {
+    tips.push("Guardar parte da renda mensal");
+    tips.push("Avaliar renda fixa após equilibrar o orçamento");
+  }
+
+  if (summary.recurringSubscriptions.length > 0) {
+    tips.push("Automatizar aporte logo após o recebimento da renda");
+  }
+
+  return [...new Set(tips)].slice(0, 3);
+}
+
+function buildStructuredAnalysis(summary, narrative) {
+  return {
+    summary: {
+      income: summary.totalIncome,
+      expense: summary.totalExpenses,
+      balance: summary.balance,
+    },
+    topCategories: summary.topCategories.map((item) => ({
+      name: formatCategoryLabel(item.category),
+      amount: item.amount,
+    })),
+    riskAlerts: buildRiskAlerts(summary),
+    savingTips: buildSavingTips(summary),
+    investmentTips: buildInvestmentTips(summary),
+    narrative: narrative || "",
+    analysis: narrative || "",
+  };
+}
+
 async function fetchTransactionsForScope({ uid, familyId }) {
   const query = familyId
     ? db.collection("transactions").where("familyId", "==", familyId)
@@ -81,4 +189,10 @@ async function saveAiReport({ familyId, uid, summary, analysis }) {
   return reportRef.id;
 }
 
-export { aggregateTransactions, fetchTransactionsForScope, saveAiReport };
+export {
+  aggregateTransactions,
+  buildStructuredAnalysis,
+  fetchTransactionsForScope,
+  formatCategoryLabel,
+  saveAiReport,
+};

@@ -79,10 +79,10 @@ async function askAI(question) {
                 "Content-Type": "application/json",
                 ...(token && { Authorization: `Bearer ${token}` })
             },
-            body: JSON.stringify({ question })
+            body: JSON.stringify({ question, familyId: null })
         });
         const data = await res.json();
-        return data.answer;
+        return data.answer || data.analysis || "Sem resposta da IA.";
     } catch (err) {
         console.error(err);
         return "Erro ao consultar a IA.";
@@ -132,7 +132,15 @@ async function getAnalysis() {
             body: JSON.stringify({ familyId: null })
         });
         const data = await res.json();
-        analysisBox.innerText = data.analysis;
+        if (data && data.summary) {
+            analysisBox.innerText =
+                `Entradas: ${data.summary.income}\n` +
+                `Saídas: ${data.summary.expense}\n` +
+                `Saldo: ${data.summary.balance}\n\n` +
+                (data.narrative || data.analysis || "");
+        } else {
+            analysisBox.innerText = data.analysis || data.narrative || "Sem resposta da IA.";
+        }
     } catch (err) {
         analysisBox.innerText = "Erro ao gerar análise.";
         console.error(err);
