@@ -8111,12 +8111,19 @@ Exemplo:
     }
 
     // Funções de Controle da Barra de Progresso IA
+    let activeAIProgressInterval = null;
+
     function startAIProgress(seconds = 45) {
       const modal = document.getElementById('ai-progress-modal');
       const bar = document.getElementById('ai-progress-bar');
       const text = document.getElementById('ai-progress-text');
 
       if (!modal || !bar || !text) return null;
+
+      if (activeAIProgressInterval) {
+        clearInterval(activeAIProgressInterval);
+        activeAIProgressInterval = null;
+      }
 
       modal.style.display = 'flex';
       modal.classList.add('active');
@@ -8134,11 +8141,16 @@ Exemplo:
         text.textContent = Math.round(progress) + '%';
       }, 100);
 
+      activeAIProgressInterval = interval;
       return interval;
     }
 
     function stopAIProgress(intervalId) {
       if (intervalId) clearInterval(intervalId);
+      if (activeAIProgressInterval) {
+        clearInterval(activeAIProgressInterval);
+        activeAIProgressInterval = null;
+      }
       const modal = document.getElementById('ai-progress-modal');
       const bar = document.getElementById('ai-progress-bar');
       const text = document.getElementById('ai-progress-text');
@@ -8225,17 +8237,8 @@ Exemplo:
       const progressInterval = startAIProgress(45);
       showToast('✨', 'Enviando extrato para importação...');
 
-      // upload para Firebase Storage para evitar limites de payload em funções serverless
-      async function uploadToStorage(file) {
-        const storage = firebase.storage();
-        const uid = auth.currentUser.uid;
-        const path = `uploads/${uid}/${Date.now()}_${file.name}`;
-        const ref = storage.ref(path);
-        await ref.put(file);
-        return path;
-      }
-
-      // helper to convert file to base64 string (usado só se não fizermos upload)
+      // helper para converter arquivo em base64 e enviar direto ao backend.
+      // Evita dependência de CORS do Firebase Storage neste fluxo.
       const fileToBase64 = async (file) => {
         try {
           return await new Promise((resolve, reject) => {
@@ -8266,22 +8269,11 @@ Exemplo:
         const token = await auth.currentUser.getIdToken();
         let payload = {
           fileType: ext,
-          familyId: currentFamily || null
+          familyId: currentFamily || null,
+          fileName: file.name
         };
-
-        // tente enviar o arquivo para Storage; não é obrigatório (especialmente em dev local)
-        try {
-          const gcsPath = await uploadToStorage(file);
-          if (gcsPath) payload.gcsPath = gcsPath;
-        } catch (e) {
-          console.warn('Falha ao enviar para Storage, usaremos base64 como fallback', e);
-        }
-
-        // se nada foi definido ainda, mande o base64 tradicional
-        if (!payload.gcsPath) {
-          const b64 = await fileToBase64(file);
-          payload.fileBase64 = b64.split(',')[1];
-        }
+        const b64 = await fileToBase64(file);
+        payload.fileBase64 = b64.split(',')[1];
 
         const res = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
           method: 'POST',
