@@ -1879,6 +1879,26 @@
                 </div>
               </div>
 
+              <div class="card rounded-2xl p-5 mb-5 border-dashed border-2 border-emerald-500/25 bg-emerald-500/5">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold text-emerald-300 mb-1">Extrato bancario</p>
+                    <h3 class="text-lg font-bold text-white mb-1">Scanner unico de extrato</h3>
+                    <p class="text-sm text-slate-400">Importe PDF ou CSV. O sistema detecta o banco, cria a conta se precisar e envia as transacoes para ela.</p>
+                  </div>
+                  <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="file" id="dashboard-statement-upload" accept=".pdf,.csv" class="hidden"
+                      onchange="uploadExtractForAI(event)">
+                    <button onclick="document.getElementById('dashboard-statement-upload').click()" class="btn btn-primary px-6">
+                      <span class="mr-2">📤</span> Escanear Extrato
+                    </button>
+                  </div>
+                </div>
+                <div id="dashboard-scan-feedback" class="mt-4 text-sm text-slate-400">
+                  Nenhum extrato importado nesta sessao.
+                </div>
+              </div>
+
               <!-- Contas Bancárias -->
               <div class="dash-section-header">
                 <p class="dash-section-title">🏦 Contas</p>
@@ -2110,9 +2130,6 @@
                     <p class="text-xs text-slate-500 mt-1">Informe o saldo atual desta conta ao cadastrá-la</p>
                   </div>
                   <button onclick="addBankAccount()" class="btn btn-primary w-full">🏦 Cadastrar Conta</button>
-                  <!-- Input oculto para carregar fatura para IA -->
-                  <input type="file" id="ai-scan-file-input" class="hidden"
-                    accept=".pdf,.ofx,.csv,.json,.png,.jpg,.jpeg">
                 </div>
               </div>
 
@@ -2442,26 +2459,8 @@
           <div id="tab-ai_analysis" class="tab-content hidden">
             <div class="section">
               <h2 class="section-title">🤖 Análise Financeira da IA</h2>
-              <p class="text-sm text-slate-400 mb-6">Envie o extrato bancário do mês e nossa IA do Cash Control
-                analisará
-                seus gastos, identificará para onde seu dinheiro está indo e fornecerá insights detalhados de economia.
+              <p class="text-sm text-slate-400 mb-6">O extrato agora é importado pelo scanner unico do Dashboard. A IA usa somente as transacoes salvas para montar o resumo e responder no chat.
               </p>
-
-              <!-- Document actions -->
-              <div
-                class="card rounded-2xl p-6 mb-6 text-center border-dashed border-2 border-emerald-500/30 bg-emerald-500/5">
-                <div class="text-4xl mb-3">📄</div>
-                <h3 class="text-lg font-bold text-white mb-2">Envie seu Extrato</h3>
-                <p class="text-sm text-slate-400 mb-4">Aceitamos arquivos PDF para análise completa do seu histórico.
-                </p>
-
-                <input type="file" id="ai-extract-upload" accept=".pdf,.csv" class="hidden"
-                  onchange="uploadExtractForAI(event)">
-                <button onclick="document.getElementById('ai-extract-upload').click()"
-                  class="btn btn-primary px-6 border-emerald-500">
-                  <span class="mr-2">📤</span> Carregar Extrato (PDF/CSV)
-                </button>
-              </div>
 
               <!-- Análise Insights Section -->
               <div id="ai-insights-container" class="mt-4">
@@ -2469,8 +2468,7 @@
                   <span class="text-emerald-400">⚡</span> Resumo Inteligente
                 </h3>
                 <div id="ai-insights-output" class="ai-analysis-output mb-8">
-                  <p class="text-slate-400 text-center p-4">Interaja com o chat abaixo para iniciar ou envie um extrato
-                    para uma análise completa.</p>
+                  <p class="text-slate-400 text-center p-4">Importe um extrato no Dashboard para atualizar este resumo automaticamente.</p>
                 </div>
 
                 <h3 class="text-lg font-bold text-white mt-8 mb-4 flex items-center gap-2">
@@ -4509,14 +4507,56 @@
       return transaction?.bankAccountId || transaction?.accountId || '';
     }
 
+    const BANK_VISUALS = {
+      nubank: { value: 'Nubank', label: 'Nubank', emoji: '🟣' },
+      inter: { value: 'Inter', label: 'Inter', emoji: '🟠' },
+      itau: { value: 'Itau', label: 'Itaú', emoji: '🟦🟨' },
+      santander: { value: 'Santander', label: 'Santander', emoji: '🔴' },
+      bradesco: { value: 'Bradesco', label: 'Bradesco', emoji: '🔺' },
+      caixa: { value: 'Caixa', label: 'Caixa', emoji: '🟦' },
+      outro: { value: 'Outro', label: 'Outro', emoji: '🏦' },
+      'banco nao definido': { value: 'Banco nao definido', label: 'Banco nao definido', emoji: '🏦' }
+    };
+
+    function normalizeBankNameLocal(bank) {
+      const key = String(bank || '')
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+
+      if (!key || key === 'banco nao definido') return 'Banco nao definido';
+      if (key === 'outros' || key === 'outro') return 'Outro';
+      return BANK_VISUALS[key]?.value || (String(bank || '').trim() || 'Outro');
+    }
+
+    function getBankDisplayName(bank) {
+      const normalized = normalizeBankNameLocal(bank);
+      const key = normalized
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+      return BANK_VISUALS[key]?.label || normalized || 'Banco nao definido';
+    }
+
+    function getBankDefaultEmoji(bank) {
+      const normalized = normalizeBankNameLocal(bank);
+      const key = normalized
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+      return BANK_VISUALS[key]?.emoji || '🏦';
+    }
+
     function normalizeBankAccountRecord(record) {
+      const bank = normalizeBankNameLocal(record.bank);
       return {
         id: record.id,
         familyId: record.familyId || currentFamily,
         userId: record.userId || currentUser?.uid || null,
-        name: record.name || record.bank || 'Sem conta',
-        bank: record.bank || 'Banco não definido',
-        emoji: record.emoji || '🏦',
+        name: record.name || getBankDisplayName(bank) || 'Sem conta',
+        bank,
+        emoji: record.emoji || getBankDefaultEmoji(bank),
         initialBalance: Number(record.initialBalance || 0),
         active: record.active !== false
       };
@@ -4555,8 +4595,52 @@
     }
 
     function getBankAccountLabel(account) {
-      if (!account) return 'Banco não definido';
-      return `${account.emoji || '🏦'} ${account.bank || 'Banco não definido'}${account.name ? ` • ${account.name}` : ''}`;
+      if (!account) return 'Banco nao definido';
+      return `${account.emoji || '🏦'} ${getBankDisplayName(account.bank)}${account.name ? ` • ${account.name}` : ''}`;
+    }
+
+    function syncAccountEmojiWithSelectedBank(force = false) {
+      const bankField = document.getElementById('account-bank');
+      const emojiField = document.getElementById('account-emoji');
+      if (!bankField || !emojiField) return;
+
+      const currentValue = emojiField.value.trim();
+      const normalizedBank = normalizeBankNameLocal(bankField.value);
+      const suggestedEmoji = getBankDefaultEmoji(normalizedBank);
+
+      if (force || !currentValue || currentValue === '🏦' || Object.values(BANK_VISUALS).some(item => item.emoji === currentValue)) {
+        emojiField.value = suggestedEmoji;
+      }
+    }
+
+    function renderDashboardScanFeedback(data = null, errorMessage = '') {
+      const container = document.getElementById('dashboard-scan-feedback');
+      if (!container) return;
+
+      if (errorMessage) {
+        container.innerHTML = `<div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-red-300">${escapeHTML(errorMessage)}</div>`;
+        return;
+      }
+
+      if (!data) {
+        container.textContent = 'Nenhum extrato importado nesta sessao.';
+        return;
+      }
+
+      const bankLabel = getBankDisplayName(data.bank || '');
+      const accountName = data.bankAccountName || bankLabel;
+      const transactionCount = Number(data.count ?? data.transactionCount ?? 0);
+      const createdLabel = data.accountCreated ? 'Conta criada automaticamente' : 'Conta existente reutilizada';
+
+      container.innerHTML = `
+        <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-slate-200">
+          <div class="font-semibold text-white mb-1">✅ Extrato importado</div>
+          <div><span class="text-slate-400">Banco:</span> ${escapeHTML(bankLabel)}</div>
+          <div><span class="text-slate-400">Conta destino:</span> ${escapeHTML(accountName)}</div>
+          <div><span class="text-slate-400">Transacoes:</span> ${transactionCount}</div>
+          <div><span class="text-slate-400">Status:</span> ${escapeHTML(createdLabel)}</div>
+        </div>
+      `;
     }
 
     function getCategoryLabelForReport(category) {
@@ -4851,7 +4935,7 @@
         <div class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-5">
           <div class="flex items-center justify-between gap-3 mb-4">
             <div>
-              <div class="text-white font-bold text-lg">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(bankItem.bank || 'Banco não definido')}</div>
+              <div class="text-white font-bold text-lg">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(getBankDisplayName(bankItem.bank))}</div>
               <div class="text-slate-400 text-sm">${escapeHTML(bankItem.name || 'Sem conta')}</div>
             </div>
             <div class="text-right">
@@ -4882,7 +4966,7 @@
           <div class="rounded-2xl border border-slate-700/60 bg-slate-900/35 p-5">
             <div class="flex items-center justify-between gap-3 mb-4">
               <div>
-                <h4 class="text-white font-bold text-lg">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(bankItem.bank || 'Banco não definido')}</h4>
+                <h4 class="text-white font-bold text-lg">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(getBankDisplayName(bankItem.bank))}</h4>
                 <p class="text-slate-400 text-sm">${escapeHTML(bankItem.name || 'Sem conta')}</p>
               </div>
               <div class="text-sm text-slate-400">${rows.length} transação(ões)</div>
@@ -5925,6 +6009,7 @@
 
     async function selectFamily(familyId) {
       currentFamily = familyId;
+      if (typeof renderDashboardScanFeedback === 'function') renderDashboardScanFeedback();
 
       try {
         const doc = await db.collection('families').doc(familyId).get();
@@ -7307,12 +7392,13 @@
     // ========== CONTAS BANCÁRIAS ==========
 
     let bankAccountsCache = [];
+    let editingBankAccountId = null;
 
     async function addBankAccount() {
       if (!currentFamily || !currentUser) { showToast('⚠️', 'Selecione uma família'); return; }
       const name = document.getElementById('account-name')?.value.trim();
-      const bank = document.getElementById('account-bank')?.value.trim() || '';
-      const emoji = document.getElementById('account-emoji')?.value.trim() || '🏦';
+      const bank = normalizeBankNameLocal(document.getElementById('account-bank')?.value.trim() || '');
+      const emoji = document.getElementById('account-emoji')?.value.trim() || getBankDefaultEmoji(bank);
       const initialBalance = Number(document.getElementById('account-initial-balance')?.value) || 0;
 
       if (!name || !bank) { showToast('⚠️', 'Informe o banco e o nome da conta'); return; }
@@ -7337,13 +7423,80 @@
         document.getElementById('account-name').value = '';
         document.getElementById('account-bank').value = 'Nubank';
         document.getElementById('account-initial-balance').value = '';
-        document.getElementById('account-emoji').value = '🏦';
+        syncAccountEmojiWithSelectedBank(true);
         showToast('✅', 'Conta cadastrada!');
         await loadBankAccounts();
         updateDashboard();
       } catch (error) {
         console.error('Error adding bank account:', error);
         showToast('❌', 'Erro ao cadastrar conta');
+      }
+    }
+
+    function openEditBankAccountModal(accountId) {
+      const account = findBankAccountInCache(accountId);
+      const modal = document.getElementById('generic-modal');
+      const title = document.getElementById('modal-title');
+      const content = document.getElementById('modal-content');
+      if (!account || !modal || !title || !content) return;
+
+      editingBankAccountId = accountId;
+      title.textContent = 'Editar Conta Bancaria';
+      content.innerHTML = `
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Banco</label>
+            <input type="text" class="input-dark w-full px-4 py-3 rounded-xl text-slate-400" value="${escapeHTML(getBankDisplayName(account.bank))}" readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Nome da conta</label>
+            <input type="text" id="edit-bank-account-name" class="input-dark w-full px-4 py-3 rounded-xl text-white" value="${escapeHTML(account.name || '')}">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Emoji</label>
+            <input type="text" id="edit-bank-account-emoji" class="input-dark w-full px-4 py-3 rounded-xl text-white" maxlength="4" value="${escapeHTML(account.emoji || getBankDefaultEmoji(account.bank))}">
+          </div>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600">Cancelar</button>
+          <button onclick="saveEditedBankAccount()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar</button>
+        </div>
+      `;
+
+      closeAllModals();
+      modal.classList.add('active');
+    }
+
+    async function saveEditedBankAccount() {
+      if (!editingBankAccountId) return;
+
+      const account = findBankAccountInCache(editingBankAccountId);
+      const name = document.getElementById('edit-bank-account-name')?.value.trim();
+      const emoji = document.getElementById('edit-bank-account-emoji')?.value.trim() || getBankDefaultEmoji(account?.bank);
+
+      if (!account || !name) {
+        showToast('⚠️', 'Informe um nome para a conta');
+        return;
+      }
+
+      try {
+        const payload = {
+          name,
+          emoji,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection('bankAccounts').doc(editingBankAccountId).set(payload, { merge: true });
+        await db.collection('bank_accounts').doc(editingBankAccountId).set(payload, { merge: true }).catch((error) => {
+          console.warn('Espelho opcional em bank_accounts falhou:', error);
+        });
+        closeModal();
+        editingBankAccountId = null;
+        showToast('✅', 'Conta atualizada!');
+        await loadBankAccounts();
+        updateDashboard();
+      } catch (error) {
+        console.error('Error updating bank account:', error);
+        showToast('❌', 'Erro ao atualizar conta');
       }
     }
 
@@ -7405,13 +7558,15 @@
               <span style="font-size:28px;">${acc.emoji}</span>
               <div class="flex-1">
                 <p class="font-bold text-white">${acc.name}</p>
-                <p class="text-xs text-slate-400">${acc.bank || 'Banco não definido'} • Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
+                <p class="text-xs text-slate-400">${getBankDisplayName(acc.bank)} • Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
               </div>
               <div class="text-right">
                 <p class="font-bold text-lg ${total < 0 ? 'text-red-400' : 'text-emerald-400'}">${formatCurrency(total)}</p>
-                <button onclick="startAiScan('${acc.id}')" class="text-xs text-emerald-400 border border-emerald-400/30 rounded px-2 py-1 mt-1 hover:bg-emerald-400/10" title="Escanear Fatura com IA">✨ Escanear</button>
               </div>
-              <button onclick="deleteBankAccount('${acc.id}')" class="text-red-400 hover:text-red-300 ml-2">🗑️</button>
+              <div class="flex items-center gap-2">
+                <button onclick="openEditBankAccountModal('${acc.id}')" class="text-emerald-400 hover:text-emerald-300">✏️</button>
+                <button onclick="deleteBankAccount('${acc.id}')" class="text-red-400 hover:text-red-300">🗑️</button>
+              </div>
             </div>
           `;
         }).join('');
@@ -7472,9 +7627,8 @@
           <div class="account-card">
             <div class="account-card-emoji">${acc.emoji}</div>
             <div class="account-card-name">${acc.name}</div>
-            <div class="text-[11px] text-slate-400 mt-1">${acc.bank || 'Banco não definido'}</div>
+            <div class="text-[11px] text-slate-400 mt-1">${getBankDisplayName(acc.bank)}</div>
             <div class="account-card-balance ${total < 0 ? 'negative' : ''}">${formatCurrency(total)}</div>
-            <button onclick="startAiScan('${acc.id}')" class="text-[10px] text-emerald-400 border border-emerald-400/30 rounded px-2 py-0.5 mt-2 w-full hover:bg-emerald-400/10">✨ Escanear IA</button>
           </div>
         `;
       }).join('');
@@ -7867,250 +8021,8 @@
 
     // === INTEGRAÇÃO COM IA (GEMINI) ===
     const GEMINI_API_KEY = "AIzaSyDzAE5Gx-KQDu8BHSr5o08-f-0DFiCtfXw";
-    let scanningAccountId = null;
     let pendingImportTransactions = [];
     let pendingImportAccountId = null;
-
-    function startAiScan(accountId) {
-      scanningAccountId = accountId;
-      document.getElementById('ai-scan-file-input').click();
-    }
-
-    // Listener para o input oculto de IA
-    document.getElementById('ai-scan-file-input')?.addEventListener('change', async function (e) {
-      const file = e.target.files[0];
-      if (!file || !scanningAccountId) return;
-      analyzeInvoiceWithAI(file, scanningAccountId);
-      e.target.value = '';
-    });
-
-    async function analyzeInvoiceWithAI(file, accountId) {
-      if (!currentUser || !currentFamily) return;
-
-      const isDeveloper = currentUser.email === 'saullinho2008@gmail.com';
-      const today = new Date().toISOString().split('T')[0];
-
-      if (!isDeveloper) {
-        try {
-          const accDoc = await db.collection('bankAccounts').doc(accountId).get();
-          if (accDoc.exists && accDoc.data().lastAiScan === today) {
-            showToast('⚠️', 'Limite de 1 fatura por dia por conta atingido!');
-            return;
-          }
-        } catch (e) { console.error("Erro ao verificar limite:", e); }
-      }
-
-      const extension = file.name.split('.').pop().toLowerCase();
-
-      // Verificação de plano para CSV (requer Premium+)
-      if (extension === 'csv' && !checkPlanAccess('premium')) {
-        showToast('⚠️', 'Escaneamento de CSV requer o plano Premium.');
-        openModal('plans', 'premium');
-        return;
-      }
-
-      // Verificação de plano para PDF (requer Executive)
-      if (extension === 'pdf' && !checkPlanAccess('executive')) {
-        showToast('⚠️', 'Escaneamento de PDF requer o plano Executivo.');
-        openModal('plans', 'executive');
-        return;
-      }
-
-      // Verificação de plano para JSON (requer Premium+)
-      if (extension === 'json' && !checkPlanAccess('premium')) {
-        showToast('⚠️', 'Escaneamento de JSON requer o plano Premium.');
-        openModal('plans', 'premium');
-        return;
-      }
-
-      let progressInterval;
-      if (extension === 'pdf') {
-        progressInterval = startAIProgress(45);
-      }
-
-      // === CSV: importar e categorizar via servidor ===
-      if (extension === 'csv') {
-        try {
-          showToast('📊', 'Importando CSV...');
-          const b64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (e) => reject(e);
-          });
-          const token = currentUser ? await auth.currentUser.getIdToken() : null;
-          if (!token) throw new Error('Usuário não autenticado');
-          const res = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              csvBase64: b64.split(',')[1],
-              fileType: 'csv',
-              familyId: currentFamily || null
-            })
-          });
-          const data = await res.json();
-          if (!data.success) throw new Error(data.error || 'Falha ao importar CSV');
-          showToast('✅', `Importadas ${data.count} transações`);
-          if (!isDeveloper) {
-            await db.collection('bankAccounts').doc(accountId).update({ lastAiScan: today });
-          }
-          // opcional: manter preview existente
-          try {
-            const text = await file.text();
-            const transactions = parseNubankCSV(text);
-            if (transactions.length) showImportPreview(transactions, accountId);
-          } catch (_){ }
-        } catch (error) {
-          showToast('❌', 'Erro ao importar CSV: ' + error.message);
-        }
-        return;
-      }
-
-      // === PDF: extrair texto com pdf.js e enviar para IA ===
-      if (extension === 'pdf') {
-        const usePdf = confirm(
-          '⚠️ Dica: Para extrair 100% das transações use o arquivo CSV exportado pelo Nubank.\n\n' +
-          'O PDF pode não conter todas as transações (limitação da leitura visual).\n\n' +
-          'Deseja continuar com o PDF mesmo assim?'
-        );
-        if (!usePdf) return;
-      }
-
-      showToast('✨', 'IA analisando fatura...');
-      let parts = [];
-
-      try {
-        if (['png', 'jpg', 'jpeg'].includes(extension)) {
-          // Imagens: enviar como base64 inline_data
-          const base64 = await compressImageToBase64(file);
-          parts.push({ inline_data: { mime_type: "image/jpeg", data: base64.split(',')[1] } });
-        } else if (extension === 'pdf') {
-          // PDF: extrair texto com pdf.js e enviar como texto
-          showToast('📄', 'Extraindo texto do PDF...');
-          let pdfText = await extractTextFromPDF(file);
-          if (!pdfText.trim()) {
-            throw new Error('O PDF está vazio ou não contém texto extraível. Tente usar o arquivo CSV.');
-          }
-          console.log('PDF texto extraído (primeiros 500 chars):', pdfText.substring(0, 500));
-          parts.push({ text: `Analise este extrato/fatura bancário extraído de um PDF:\n\n${pdfText}` });
-
-          // Fluxo de envio para Análise Simultânea da IA em Background
-          if (currentUser) {
-            auth.currentUser.getIdToken().then(async (token) => {
-              const base64Str = await compressImageToBase64(file); // hack para reutilizar base64 convert logic se precisar. Como pdf nao base64 native aqui vamos usar FileReader:
-
-              const reader = new FileReader();
-              reader.onload = async (e) => {
-                const b64 = e.target.result.split(',')[1];
-                try {
-                  await fetch(`${getApiBaseUrl()}/uploadPDF`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({
-                      pdfBase64: b64,
-                      fileType: 'pdf',
-                      familyId: currentFamily || null
-                    })
-                  });
-                  // Dispara atualizar insights sem notificar popup novo
-                  fetchAIAnalysis(token);
-                } catch (ign) { }
-              };
-              reader.readAsDataURL(file);
-            });
-          }
-
-        } else if (extension === 'json') {
-          // JSON: ler conteúdo e enviar como texto
-          const text = await file.text();
-          parts.push({ text: `Analise este arquivo JSON de transações financeiras:\n\n${text}` });
-        } else if (extension === 'ofx') {
-          const text = await file.text();
-          parts.push({ text: `Analise este arquivo OFX:\n\n${text}` });
-        } else {
-          showToast('❌', 'Formato não suportado. Use CSV, PDF, JSON ou imagem.');
-          return;
-        }
-
-        const promptText = `Você é um sistema de extração de dados financeiros de alta precisão.
-Analise este documento (fatura, extrato ou imagem) e extraia TODAS as transações encontradas.
-
-Para cada transação, você deve retornar um objeto com estas chaves exatas:
-- "type": "income" (se for entrada/crédito) ou "expense" (se for saída/débito/gasto)
-- "date": a data da transação no formato internacional YYYY-MM-DD
-- "description": nome curto do estabelecimento, empresa ou pessoa (ex: "Nubank", "Supermercado", "João")
-- "amount": o valor numérico puro, usando ponto para decimais (ex: 45.90)
-- "category": analise cuidadosamente o nome da instituição/pessoa e o valor debitado para determinar logicamente onde foi gasto. Escolha a melhor opção DESTA LISTA EXATA: moradia, alimentacao, transporte, saude, educacao, lazer, vestuario, servicos, salario, outros. Se não souber ou não for óbvio, coloque "outros".
-- "paymentMethod": escolha: pix, cartao, dinheiro, boleto, transferencia, outros
-- "observations": qualquer detalhe extra ou string vazia ""
-
-Retorne APENAS um array JSON puro, sem explicações extras.
-Exemplo:
-[{"type":"expense","date":"2024-05-10","description":"Mercado","amount":150.00,"category":"alimentacao","paymentMethod":"cartao","observations":""}]`;
-
-        parts.unshift({ text: promptText });
-
-        console.log('Enviando para Gemini API (gemini-2.5-flash)...');
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts }],
-            generationConfig: {
-              temperature: 0.1,
-              responseMimeType: "application/json"
-            }
-          })
-        });
-
-        const data = await response.json();
-        console.log('Gemini API Status:', response.status, response.statusText);
-        if (!response.ok) {
-          console.error('Gemini API Error:', JSON.stringify(data));
-          throw new Error(data.error?.message || `Erro na API do Gemini (${response.status})`);
-        }
-        if (!data.candidates?.[0]) {
-          console.error('Gemini sem candidatos:', JSON.stringify(data));
-          throw new Error('A IA não conseguiu processar este arquivo. Tente novamente.');
-        }
-
-        const aiText = data.candidates[0].content.parts[0].text;
-        console.log('Gemini Raw Response:', aiText);
-
-        let transactions;
-        try {
-          transactions = JSON.parse(aiText.trim());
-        } catch (e) {
-          const jsonMatch = aiText.match(/\[[\s\S]*\]/);
-          if (jsonMatch) {
-            transactions = JSON.parse(jsonMatch[0]);
-          } else {
-            console.error('Parse falhou. Resposta bruta:', aiText);
-            throw new Error('A IA retornou um formato inválido. Tente novamente.');
-          }
-        }
-
-        if (!Array.isArray(transactions) || transactions.length === 0) {
-          throw new Error('A IA não encontrou transações neste arquivo.');
-        }
-
-        if (!isDeveloper) {
-          await db.collection('bankAccounts').doc(accountId).update({ lastAiScan: today });
-        }
-
-        showImportPreview(transactions, accountId);
-
-      } catch (error) {
-        console.error('Erro na IA:', error);
-        showToast('❌', 'Erro: ' + (error.message || 'Não consegui ler este arquivo.'));
-      } finally {
-        if (progressInterval) stopAIProgress(progressInterval);
-      }
-    }
 
     // === Parser de CSV do Nubank (e bancos compatíveis) ===
     function parseNubankCSV(text) {
@@ -8590,16 +8502,25 @@ Exemplo:
       return data.candidates?.[0]?.content?.parts?.[0]?.text || 'A IA não retornou resposta.';
     }
 
+    async function refreshAfterStatementImport() {
+      if (typeof loadBankAccounts === 'function') await loadBankAccounts();
+      if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+      if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+      if (typeof updateDashboard === 'function') await updateDashboard();
+      if (typeof fetchAIAnalysis === 'function') await fetchAIAnalysis();
+
+      const reportStart = document.getElementById('report-start')?.value;
+      const reportEnd = document.getElementById('report-end')?.value;
+      const isReportVisible = !document.getElementById('finance-report')?.classList.contains('hidden');
+      if (isReportVisible && reportStart && reportEnd && typeof generateReport === 'function') {
+        await generateReport();
+      }
+    }
+
     async function uploadExtractForAI(event) {
       const file = event.target.files[0];
       if (!file) return;
       if (!currentUser) return showToast('⚠️', 'Faça login primeiro.');
-
-      if (!checkPlanAccess('executive')) {
-        showToast('⚠️', 'A função de Chat com Extrato (PDF/CSV) requer o plano Executivo.');
-        openModal('plans', 'executive');
-        return;
-      }
 
       const ext = file.name.split('.').pop().toLowerCase();
       if (!['pdf', 'csv'].includes(ext)) {
@@ -8608,11 +8529,22 @@ Exemplo:
         return;
       }
 
+      if (ext === 'csv' && !checkPlanAccess('premium')) {
+        showToast('⚠️', 'Escaneamento de CSV requer o plano Premium.');
+        openModal('plans', 'premium');
+        return;
+      }
+
+      if (ext === 'pdf' && !checkPlanAccess('executive')) {
+        showToast('⚠️', 'Escaneamento de PDF requer o plano Executivo.');
+        openModal('plans', 'executive');
+        return;
+      }
+
       const progressInterval = startAIProgress(45);
+      renderDashboardScanFeedback();
       showToast('✨', 'Enviando extrato para importação...');
 
-      // helper para converter arquivo em base64 e enviar direto ao backend.
-      // Evita dependência de CORS do Firebase Storage neste fluxo.
       const fileToBase64 = async (file) => {
         try {
           return await new Promise((resolve, reject) => {
@@ -8664,11 +8596,12 @@ Exemplo:
         const data = await res.json();
         if (!data.success) throw new Error(data.error || 'Falha na importação');
 
-        showToast('✅', `Importadas ${data.count} transações com sucesso.`);
-        if (typeof loadAllTransactions === 'function') await loadAllTransactions();
-        await fetchAIAnalysis();
+        renderDashboardScanFeedback(data);
+        showToast('✅', `${data.accountCreated ? 'Conta criada e ' : ''}importadas ${data.count || data.transactionCount || 0} transações para ${data.bankAccountName || getBankDisplayName(data.bank)}.`);
+        await refreshAfterStatementImport();
       } catch (error) {
         console.error('Erro uploadExtractForAI:', error);
+        renderDashboardScanFeedback(null, error.message || 'Erro ao importar extrato');
         showToast('❌', 'Erro ao importar extrato: ' + error.message);
       } finally {
         stopAIProgress(progressInterval);
@@ -8822,10 +8755,11 @@ Exemplo:
         const amountClass = item.type === 'income' ? 'text-emerald-400' : 'text-red-400';
         const sign = item.type === 'income' ? '+' : '-';
         const date = item.date ? item.date.split('-').reverse().join('/') : '';
+        const bankLabel = getBankDisplayName(item.bank || '');
         return `
           <div class="rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 py-2">
             <div class="text-slate-100 text-sm font-medium">${escapeHTML(item.description || 'Sem descrição')}</div>
-            <div class="text-slate-400 text-xs mt-1">${escapeHTML(date)} • ${escapeHTML(item.bank || 'Outros')} • ${escapeHTML(item.category || 'outros')}</div>
+            <div class="text-slate-400 text-xs mt-1">${escapeHTML(date)} • ${escapeHTML(bankLabel)} • ${escapeHTML(item.category || 'outros')}</div>
             <div class="${amountClass} text-sm font-semibold mt-2">${sign}${formatCurrencyBRL(item.amount)}</div>
           </div>
         `;
@@ -8913,14 +8847,13 @@ Exemplo:
       if (btn.textContent.includes('Análise da IA')) {
         btn.addEventListener('click', () => {
           const currentHtml = document.getElementById('ai-insights-output').innerHTML;
-          const isIdle = currentHtml.includes('Interaja com o chat') || currentHtml.includes('Faça login') || currentHtml.includes('Interaja com');
+          const isIdle = currentHtml.includes('Interaja com o chat') ||
+            currentHtml.includes('Faça login') ||
+            currentHtml.includes('Importe um extrato no Dashboard');
           if (isIdle && auth.currentUser) fetchAIAnalysis();
         });
       }
     });
-
-    // Também envia PDF para a memória durante o scan de fatura do Dashboard
-    const _origAnalyzeForAI = typeof analyzeInvoiceWithAI === 'undefined' ? null : analyzeInvoiceWithAI;
 
     async function sendAIChatMessage() {
       if (!auth.currentUser) return showToast('⚠️', 'Faça login para conversar com a IA.');
@@ -8966,6 +8899,9 @@ Exemplo:
         setAIChatLoading(false);
       }
     }
+
+    document.getElementById('account-bank')?.addEventListener('change', () => syncAccountEmojiWithSelectedBank(true));
+    syncAccountEmojiWithSelectedBank(true);
 
     function appendAIMessage(sender, payload) {
       const chatBox = document.getElementById('ai-chat-box');

@@ -1,13 +1,14 @@
 import pdf from "pdf-parse";
 import { admin, db } from "./firebase.js";
+import { canonicalBankName, DEFAULT_BANK, resolveImportBankAccount } from "./banks.js";
 
 const BANK_PATTERNS = [
-  { bank: "Nubank", emoji: "🟣", patterns: ["NUBANK", "NU PAGAMENTOS", "NUBANK ULTRAVIOLETA", "NU "] },
-  { bank: "Inter", emoji: "🟠", patterns: ["BANCO INTER", "INTERMEDIUM", "INTER "] },
-  { bank: "Itaú", emoji: "🟡", patterns: ["ITAU", "ITAU UNIBANCO", "ITAUCARD"] },
-  { bank: "Santander", emoji: "🔴", patterns: ["SANTANDER", "SX NEGOCIOS"] },
-  { bank: "Bradesco", emoji: "🔴", patterns: ["BRADESCO", "NEXT", "BRA DESCO"] },
-  { bank: "Caixa", emoji: "🔵", patterns: ["CAIXA", "CEF", "CAIXA ECONOMICA"] },
+  { bank: "Nubank", patterns: ["NUBANK", "NU PAGAMENTOS", "NUBANK ULTRAVIOLETA", "NU "] },
+  { bank: "Inter", patterns: ["BANCO INTER", "INTERMEDIUM", "INTER "] },
+  { bank: "Itau", patterns: ["ITAU", "ITAU UNIBANCO", "ITAUCARD"] },
+  { bank: "Santander", patterns: ["SANTANDER", "SX NEGOCIOS"] },
+  { bank: "Bradesco", patterns: ["BRADESCO", "NEXT", "BRA DESCO"] },
+  { bank: "Caixa", patterns: ["CAIXA", "CEF", "CAIXA ECONOMICA"] },
 ];
 
 const CATEGORY_RULES = [
@@ -22,7 +23,7 @@ const CATEGORY_RULES = [
 ];
 
 function normalizeUpper(value) {
-  return (value || "")
+  return String(value || "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase();
@@ -37,7 +38,7 @@ function cleanDescription(value) {
 }
 
 function normalizeText(text) {
-  return (text || "")
+  return String(text || "")
     .replace(/\u00a0/g, " ")
     .replace(/\r/g, "")
     .replace(/[ \t]+/g, " ")
@@ -50,11 +51,11 @@ function inferBankByPatterns(text) {
 
   for (const entry of BANK_PATTERNS) {
     if (entry.patterns.some((pattern) => haystack.includes(pattern))) {
-      return entry.bank;
+      return canonicalBankName(entry.bank);
     }
   }
 
-  return "Outros";
+  return DEFAULT_BANK;
 }
 
 function inferCategory(description) {
@@ -185,11 +186,10 @@ function parseCsvRows(csvText) {
       record[header] = (columns[headerIndex] || "").trim();
     });
 
-    const rawDate = record.DATA || record.DATE || record["DATA DO LANCAMENTO"] || record["DT"] || "";
+    const rawDate = record.DATA || record.DATE || record["DATA DO LANCAMENTO"] || record.DT || "";
     const rawDescription =
-      record.DESCRICAO || record.DESCRIPTION || record.HISTORICO || record.MEMO || record["LANÇAMENTO"] || "";
-    const rawAmount =
-      record.VALOR || record.AMOUNT || record.VALUE || record["VALOR (R$)"] || record["VALOR"] || "";
+      record.DESCRICAO || record.DESCRIPTION || record.HISTORICO || record.MEMO || record.LANCAMENTO || "";
+    const rawAmount = record.VALOR || record.AMOUNT || record.VALUE || record["VALOR (R$)"] || "";
 
     const date = normalizeDate(rawDate);
     const description = cleanDescription(rawDescription);
@@ -257,55 +257,6 @@ function detectSubscriptions(transactions, existingTransactions) {
   });
 }
 
-async function resolveBankAccountTarget(familyId, bankAccountId, bank) {
-  const collectionCandidates = ["bank_accounts", "bankAccounts"];
-
-  if (bankAccountId) {
-    for (const collectionName of collectionCandidates) {
-      const existingDoc = await db.collection(collectionName).doc(bankAccountId).get();
-      if (existingDoc.exists) {
-        return {
-          bankAccountId,
-          collectionName,
-        };
-      }
-    }
-
-    return {
-      bankAccountId,
-      collectionName: "bankAccounts",
-    };
-  }
-
-  if (!familyId || !bank || bank === "Outros") {
-    return {
-      bankAccountId: null,
-      collectionName: null,
-    };
-  }
-
-  for (const collectionName of collectionCandidates) {
-    const snapshot = await db
-      .collection(collectionName)
-      .where("familyId", "==", familyId)
-      .where("bank", "==", bank)
-      .limit(1)
-      .get();
-
-    if (!snapshot.empty) {
-      return {
-        bankAccountId: snapshot.docs[0].id,
-        collectionName,
-      };
-    }
-  }
-
-  return {
-    bankAccountId: null,
-    collectionName: null,
-  };
-}
-
 function shapeTransaction(rawTransaction, context) {
   const amount = Number(rawTransaction.amount);
   const installment = detectInstallment(rawTransaction.description);
@@ -359,20 +310,24 @@ async function persistImportedTransactions({
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
 
-  if (bankAccount && bankAccount.bankAccountId && bankAccount.collectionName) {
-    const accountRef = db.collection(bankAccount.collectionName).doc(bankAccount.bankAccountId);
+  if (bankAccount && bankAccount.bankAccountId && Array.isArray(bankAccount.syncCollections) && bankAccount.syncCollections.length) {
     const balanceDelta = decoratedTransactions.reduce((sum, transaction) => {
       return sum + (transaction.type === "income" ? transaction.amount : -transaction.amount);
     }, 0);
 
-    batch.set(
-      accountRef,
-      {
-        balance: admin.firestore.FieldValue.increment(balanceDelta),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
+    const today = new Date().toISOString().split("T")[0];
+    for (const collectionName of [...new Set(bankAccount.syncCollections)]) {
+      const accountRef = db.collection(collectionName).doc(bankAccount.bankAccountId);
+      batch.set(
+        accountRef,
+        {
+          balance: admin.firestore.FieldValue.increment(balanceDelta),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastAiScan: today,
+        },
+        { merge: true }
+      );
+    }
   }
 
   await batch.commit();
@@ -415,14 +370,27 @@ async function importStatementData({
     throw new Error("Nenhuma transacao encontrada no arquivo");
   }
 
-  const bank = providedBank || inferBankByPatterns(rawText || parsedTransactions.map((item) => item.description).join(" "));
-  const resolvedBankAccount = await resolveBankAccountTarget(familyId, bankAccountId, bank);
+  const bank = canonicalBankName(
+    providedBank || inferBankByPatterns(rawText || parsedTransactions.map((item) => item.description).join(" "))
+  );
+  const resolvedBankAccount = await resolveImportBankAccount({
+    familyId,
+    uid,
+    bank,
+    bankAccountId,
+  });
+  const today = new Date().toISOString().split("T")[0];
+
+  if (resolvedBankAccount.lastAiScan && resolvedBankAccount.lastAiScan === today) {
+    throw new Error("Limite de 1 extrato por dia atingido para este banco.");
+  }
+
   const shapedTransactions = parsedTransactions.map((transaction) =>
     shapeTransaction(transaction, {
       uid,
       familyId,
       bank,
-      bankAccountId: resolvedBankAccount.bankAccountId,
+      bankAccountId: resolvedBankAccount.bankAccountId || null,
       source: fileType === "csv" ? "csv_import" : "pdf_import",
     })
   );
@@ -439,7 +407,11 @@ async function importStatementData({
   return {
     bank,
     bankAccountId: resolvedBankAccount.bankAccountId,
+    bankAccountName: resolvedBankAccount.name || bank,
+    bankEmoji: resolvedBankAccount.emoji || null,
+    accountCreated: Boolean(resolvedBankAccount.created),
     transactionCount: storedTransactions.length,
+    count: storedTransactions.length,
     transactions: storedTransactions,
   };
 }
