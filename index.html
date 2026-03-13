@@ -1612,6 +1612,1022 @@
       white-space: pre-wrap;
       margin-top: 20px;
     }
+
+    /* === REDESIGN 2026 === */
+    :root {
+      --color-primary: #14b86a;
+      --color-primary-dark: #0f9f62;
+      --color-secondary: #1f8fff;
+      --color-danger: #ef4444;
+      --color-warning: #f59e0b;
+      --color-shell: rgba(10, 16, 29, 0.84);
+      --color-shell-border: rgba(148, 163, 184, 0.12);
+      --color-page-surface: #f3f7fb;
+      --color-surface: #ffffff;
+      --color-surface-soft: #f8fbff;
+      --color-surface-alt: #eef4fa;
+      --color-border-soft: #d8e2ee;
+      --color-text: #f7fbff;
+      --color-text-secondary: #9aabc2;
+      --color-ink: #10233e;
+      --color-ink-soft: #5e738f;
+      --shadow-soft: 0 24px 80px rgba(7, 14, 26, 0.16);
+      --shadow-card: 0 16px 48px rgba(15, 23, 42, 0.08);
+      --shell-gradient: radial-gradient(circle at top left, rgba(31, 143, 255, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(20, 184, 106, 0.18), transparent 26%),
+        linear-gradient(180deg, #0a1020 0%, #0f1730 44%, #101a37 100%);
+      --surface-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.96));
+    }
+
+    body {
+      background: var(--shell-gradient);
+      color: var(--color-text);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 85%);
+      opacity: 0.5;
+    }
+
+    .gradient-bg {
+      background: transparent;
+    }
+
+    main {
+      padding: 28px 24px 120px;
+    }
+
+    .container {
+      max-width: 1320px;
+    }
+
+    .card,
+    .card-glass,
+    .loan-card,
+    .list-item,
+    .ai-analysis-output,
+    .ai-chat-container,
+    #recent-transactions,
+    #future-commitments-table,
+    #report-content,
+    .initial-balance-card,
+    .loan-preview-box {
+      background: var(--surface-gradient);
+      border: 1px solid var(--color-border-soft);
+      box-shadow: var(--shadow-card);
+      color: var(--color-ink);
+      backdrop-filter: none;
+    }
+
+    .card:hover,
+    .loan-card:hover,
+    .list-item:hover {
+      border-color: rgba(20, 184, 106, 0.26);
+      box-shadow: 0 22px 56px rgba(20, 184, 106, 0.14);
+    }
+
+    .section-title,
+    .dash-section-title {
+      color: #eff6ff;
+      letter-spacing: -0.02em;
+    }
+
+    .section-description,
+    .dash-section-link {
+      color: #95b4d9;
+    }
+
+    .card .section-title,
+    .section-surface .section-title,
+    .loan-card .section-title {
+      color: var(--color-ink);
+    }
+
+    .card .section-description,
+    .section-surface .section-description,
+    .card .text-white,
+    .loan-card .text-white,
+    .list-item .text-white,
+    .card .text-slate-200,
+    .card .text-slate-100 {
+      color: var(--color-ink) !important;
+    }
+
+    .card .text-slate-400,
+    .card .text-slate-500,
+    .card .text-slate-300,
+    .loan-card .text-slate-400,
+    .loan-card .text-slate-500,
+    .list-item .text-slate-400,
+    .list-item .text-slate-500 {
+      color: var(--color-ink-soft) !important;
+    }
+
+    .dash-section-link {
+      font-weight: 700;
+    }
+
+    .input-field,
+    .input-dark,
+    textarea.input-field,
+    select.input-field,
+    select.input-dark {
+      background: #f8fbff;
+      border: 1px solid var(--color-border-soft);
+      color: var(--color-ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .input-field::placeholder,
+    .input-dark::placeholder {
+      color: #7890ad;
+    }
+
+    .input-field:focus,
+    .input-dark:focus {
+      border-color: rgba(20, 184, 106, 0.6);
+      box-shadow: 0 0 0 4px rgba(20, 184, 106, 0.12);
+    }
+
+    select.input-field,
+    select.input-dark {
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%2310233e" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 42px;
+    }
+
+    .btn {
+      border-radius: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #14b86a 0%, #0f9f62 100%);
+      box-shadow: 0 12px 28px rgba(20, 184, 106, 0.24);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 16px 32px rgba(20, 184, 106, 0.28);
+    }
+
+    .btn-secondary,
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(173, 194, 220, 0.18);
+      color: #eaf3ff;
+    }
+
+    .btn-secondary:hover,
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(20, 184, 106, 0.4);
+      color: #ffffff;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    header.app-topbar,
+    header.family-topbar,
+    nav.app-tabs-nav {
+      background: rgba(7, 12, 24, 0.8);
+      border-bottom: 1px solid var(--color-shell-border);
+      backdrop-filter: blur(26px);
+    }
+
+    header.app-topbar .container,
+    header.family-topbar .container {
+      padding: 18px 24px;
+    }
+
+    nav.app-tabs-nav {
+      top: 74px;
+    }
+
+    nav.app-tabs-nav .tabs {
+      padding: 12px 24px 16px;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.03);
+      color: #c1d5ef;
+      border: 1px solid transparent;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(20, 184, 106, 0.98), rgba(31, 143, 255, 0.98));
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 16px 34px rgba(20, 184, 106, 0.28);
+    }
+
+    .login-container {
+      padding: 32px;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(20, 184, 106, 0.28), transparent 24%),
+        radial-gradient(circle at 92% 18%, rgba(31, 143, 255, 0.22), transparent 28%),
+        linear-gradient(135deg, #09111f 0%, #101b35 46%, #0d1732 100%);
+    }
+
+    .auth-shell {
+      width: min(1240px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(380px, 440px);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .auth-visual-panel,
+    .family-hero-card,
+    .tab-intro-card,
+    .scanner-feature-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      border: 1px solid rgba(186, 204, 229, 0.18);
+      background: linear-gradient(145deg, rgba(246, 251, 255, 0.08), rgba(255, 255, 255, 0.03));
+      box-shadow: 0 30px 80px rgba(2, 8, 23, 0.34);
+    }
+
+    .auth-visual-panel {
+      min-height: 760px;
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(145deg, rgba(8, 16, 30, 0.88), rgba(18, 30, 57, 0.82)),
+        url('stitch/cash_control_split_screen_login/screen.png') center/cover;
+    }
+
+    .auth-visual-panel::before,
+    .tab-intro-card::before,
+    .scanner-feature-card::before,
+    .family-hero-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.62));
+      pointer-events: none;
+    }
+
+    .auth-visual-content,
+    .tab-intro-content,
+    .scanner-feature-content,
+    .family-hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-kicker,
+    .tab-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #d9e9fb;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .auth-visual-title,
+    .tab-intro-title {
+      margin: 18px 0 12px;
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: 1.02;
+      color: #ffffff;
+      letter-spacing: -0.04em;
+    }
+
+    .tab-intro-title {
+      font-size: clamp(28px, 3vw, 42px);
+    }
+
+    .auth-visual-description,
+    .tab-intro-description {
+      max-width: 560px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(226, 237, 253, 0.82);
+    }
+
+    .auth-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .auth-kpi-card {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .auth-kpi-label {
+      color: rgba(218, 234, 255, 0.72);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .auth-kpi-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.03em;
+    }
+
+    .auth-preview-stack {
+      position: relative;
+      display: grid;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .preview-window {
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 24px 54px rgba(2, 8, 23, 0.34);
+    }
+
+    .preview-window img,
+    .tab-intro-preview img,
+    .family-preview-grid img,
+    .hero-preview-card img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .preview-mini-grid,
+    .family-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .preview-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .preview-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e5f1ff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .auth-form-panel {
+      align-self: center;
+      width: 100%;
+      max-width: 440px;
+      padding: 34px;
+      border-radius: 32px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 248, 253, 0.93));
+      border: 1px solid rgba(203, 213, 225, 0.62);
+      box-shadow: 0 32px 72px rgba(2, 8, 23, 0.32);
+    }
+
+    .login-header {
+      text-align: left;
+      margin-bottom: 30px;
+    }
+
+    .login-logo {
+      margin: 0 0 18px 0;
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      box-shadow: 0 18px 38px rgba(20, 184, 106, 0.26);
+    }
+
+    .login-title {
+      font-size: 34px;
+      color: var(--color-ink);
+      letter-spacing: -0.04em;
+    }
+
+    .login-subtitle {
+      color: var(--color-ink-soft);
+      margin-top: 10px;
+      max-width: 340px;
+      line-height: 1.65;
+    }
+
+    .form-group label {
+      color: #30455f;
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+
+    #family-screen {
+      background: transparent;
+    }
+
+    .family-shell {
+      display: grid;
+      gap: 24px;
+    }
+
+    .family-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .family-hero-card {
+      min-height: 280px;
+      padding: 28px;
+      background: linear-gradient(145deg, rgba(9, 15, 28, 0.78), rgba(18, 28, 51, 0.86));
+    }
+
+    .family-hero-copy h2 {
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 18px 0 10px;
+      color: #fff;
+    }
+
+    .family-hero-copy p {
+      max-width: 540px;
+      color: rgba(221, 234, 253, 0.8);
+      line-height: 1.7;
+    }
+
+    .family-preview-grid {
+      margin-top: 24px;
+    }
+
+    #main-screen {
+      position: relative;
+    }
+
+    .dashboard-shell,
+    .finances-shell,
+    .commitments-shell,
+    .projections-shell,
+    .subscriptions-shell,
+    .analysis-shell {
+      display: grid;
+      gap: 24px;
+    }
+
+    .dash-hero {
+      padding: 30px;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at top right, rgba(31, 143, 255, 0.28), transparent 28%),
+        linear-gradient(140deg, rgba(12, 25, 47, 0.92), rgba(17, 112, 74, 0.88));
+      border: 1px solid rgba(182, 220, 205, 0.16);
+      box-shadow: 0 30px 90px rgba(4, 12, 28, 0.34);
+    }
+
+    .dash-hero-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 380px);
+      gap: 26px;
+      align-items: end;
+    }
+
+    .dash-hero-balance {
+      font-size: clamp(40px, 4.6vw, 64px);
+      letter-spacing: -0.05em;
+      margin-bottom: 14px;
+    }
+
+    .dash-hero-greeting {
+      font-size: 16px;
+    }
+
+    .dash-hero-stats {
+      gap: 14px;
+      margin-top: 22px;
+      padding-top: 18px;
+    }
+
+    .dash-hero-stat {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .dash-hero-preview {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .hero-preview-card {
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 18px 42px rgba(2, 8, 23, 0.26);
+    }
+
+    .hero-preview-note {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #eff6ff;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .dashboard-control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .scanner-feature-card {
+      padding: 24px;
+      background:
+        linear-gradient(140deg, rgba(245, 251, 255, 0.9), rgba(231, 247, 239, 0.88)),
+        url('stitch/professional_accounts_and_loans_view/screen.png') right center/cover;
+      border: 1px solid rgba(159, 197, 179, 0.36);
+    }
+
+    .scanner-feature-card::before {
+      background: linear-gradient(90deg, rgba(244, 251, 255, 0.98) 0%, rgba(244, 251, 255, 0.94) 56%, rgba(244, 251, 255, 0.55) 100%);
+    }
+
+    .scanner-feature-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .scanner-feature-meta {
+      max-width: 640px;
+    }
+
+    .scanner-feature-kicker {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #0f9f62;
+    }
+
+    .scanner-feature-title {
+      font-size: clamp(26px, 3vw, 36px);
+      color: var(--color-ink);
+      margin: 8px 0 10px;
+      letter-spacing: -0.04em;
+    }
+
+    .scanner-feature-description {
+      color: var(--color-ink-soft);
+      line-height: 1.75;
+      max-width: 560px;
+    }
+
+    .scanner-feature-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .dashboard-scan-feedback {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(16, 35, 62, 0.06);
+      color: #34506d;
+      border: 1px dashed rgba(52, 80, 109, 0.18);
+      font-weight: 600;
+    }
+
+    .dashboard-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .section-surface {
+      padding: 24px;
+      border-radius: 28px;
+      background: var(--surface-gradient);
+      border: 1px solid var(--color-border-soft);
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-surface .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-surface .section-heading h3 {
+      margin: 0;
+      font-size: 19px;
+      color: var(--color-ink);
+      letter-spacing: -0.03em;
+    }
+
+    .section-surface .section-heading p {
+      margin: 4px 0 0;
+      color: var(--color-ink-soft);
+      font-size: 13px;
+    }
+
+    .accounts-scroll {
+      gap: 16px;
+      padding: 4px 0 8px;
+    }
+
+    .account-card {
+      min-width: 220px;
+      padding: 18px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff, #f6faff);
+      border: 1px solid var(--color-border-soft);
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .account-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: var(--bank-accent, linear-gradient(135deg, #14b86a, #1f8fff));
+    }
+
+    .account-card-emoji {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .account-card-name {
+      color: var(--color-ink);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .account-card-bank {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--bank-soft, rgba(16, 185, 129, 0.12));
+      color: var(--bank-text, #0f9f62);
+      margin-bottom: 12px;
+    }
+
+    .account-card-balance {
+      color: var(--color-ink);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .account-card-meta {
+      margin-top: 4px;
+      color: var(--color-ink-soft);
+      font-size: 12px;
+    }
+
+    .account-card.add-card {
+      justify-content: center;
+      align-items: center;
+      color: #6d829e;
+      border-style: dashed;
+      background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(244,248,253,0.75));
+    }
+
+    .account-card.add-card:hover {
+      color: var(--color-primary);
+      background: linear-gradient(180deg, rgba(20,184,106,0.05), rgba(31,143,255,0.08));
+    }
+
+    .btn-grid-mobile {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+
+    .btn-grid-mobile .btn {
+      min-width: 140px;
+    }
+
+    .btn-grid-mobile .btn-primary {
+      box-shadow: 0 14px 24px rgba(20, 184, 106, 0.22);
+    }
+
+    .tab-intro-card {
+      padding: 26px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(260px, 360px);
+      gap: 24px;
+      align-items: center;
+      background: linear-gradient(145deg, rgba(11, 18, 34, 0.74), rgba(18, 28, 53, 0.88));
+    }
+
+    .tab-intro-preview {
+      position: relative;
+      z-index: 1;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 18px 46px rgba(2, 8, 23, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .list-item,
+    .loan-card {
+      border-radius: 22px;
+      padding: 18px 20px;
+    }
+
+    .list-item-title,
+    .loan-card .font-bold,
+    .loan-card strong {
+      color: var(--color-ink);
+    }
+
+    .list-item-subtitle,
+    .loan-card .text-xs,
+    .loan-card .text-sm,
+    #subscriptions-alert-text,
+    .future-table td,
+    .future-table th {
+      color: var(--color-ink-soft);
+    }
+
+    .future-table th {
+      border-bottom: 1px solid rgba(93, 117, 146, 0.18);
+    }
+
+    .future-table td {
+      border-bottom: 1px solid rgba(93, 117, 146, 0.12);
+    }
+
+    .future-table .month-col {
+      color: var(--color-ink);
+    }
+
+    .future-table .total-col {
+      color: #0f9f62;
+    }
+
+    .future-table .amount-col {
+      color: #d44f4f;
+    }
+
+    .report-export-buttons,
+    .ai-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .ai-chat-container {
+      min-height: 560px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #ffffff, #f7fbff);
+    }
+
+    .ai-chat-box {
+      padding: 22px;
+      background:
+        radial-gradient(circle at top right, rgba(31, 143, 255, 0.08), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,0.72), rgba(248,251,255,0.9));
+    }
+
+    .ai-message.bot {
+      background: #ffffff;
+      border: 1px solid rgba(152, 170, 194, 0.28);
+      color: var(--color-ink);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+    }
+
+    .ai-message.user {
+      box-shadow: 0 16px 28px rgba(20, 184, 106, 0.18);
+    }
+
+    .ai-chat-input-area {
+      padding: 18px;
+      background: rgba(241, 247, 252, 0.95);
+      border-top: 1px solid var(--color-border-soft);
+    }
+
+    .ai-chat-input {
+      background: #ffffff;
+      border: 1px solid var(--color-border-soft);
+      color: var(--color-ink);
+    }
+
+    .ai-analysis-output {
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .analysis-rich-card {
+      padding: 22px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff, #f7fbff);
+      border: 1px solid var(--color-border-soft);
+      box-shadow: var(--shadow-card);
+    }
+
+    .analysis-highlight-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(161, 177, 197, 0.22);
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,251,255,0.96));
+    }
+
+    .subscriptions-summary-card {
+      background:
+        radial-gradient(circle at top right, rgba(99,102,241,0.14), transparent 22%),
+        linear-gradient(180deg, #ffffff, #f7fbff);
+      border: 1px solid var(--color-border-soft);
+      box-shadow: var(--shadow-card);
+    }
+
+    .surface-empty-state {
+      padding: 28px;
+      border-radius: 22px;
+      border: 1px dashed rgba(120, 144, 173, 0.3);
+      background: rgba(247, 250, 255, 0.6);
+      text-align: center;
+      color: var(--color-ink-soft);
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #ffffff, #f7fbff);
+      border: 1px solid var(--color-border-soft);
+      box-shadow: 0 30px 80px rgba(2, 8, 23, 0.22);
+    }
+
+    .modal-title,
+    .modal-content label,
+    .modal-content .text-white,
+    .modal-content .font-bold {
+      color: var(--color-ink) !important;
+    }
+
+    .modal-content .text-slate-400,
+    .modal-content .text-slate-300,
+    .modal-content .text-slate-500 {
+      color: var(--color-ink-soft) !important;
+    }
+
+    .modal-close {
+      background: rgba(15, 35, 62, 0.06);
+      color: var(--color-ink);
+    }
+
+    .toast {
+      background: rgba(8, 14, 27, 0.94);
+      border-color: rgba(205, 220, 239, 0.16);
+    }
+
+    .fab {
+      background: linear-gradient(135deg, #14b86a 0%, #1f8fff 100%);
+      box-shadow: 0 24px 48px rgba(20, 184, 106, 0.24);
+    }
+
+    @media (max-width: 1024px) {
+      .auth-shell,
+      .family-grid,
+      .dash-hero-content,
+      .tab-intro-card,
+      .dashboard-grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-visual-panel {
+        min-height: auto;
+      }
+
+      .tab-intro-preview,
+      .dash-hero-preview {
+        max-width: 560px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 16px;
+      }
+
+      .auth-form-panel {
+        padding: 24px;
+        border-radius: 24px;
+      }
+
+      .auth-kpi-grid,
+      .preview-mini-grid,
+      .family-preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header.app-topbar .container,
+      header.family-topbar .container {
+        padding: 14px 16px;
+      }
+
+      nav.app-tabs-nav {
+        top: 64px;
+      }
+
+      nav.app-tabs-nav .tabs {
+        padding: 10px 16px 14px;
+      }
+
+      main {
+        padding: 18px 14px 100px;
+      }
+
+      .dash-hero,
+      .scanner-feature-card,
+      .tab-intro-card,
+      .section-surface {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .dash-hero-balance {
+        font-size: 38px;
+      }
+
+      .dash-hero-stats {
+        flex-direction: column;
+      }
+
+      .btn-grid-mobile .btn {
+        min-width: calc(50% - 5px);
+      }
+
+      .account-card {
+        min-width: 188px;
+      }
+
+      .scanner-feature-content {
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 
@@ -1620,94 +2636,140 @@
   <div id="app" class="min-h-full">
     <!-- Login Screen -->
     <div id="login-screen" class="login-container">
-      <div class="login-card card-glass">
-        <div class="login-header">
-          <div class="login-logo">💰</div>
-          <h1 class="login-title">Cash Control</h1>
-          <p class="login-subtitle">Gestão Financeira Familiar</p>
-        </div>
-
-        <div id="login-form">
-          <div class="form-group">
-            <label>📧 Email</label>
-            <input type="email" id="login-email" class="input-field w-full" placeholder="seu@email.com">
+      <div class="auth-shell">
+        <section class="auth-visual-panel">
+          <div class="auth-visual-content">
+            <span class="auth-kicker">Cash Control Studio</span>
+            <h2 class="auth-visual-title">Controle financeiro familiar com cara de produto premium.</h2>
+            <p class="auth-visual-description">
+              Entradas, despesas, contas, scanner de extrato, bancos e IA financeira em um fluxo único. O redesign usa
+              as referências do Stitch para entregar uma experiência mais clara, organizada e escaneável.
+            </p>
+            <div class="preview-chip-row">
+              <span class="preview-chip">Scanner único no dashboard</span>
+              <span class="preview-chip">Contas por banco</span>
+              <span class="preview-chip">Resumo financeiro com IA</span>
+            </div>
+            <div class="auth-kpi-grid">
+              <div class="auth-kpi-card">
+                <div class="auth-kpi-label">Fluxo</div>
+                <div class="auth-kpi-value">PDF → Firestore</div>
+              </div>
+              <div class="auth-kpi-card">
+                <div class="auth-kpi-label">Leitura</div>
+                <div class="auth-kpi-value">Mais limpa</div>
+              </div>
+              <div class="auth-kpi-card">
+                <div class="auth-kpi-label">Modo</div>
+                <div class="auth-kpi-value">Claro + Escuro</div>
+              </div>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>🔐 Senha</label>
-            <input type="password" id="login-password" class="input-field w-full" placeholder="••••••••">
+          <div class="auth-preview-stack auth-visual-content">
+            <div class="preview-window">
+              <img src="stitch/modernized_financial_dashboard/screen.png" alt="Preview do dashboard moderno do Cash Control">
+            </div>
+            <div class="preview-mini-grid">
+              <div class="preview-window">
+                <img src="stitch/refined_income_and_expense_management/screen.png" alt="Preview da área financeira">
+              </div>
+              <div class="preview-window">
+                <img src="stitch/ai_insights_and_subscription_management/screen.png" alt="Preview da IA financeira">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="login-card card-glass auth-form-panel">
+          <div class="login-header">
+            <div class="login-logo">💰</div>
+            <h1 class="login-title">Cash Control</h1>
+            <p class="login-subtitle">Gestão financeira familiar com scanner de extrato, contas por banco e inteligência financeira.</p>
           </div>
 
-          <div id="login-error"
-            class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+          <div id="login-form">
+            <div class="form-group">
+              <label>📧 Email</label>
+              <input type="email" id="login-email" class="input-field w-full" placeholder="seu@email.com">
+            </div>
 
-          <button onclick="handleLogin()" class="btn btn-primary w-full mb-3">
-            <span>🚀</span> Entrar
-          </button>
+            <div class="form-group">
+              <label>🔐 Senha</label>
+              <input type="password" id="login-password" class="input-field w-full" placeholder="••••••••">
+            </div>
 
-          <button type="button" onclick="showForgotPassword()" class="btn btn-outline w-full mb-3">
-            <span>🔑</span> Esqueceu a Senha?
-          </button>
+            <div id="login-error"
+              class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
 
-          <button onclick="showRegister()" class="btn btn-outline w-full">
-            <span>✨</span> Criar Conta
-          </button>
-        </div>
+            <button onclick="handleLogin()" class="btn btn-primary w-full mb-3">
+              <span>🚀</span> Entrar
+            </button>
 
-        <div id="register-form" class="hidden">
-          <div class="form-group">
-            <label>👤 Nome Completo</label>
-            <input type="text" id="register-name" class="input-field w-full" placeholder="Seu nome">
+            <button type="button" onclick="showForgotPassword()" class="btn btn-outline w-full mb-3">
+              <span>🔑</span> Esqueceu a Senha?
+            </button>
+
+            <button onclick="showRegister()" class="btn btn-outline w-full">
+              <span>✨</span> Criar Conta
+            </button>
           </div>
 
-          <div class="form-group">
-            <label>📧 Email</label>
-            <input type="email" id="register-email" class="input-field w-full" placeholder="seu@email.com">
+          <div id="register-form" class="hidden">
+            <div class="form-group">
+              <label>👤 Nome Completo</label>
+              <input type="text" id="register-name" class="input-field w-full" placeholder="Seu nome">
+            </div>
+
+            <div class="form-group">
+              <label>📧 Email</label>
+              <input type="email" id="register-email" class="input-field w-full" placeholder="seu@email.com">
+            </div>
+
+            <div class="form-group">
+              <label>🔐 Senha</label>
+              <input type="password" id="register-password" class="input-field w-full" placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <div id="register-error"
+              class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+
+            <button onclick="handleRegister()" class="btn btn-primary w-full mb-3">
+              <span>✨</span> Criar Conta
+            </button>
+
+            <button onclick="showLogin()" class="btn btn-outline w-full">
+              <span>←</span> Voltar
+            </button>
           </div>
 
-          <div class="form-group">
-            <label>🔐 Senha</label>
-            <input type="password" id="register-password" class="input-field w-full" placeholder="Mínimo 6 caracteres">
+          <div id="reset-form" class="hidden">
+            <div class="form-group">
+              <label>📧 Email</label>
+              <input type="email" id="reset-email" class="input-field w-full" placeholder="seu@email.com">
+            </div>
+
+            <div id="reset-message"
+              class="hidden mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400 text-sm"></div>
+
+            <div id="reset-error"
+              class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+
+            <button onclick="handlePasswordReset()" class="btn btn-primary w-full mb-3">
+              <span>📩</span> Enviar Link de Reset
+            </button>
+
+            <button onclick="showLogin()" class="btn btn-outline w-full">
+              <span>←</span> Voltar
+            </button>
           </div>
-
-          <div id="register-error"
-            class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
-
-          <button onclick="handleRegister()" class="btn btn-primary w-full mb-3">
-            <span>✨</span> Criar Conta
-          </button>
-
-          <button onclick="showLogin()" class="btn btn-outline w-full">
-            <span>←</span> Voltar
-          </button>
-        </div>
-
-        <div id="reset-form" class="hidden">
-          <div class="form-group">
-            <label>📧 Email</label>
-            <input type="email" id="reset-email" class="input-field w-full" placeholder="seu@email.com">
-          </div>
-
-          <div id="reset-message"
-            class="hidden mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400 text-sm"></div>
-
-          <div id="reset-error"
-            class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
-
-          <button onclick="handlePasswordReset()" class="btn btn-primary w-full mb-3">
-            <span>📩</span> Enviar Link de Reset
-          </button>
-
-          <button onclick="showLogin()" class="btn btn-outline w-full">
-            <span>←</span> Voltar
-          </button>
         </div>
       </div>
     </div>
 
     <!-- Family Selection Screen -->
     <div id="family-screen" class="hidden min-h-screen">
-      <header>
+      <header class="family-topbar">
         <div class="container">
           <div class="header-left">
             <div class="header-brand">
@@ -1725,26 +2787,54 @@
       </header>
 
       <main>
-        <div class="container">
-          <div class="section">
-            <h2 class="section-title">📋 Suas Famílias</h2>
-            <div id="family-list" class="space-y-3">
-              <p class="text-slate-400">Carregando...</p>
+        <div class="container family-shell">
+          <section class="family-hero-card">
+            <div class="family-hero-content">
+              <div class="family-hero-copy">
+                <span class="auth-kicker">Espaço colaborativo</span>
+                <h2>Organize a vida financeira da sua família em um app só.</h2>
+                <p>
+                  Escolha uma família existente ou crie uma nova estrutura para começar com contas, extratos,
+                  transações, relatórios e análises de IA baseadas nos dados salvos.
+                </p>
+              </div>
+              <div class="family-preview-grid">
+                <div class="preview-window">
+                  <img src="stitch/modernized_financial_dashboard/screen.png" alt="Preview do dashboard do Cash Control">
+                </div>
+                <div class="preview-window">
+                  <img src="stitch/interactive_divisions_and_goals_dashboard/screen.png" alt="Preview de metas e divisões">
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div class="section card rounded-2xl p-8">
-            <h3 class="section-title">➕ Criar Nova Família</h3>
-            <p class="section-description">Crie uma família para começar a gerenciar suas finanças juntos</p>
-
-            <div class="form-group">
-              <label>Nome da Família</label>
-              <input type="text" id="new-family-name" class="input-field w-full" placeholder="Ex: Fonseca">
+          <div class="family-grid">
+            <div class="section section-surface">
+              <div class="section-heading">
+                <div>
+                  <h3>📋 Suas Famílias</h3>
+                  <p>Selecione um ambiente para continuar.</p>
+                </div>
+              </div>
+              <div id="family-list" class="space-y-3">
+                <p class="text-slate-400">Carregando...</p>
+              </div>
             </div>
 
-            <button onclick="createFamily()" class="btn btn-primary w-full">
-              <span>🎯</span> Criar Família
-            </button>
+            <div class="section card rounded-2xl p-8">
+              <h3 class="section-title">➕ Criar Nova Família</h3>
+              <p class="section-description">Crie uma família para começar a gerenciar suas finanças juntos</p>
+
+              <div class="form-group">
+                <label>Nome da Família</label>
+                <input type="text" id="new-family-name" class="input-field w-full" placeholder="Ex: Fonseca">
+              </div>
+
+              <button onclick="createFamily()" class="btn btn-primary w-full">
+                <span>🎯</span> Criar Família
+              </button>
+            </div>
           </div>
         </div>
       </main>
@@ -1753,7 +2843,7 @@
     <!-- Main App Screen -->
     <div id="main-screen" class="hidden flex flex-col min-h-screen">
       <!-- Header -->
-      <header>
+      <header class="app-topbar">
         <div class="container">
           <div class="header-left">
             <button onclick="goToFamilySelection()" class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0">←</button>
@@ -1776,7 +2866,7 @@
       </header>
 
       <!-- Navigation Tabs -->
-      <nav>
+      <nav class="app-tabs-nav">
         <div class="container">
           <div class="tabs">
             <button onclick="switchTab('dashboard')" class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
@@ -1825,38 +2915,50 @@
         <div class="container">
           <!-- Dashboard Tab -->
           <div id="tab-dashboard" class="tab-content">
-            <div class="section">
+            <div class="section dashboard-shell">
 
               <!-- Hero Card -->
               <div class="dash-hero" id="dash-hero-card">
-                <div style="position:relative;z-index:1;">
-                  <p class="dash-hero-greeting">Olá, <span id="dash-hero-name">Usuário</span>! 👋</p>
-                  <p style="font-size:12px;opacity:0.7;margin-bottom:8px;" id="dash-hero-date"></p>
-                  <p style="font-size:13px;opacity:0.8;">Saldo total disponível</p>
-                  <p class="dash-hero-balance" id="dash-balance">R$ 0,00</p>
-                  <p class="balance-prev-badge" id="dash-balance-prev-badge" style="margin-bottom:4px;"></p>
-                  <div class="dash-hero-stats">
-                    <div class="dash-hero-stat">
-                      <p class="dash-hero-stat-label">Entradas</p>
-                      <p class="dash-hero-stat-value success" id="dash-total-income">R$ 0,00</p>
-                      <p style="font-size:10px;opacity:0.6;" id="dash-income-period">Este mês</p>
+                <div class="dash-hero-content">
+                  <div style="position:relative;z-index:1;">
+                    <p class="dash-hero-greeting">Olá, <span id="dash-hero-name">Usuário</span>! 👋</p>
+                    <p style="font-size:12px;opacity:0.7;margin-bottom:8px;" id="dash-hero-date"></p>
+                    <p style="font-size:13px;opacity:0.8;">Saldo total disponível</p>
+                    <p class="dash-hero-balance" id="dash-balance">R$ 0,00</p>
+                    <p class="balance-prev-badge" id="dash-balance-prev-badge" style="margin-bottom:4px;"></p>
+                    <div class="dash-hero-stats">
+                      <div class="dash-hero-stat">
+                        <p class="dash-hero-stat-label">Entradas</p>
+                        <p class="dash-hero-stat-value success" id="dash-total-income">R$ 0,00</p>
+                        <p style="font-size:10px;opacity:0.6;" id="dash-income-period">Este mês</p>
+                      </div>
+                      <div class="dash-hero-stat">
+                        <p class="dash-hero-stat-label">Despesas</p>
+                        <p class="dash-hero-stat-value danger" id="dash-total-expenses">R$ 0,00</p>
+                        <p style="font-size:10px;opacity:0.6;" id="dash-expenses-period">Este mês</p>
+                      </div>
+                      <div class="dash-hero-stat">
+                        <p class="dash-hero-stat-label">Pendências</p>
+                        <p class="dash-hero-stat-value danger" id="dash-commitments-total">R$ 0,00</p>
+                        <p style="font-size:10px;opacity:0.6;" id="dash-balance-period">Próx. mês</p>
+                      </div>
                     </div>
-                    <div class="dash-hero-stat">
-                      <p class="dash-hero-stat-label">Despesas</p>
-                      <p class="dash-hero-stat-value danger" id="dash-total-expenses">R$ 0,00</p>
-                      <p style="font-size:10px;opacity:0.6;" id="dash-expenses-period">Este mês</p>
+                  </div>
+
+                  <div class="dash-hero-preview">
+                    <div class="hero-preview-card">
+                      <img src="stitch/modernized_financial_dashboard/screen.png" alt="Preview do dashboard redesenhado">
                     </div>
-                    <div class="dash-hero-stat">
-                      <p class="dash-hero-stat-label">Pendências</p>
-                      <p class="dash-hero-stat-value danger" id="dash-commitments-total">R$ 0,00</p>
-                      <p style="font-size:10px;opacity:0.6;" id="dash-balance-period">Próx. mês</p>
+                    <div class="hero-preview-note">
+                      O dashboard agora centraliza o scanner de extrato, as contas por banco e os principais resumos em
+                      um fluxo único.
                     </div>
                   </div>
                 </div>
               </div>
 
               <!-- Filtro de Período -->
-              <div class="flex items-center justify-between mb-3">
+              <div class="dashboard-control-row">
                 <label class="text-sm text-slate-400">Período:</label>
                 <select id="dashboard-period" onchange="updateDashboardByPeriod()" class="input-field"
                   style="width:auto;padding:6px 12px;font-size:13px;">
@@ -1879,14 +2981,16 @@
                 </div>
               </div>
 
-              <div class="card rounded-2xl p-5 mb-5 border-dashed border-2 border-emerald-500/25 bg-emerald-500/5">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <p class="text-sm font-semibold text-emerald-300 mb-1">Extrato bancario</p>
-                    <h3 class="text-lg font-bold text-white mb-1">Scanner unico de extrato</h3>
-                    <p class="text-sm text-slate-400">Importe PDF ou CSV. O sistema detecta o banco, cria a conta se precisar e envia as transacoes para ela.</p>
+              <div class="scanner-feature-card">
+                <div class="scanner-feature-content">
+                  <div class="scanner-feature-meta">
+                    <div>
+                      <p class="scanner-feature-kicker">Extrato bancário</p>
+                      <h3 class="scanner-feature-title">Scanner único de extrato</h3>
+                      <p class="scanner-feature-description">Importe PDF ou CSV. O sistema detecta o banco, cria a conta se precisar e envia as transações para ela automaticamente.</p>
+                    </div>
                   </div>
-                  <div class="flex flex-col sm:flex-row gap-3">
+                  <div class="scanner-feature-actions">
                     <input type="file" id="dashboard-statement-upload" accept=".pdf,.csv" class="hidden"
                       onchange="uploadExtractForAI(event)">
                     <button onclick="document.getElementById('dashboard-statement-upload').click()" class="btn btn-primary px-6">
@@ -1894,7 +2998,7 @@
                     </button>
                   </div>
                 </div>
-                <div id="dashboard-scan-feedback" class="mt-4 text-sm text-slate-400">
+                <div id="dashboard-scan-feedback" class="dashboard-scan-feedback">
                   Nenhum extrato importado nesta sessao.
                 </div>
               </div>
@@ -1910,21 +3014,25 @@
                   title="Adicionar conta">+</div>
               </div>
 
-              <!-- Transações Recentes -->
-              <div class="dash-section-header">
-                <p class="dash-section-title">📋 Últimas Transações</p>
-                <span class="dash-section-link" onclick="switchTab('finances');">Ver tudo ›</span>
-              </div>
-              <div class="card rounded-2xl p-3 mb-5" id="recent-transactions">
-                <p class="text-slate-400 text-center py-4">Nenhuma transação</p>
-              </div>
+              <div class="dashboard-grid-2">
+                <div>
+                  <div class="dash-section-header">
+                    <p class="dash-section-title">📋 Últimas Transações</p>
+                    <span class="dash-section-link" onclick="switchTab('finances');">Ver tudo ›</span>
+                  </div>
+                  <div class="card rounded-2xl p-3 mb-5" id="recent-transactions">
+                    <p class="text-slate-400 text-center py-4">Nenhuma transação</p>
+                  </div>
+                </div>
 
-              <!-- Próximas Pendências -->
-              <div class="dash-section-header">
-                <p class="dash-section-title">📅 Próximas Pendências</p>
-              </div>
-              <div class="card rounded-2xl p-4 mb-5" id="future-commitments-table">
-                <p class="text-slate-400 text-center py-4">Carregando...</p>
+                <div>
+                  <div class="dash-section-header">
+                    <p class="dash-section-title">📅 Próximas Pendências</p>
+                  </div>
+                  <div class="card rounded-2xl p-4 mb-5" id="future-commitments-table">
+                    <p class="text-slate-400 text-center py-4">Carregando...</p>
+                  </div>
+                </div>
               </div>
 
               <!-- Gráfico de Categorias -->
@@ -1945,12 +3053,26 @@
 
           <!-- Finances Tab -->
           <div id="tab-finances" class="tab-content hidden">
+            <div class="tab-intro-card mb-6">
+              <div class="tab-intro-content">
+                <span class="tab-kicker">Operação financeira</span>
+                <h2 class="tab-intro-title">Entradas, despesas, contas e relatórios com leitura muito mais limpa.</h2>
+                <p class="tab-intro-description">
+                  A área financeira foi reorganizada para priorizar formulário, histórico e leitura por banco em uma
+                  estrutura inspirada nas referências do Stitch.
+                </p>
+              </div>
+              <div class="tab-intro-preview">
+                <img src="stitch/refined_income_and_expense_management/screen.png" alt="Preview da área financeira do Cash Control">
+              </div>
+            </div>
+
             <div class="btn-grid-mobile mt-4">
-              <button onclick="setFinanceView('income')" class="btn btn-secondary">📥 Entradas</button>
-              <button onclick="setFinanceView('expenses')" class="btn btn-secondary">📤 Despesas</button>
-              <button onclick="setFinanceView('accounts')" class="btn btn-secondary">🏦 Contas</button>
-              <button onclick="setFinanceView('loans')" class="btn btn-secondary">💳 Empréstimos</button>
-              <button onclick="setFinanceView('report')" class="btn btn-secondary col-span-2">📊 Relatório</button>
+              <button onclick="setFinanceView('income')" class="btn btn-secondary" data-view="income">📥 Entradas</button>
+              <button onclick="setFinanceView('expenses')" class="btn btn-secondary" data-view="expenses">📤 Despesas</button>
+              <button onclick="setFinanceView('accounts')" class="btn btn-secondary" data-view="accounts">🏦 Contas</button>
+              <button onclick="setFinanceView('loans')" class="btn btn-secondary" data-view="loans">💳 Empréstimos</button>
+              <button onclick="setFinanceView('report')" class="btn btn-secondary col-span-2" data-view="report">📊 Relatório</button>
             </div>
 
             <!-- Income View -->
@@ -2275,6 +3397,19 @@
 
           <!-- Commitments Tab -->
           <div id="tab-commitments" class="tab-content hidden">
+            <div class="tab-intro-card mb-6">
+              <div class="tab-intro-content">
+                <span class="tab-kicker">Divisões</span>
+                <h2 class="tab-intro-title">Distribua a renda da família com um painel mais claro e orientado por metas.</h2>
+                <p class="tab-intro-description">
+                  A nova apresentação destaca percentuais, blocos de compromisso e valores calculados sem sacrificar a
+                  lógica atual do produto.
+                </p>
+              </div>
+              <div class="tab-intro-preview">
+                <img src="stitch/interactive_divisions_and_goals_dashboard/screen.png" alt="Preview das divisões e metas">
+              </div>
+            </div>
             <div class="section">
               <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <div>
@@ -2390,6 +3525,19 @@
 
           <!-- Projections Tab -->
           <div id="tab-projections" class="tab-content hidden">
+            <div class="tab-intro-card mb-6">
+              <div class="tab-intro-content">
+                <span class="tab-kicker">Objetivos</span>
+                <h2 class="tab-intro-title">Acompanhe metas e acompanhe evolução com uma interface mais orientada a progresso.</h2>
+                <p class="tab-intro-description">
+                  O redesenho aproxima objetivos, histórico e opções de investimento em um fluxo mais produto e menos
+                  bloco solto.
+                </p>
+              </div>
+              <div class="tab-intro-preview">
+                <img src="stitch/interactive_divisions_and_goals_dashboard/screen.png" alt="Preview da tela de objetivos">
+              </div>
+            </div>
             <div class="section">
               <div class="flex items-center justify-between mb-4">
                 <h2 class="section-title mb-0">🎯 Meus Objetivos</h2>
@@ -2424,6 +3572,18 @@
 
           <!-- Subscriptions Tab -->
           <div id="tab-subscriptions" class="tab-content hidden">
+            <div class="tab-intro-card mb-6">
+              <div class="tab-intro-content">
+                <span class="tab-kicker">Assinaturas</span>
+                <h2 class="tab-intro-title">Visualize recorrências com mais contexto e mais clareza de impacto mensal.</h2>
+                <p class="tab-intro-description">
+                  A interface agora aproxima total mensal, alertas e a lista de recorrências em uma única leitura.
+                </p>
+              </div>
+              <div class="tab-intro-preview">
+                <img src="stitch/ai_insights_and_subscription_management/screen.png" alt="Preview da área de assinaturas">
+              </div>
+            </div>
             <div class="section">
               <div class="flex items-center justify-between mb-4">
                 <h2 class="section-title mb-0">🔄 Minhas Assinaturas</h2>
@@ -2431,7 +3591,7 @@
               </div>
 
               <!-- Card de Resumo -->
-              <div class="card rounded-2xl p-5 mb-5"
+              <div class="card subscriptions-summary-card rounded-2xl p-5 mb-5"
                 style="background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08)); border-color:rgba(99,102,241,0.3);">
                 <div class="flex items-center justify-between mb-3">
                   <div>
@@ -2457,6 +3617,19 @@
 
           <!-- AI Analysis Tab -->
           <div id="tab-ai_analysis" class="tab-content hidden">
+            <div class="tab-intro-card mb-6">
+              <div class="tab-intro-content">
+                <span class="tab-kicker">IA financeira</span>
+                <h2 class="tab-intro-title">Resumo inteligente e chat ancorados nas transações já salvas.</h2>
+                <p class="tab-intro-description">
+                  O upload de extrato foi retirado desta área. Agora a IA consome apenas os dados estruturados do
+                  scanner único no dashboard.
+                </p>
+              </div>
+              <div class="tab-intro-preview">
+                <img src="stitch/ai_insights_and_subscription_management/screen.png" alt="Preview da análise da IA">
+              </div>
+            </div>
             <div class="section">
               <h2 class="section-title">🤖 Análise Financeira da IA</h2>
               <p class="text-sm text-slate-400 mb-6">O extrato agora é importado pelo scanner unico do Dashboard. A IA usa somente as transacoes salvas para montar o resumo e responder no chat.
@@ -2468,7 +3641,7 @@
                   <span class="text-emerald-400">⚡</span> Resumo Inteligente
                 </h3>
                 <div id="ai-insights-output" class="ai-analysis-output mb-8">
-                  <p class="text-slate-400 text-center p-4">Importe um extrato no Dashboard para atualizar este resumo automaticamente.</p>
+                  <div class="analysis-rich-card text-slate-500 text-center p-6">Importe um extrato no Dashboard para atualizar este resumo automaticamente.</div>
                 </div>
 
                 <h3 class="text-lg font-bold text-white mt-8 mb-4 flex items-center gap-2">
@@ -4508,14 +5681,14 @@
     }
 
     const BANK_VISUALS = {
-      nubank: { value: 'Nubank', label: 'Nubank', emoji: '🟣' },
-      inter: { value: 'Inter', label: 'Inter', emoji: '🟠' },
-      itau: { value: 'Itau', label: 'Itaú', emoji: '🟦🟨' },
-      santander: { value: 'Santander', label: 'Santander', emoji: '🔴' },
-      bradesco: { value: 'Bradesco', label: 'Bradesco', emoji: '🔺' },
-      caixa: { value: 'Caixa', label: 'Caixa', emoji: '🟦' },
-      outro: { value: 'Outro', label: 'Outro', emoji: '🏦' },
-      'banco nao definido': { value: 'Banco nao definido', label: 'Banco nao definido', emoji: '🏦' }
+      nubank: { value: 'Nubank', label: 'Nubank', emoji: '🟣', accent: '#7c3aed', soft: 'rgba(124, 58, 237, 0.12)', text: '#6d28d9' },
+      inter: { value: 'Inter', label: 'Inter', emoji: '🟠', accent: '#f97316', soft: 'rgba(249, 115, 22, 0.14)', text: '#c2410c' },
+      itau: { value: 'Itau', label: 'Itaú', emoji: '🟦🟨', accent: '#2563eb', soft: 'rgba(37, 99, 235, 0.12)', text: '#1d4ed8' },
+      santander: { value: 'Santander', label: 'Santander', emoji: '🔴', accent: '#dc2626', soft: 'rgba(220, 38, 38, 0.12)', text: '#b91c1c' },
+      bradesco: { value: 'Bradesco', label: 'Bradesco', emoji: '🔺', accent: '#e11d48', soft: 'rgba(225, 29, 72, 0.12)', text: '#be123c' },
+      caixa: { value: 'Caixa', label: 'Caixa', emoji: '🟦', accent: '#0ea5e9', soft: 'rgba(14, 165, 233, 0.12)', text: '#0369a1' },
+      outro: { value: 'Outro', label: 'Outro', emoji: '🏦', accent: '#64748b', soft: 'rgba(100, 116, 139, 0.12)', text: '#475569' },
+      'banco nao definido': { value: 'Banco nao definido', label: 'Banco nao definido', emoji: '🏦', accent: '#64748b', soft: 'rgba(100, 116, 139, 0.12)', text: '#475569' }
     };
 
     function normalizeBankNameLocal(bank) {
@@ -4546,6 +5719,20 @@
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase();
       return BANK_VISUALS[key]?.emoji || '🏦';
+    }
+
+    function getBankThemeMeta(bank) {
+      const normalized = normalizeBankNameLocal(bank);
+      const key = normalized
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+      return BANK_VISUALS[key] || BANK_VISUALS.outro;
+    }
+
+    function getBankThemeStyle(bank) {
+      const meta = getBankThemeMeta(bank);
+      return `--bank-accent:${meta.accent};--bank-soft:${meta.soft};--bank-text:${meta.text};`;
     }
 
     function normalizeBankAccountRecord(record) {
@@ -4618,7 +5805,7 @@
       if (!container) return;
 
       if (errorMessage) {
-        container.innerHTML = `<div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-red-300">${escapeHTML(errorMessage)}</div>`;
+        container.innerHTML = `<div class="analysis-highlight-card" style="border-color:rgba(239,68,68,0.2);background:linear-gradient(180deg,rgba(239,68,68,0.12),rgba(255,255,255,0.98));color:#b91c1c;">${escapeHTML(errorMessage)}</div>`;
         return;
       }
 
@@ -4633,12 +5820,12 @@
       const createdLabel = data.accountCreated ? 'Conta criada automaticamente' : 'Conta existente reutilizada';
 
       container.innerHTML = `
-        <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-slate-200">
-          <div class="font-semibold text-white mb-1">✅ Extrato importado</div>
-          <div><span class="text-slate-400">Banco:</span> ${escapeHTML(bankLabel)}</div>
-          <div><span class="text-slate-400">Conta destino:</span> ${escapeHTML(accountName)}</div>
-          <div><span class="text-slate-400">Transacoes:</span> ${transactionCount}</div>
-          <div><span class="text-slate-400">Status:</span> ${escapeHTML(createdLabel)}</div>
+        <div class="analysis-highlight-card" style="border-color:rgba(20,184,106,0.24);background:linear-gradient(180deg,rgba(20,184,106,0.12),rgba(255,255,255,0.98));">
+          <div class="font-semibold text-slate-900 mb-2">✅ Extrato importado</div>
+          <div class="text-slate-700"><span class="text-slate-500">Banco:</span> ${escapeHTML(bankLabel)}</div>
+          <div class="text-slate-700"><span class="text-slate-500">Conta destino:</span> ${escapeHTML(accountName)}</div>
+          <div class="text-slate-700"><span class="text-slate-500">Transações:</span> ${transactionCount}</div>
+          <div class="text-slate-700"><span class="text-slate-500">Status:</span> ${escapeHTML(createdLabel)}</div>
         </div>
       `;
     }
@@ -7530,7 +8717,7 @@
         if (!container) return;
 
         if (bankAccountsCache.length === 0) {
-          container.innerHTML = '<p class="text-slate-400 text-center py-8">Nenhuma conta cadastrada</p>';
+          container.innerHTML = '<div class="surface-empty-state">Nenhuma conta cadastrada ainda. Crie a primeira conta bancária para começar a organizar as movimentações por banco.</div>';
           return;
         }
 
@@ -7553,15 +8740,20 @@
         const html = bankAccountsCache.map(acc => {
           const txBalance = balanceByAccount[acc.id] || 0;
           const total = (acc.initialBalance || 0) + txBalance;
+          const bankLabel = getBankDisplayName(acc.bank);
           return `
-            <div class="loan-card flex items-center gap-4">
-              <span style="font-size:28px;">${acc.emoji}</span>
+            <div class="loan-card flex items-center gap-4" style="${getBankThemeStyle(acc.bank)}">
+              <div class="flex items-center justify-center rounded-2xl" style="width:56px;height:56px;background:var(--bank-soft);font-size:28px;">${acc.emoji}</div>
               <div class="flex-1">
-                <p class="font-bold text-white">${acc.name}</p>
-                <p class="text-xs text-slate-400">${getBankDisplayName(acc.bank)} • Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <p class="font-bold text-white">${acc.name}</p>
+                  <span class="account-card-bank">${bankLabel}</span>
+                </div>
+                <p class="text-xs text-slate-400">Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
               </div>
               <div class="text-right">
                 <p class="font-bold text-lg ${total < 0 ? 'text-red-400' : 'text-emerald-400'}">${formatCurrency(total)}</p>
+                <p class="text-xs text-slate-400 mt-1">Saldo atual</p>
               </div>
               <div class="flex items-center gap-2">
                 <button onclick="openEditBankAccountModal('${acc.id}')" class="text-emerald-400 hover:text-emerald-300">✏️</button>
@@ -7623,12 +8815,14 @@
       const cards = bankAccountsCache.map(acc => {
         const txBalance = balanceByAccount[acc.id] || 0;
         const total = (acc.initialBalance || 0) + txBalance;
+        const bankLabel = getBankDisplayName(acc.bank);
         return `
-          <div class="account-card">
+          <div class="account-card" style="${getBankThemeStyle(acc.bank)}">
             <div class="account-card-emoji">${acc.emoji}</div>
             <div class="account-card-name">${acc.name}</div>
-            <div class="text-[11px] text-slate-400 mt-1">${getBankDisplayName(acc.bank)}</div>
+            <div class="account-card-bank">${bankLabel}</div>
             <div class="account-card-balance ${total < 0 ? 'negative' : ''}">${formatCurrency(total)}</div>
+            <div class="account-card-meta">Saldo inicial ${formatCurrency(acc.initialBalance || 0)}</div>
           </div>
         `;
       }).join('');
@@ -7903,7 +9097,7 @@
       const subscriptions = await getSubscriptions();
 
       if (subscriptions.length === 0) {
-        listEl.innerHTML = '<p class="text-slate-400 text-center py-8">Nenhuma assinatura cadastrada</p>';
+        listEl.innerHTML = '<div class="surface-empty-state">Nenhuma assinatura cadastrada. Adicione serviços recorrentes para acompanhar o peso mensal desse bloco.</div>';
         if (totalEl) totalEl.textContent = 'R$ 0,00';
         if (alertEl) alertEl.classList.add('hidden');
         return;
@@ -7926,14 +9120,14 @@
         return `
           <div class="list-item" style="animation: slideInUp 0.3s ease-out;">
             <div class="flex items-center gap-3 flex-1 min-w-0">
-              <span class="text-2xl flex-shrink-0">${icon}</span>
+              <span class="text-2xl flex-shrink-0 flex items-center justify-center rounded-2xl" style="width:52px;height:52px;background:rgba(99,102,241,0.1);">${icon}</span>
               <div class="flex-1 min-w-0">
                 <p class="list-item-title">${sub.name || 'Sem nome'}</p>
                 <p class="list-item-subtitle">${sub.category || 'outros'} ${renewDay ? '• Renova ' + renewDay : ''}</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
-              <span class="text-base font-bold text-purple-400">${formatCurrency(Number(sub.amount) || 0)}</span>
+              <span class="text-base font-bold text-purple-500">${formatCurrency(Number(sub.amount) || 0)}</span>
               <button onclick="deleteSubscription('${sub.id}')" class="list-item-btn" style="color:#ef4444;" title="Remover">🗑️</button>
             </div>
           </div>`;
@@ -8627,12 +9821,12 @@
 
     function renderFallbackAnalysisCard(text) {
       return `
-        <div class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-5">
-          <div class="flex items-center gap-2 mb-3 text-slate-200 font-semibold">
-            <span class="text-indigo-400">🧾</span>
+        <div class="analysis-rich-card">
+          <div class="flex items-center gap-2 mb-3 text-slate-800 font-semibold">
+            <span class="text-indigo-500">🧾</span>
             <span>Resumo da IA</span>
           </div>
-          <div class="text-slate-300 leading-7 whitespace-pre-line">${escapeHTML(text || 'Sem resposta da IA')}</div>
+          <div class="text-slate-600 leading-7 whitespace-pre-line">${escapeHTML(text || 'Sem resposta da IA')}</div>
         </div>
       `;
     }
@@ -8659,22 +9853,22 @@
 
       const categoryHtml = (topCategories.length ? topCategories : [{ name: 'Sem dados', amount: 0 }])
         .map((item) => `
-          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 px-4 py-3 flex items-center justify-between gap-3">
-            <div class="text-slate-200 font-medium">${escapeHTML(item.name || 'Outros')}</div>
-            <div class="text-slate-100 font-semibold">${formatCurrencyBRL(item.amount)}</div>
+          <div class="analysis-highlight-card flex items-center justify-between gap-3">
+            <div class="text-slate-700 font-medium">${escapeHTML(item.name || 'Outros')}</div>
+            <div class="text-slate-900 font-semibold">${formatCurrencyBRL(item.amount)}</div>
           </div>
         `)
         .join('');
 
       const renderItemCards = (items, accentClass, icon) => {
         if (!items.length) {
-          return `<div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 px-4 py-3 text-slate-400">Sem itens para este bloco.</div>`;
+          return `<div class="analysis-highlight-card text-slate-500">Sem itens para este bloco.</div>`;
         }
 
         return items.map((item) => `
-          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 px-4 py-3 flex items-start gap-3">
+          <div class="analysis-highlight-card flex items-start gap-3">
             <span class="${accentClass} mt-0.5">${icon}</span>
-            <span class="text-slate-200 leading-6">${escapeHTML(item)}</span>
+            <span class="text-slate-700 leading-6">${escapeHTML(item)}</span>
           </div>
         `).join('');
       };
@@ -8682,16 +9876,16 @@
       outputDiv.innerHTML = `
         <div class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+            <div class="analysis-highlight-card" style="border-color:rgba(20,184,106,0.18);background:linear-gradient(180deg,rgba(20,184,106,0.12),rgba(255,255,255,0.96));">
               <div class="text-emerald-300 text-sm font-medium mb-2">📈 Entradas</div>
               <div class="text-2xl font-bold text-emerald-400">${formatCurrencyBRL(summary.income)}</div>
             </div>
-            <div class="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4">
+            <div class="analysis-highlight-card" style="border-color:rgba(244,63,94,0.18);background:linear-gradient(180deg,rgba(244,63,94,0.10),rgba(255,255,255,0.96));">
               <div class="text-rose-300 text-sm font-medium mb-2">📉 Saídas</div>
               <div class="text-2xl font-bold text-rose-400">${formatCurrencyBRL(summary.expense)}</div>
             </div>
-            <div class="rounded-2xl border border-slate-600/60 bg-slate-900/40 p-4">
-              <div class="text-slate-300 text-sm font-medium mb-2">💰 Saldo</div>
+            <div class="analysis-highlight-card">
+              <div class="text-slate-500 text-sm font-medium mb-2">💰 Saldo</div>
               <div class="text-2xl font-bold ${balanceClass}">${formatCurrencyBRL(balance)}</div>
             </div>
           </div>
@@ -8729,12 +9923,12 @@
           </div>
 
           ${narrative ? `
-            <div class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-5">
-              <div class="text-slate-200 font-semibold mb-2 flex items-center gap-2">
+            <div class="analysis-rich-card">
+              <div class="text-slate-800 font-semibold mb-2 flex items-center gap-2">
                 <span class="text-cyan-400">🧠</span>
                 <span>Leitura da IA</span>
               </div>
-              <div class="text-slate-300 leading-7 whitespace-pre-line">${escapeHTML(narrative)}</div>
+              <div class="text-slate-600 leading-7 whitespace-pre-line">${escapeHTML(narrative)}</div>
             </div>
           ` : ''}
         </div>
@@ -8757,9 +9951,9 @@
         const date = item.date ? item.date.split('-').reverse().join('/') : '';
         const bankLabel = getBankDisplayName(item.bank || '');
         return `
-          <div class="rounded-xl border border-slate-700/60 bg-slate-950/40 px-3 py-2">
-            <div class="text-slate-100 text-sm font-medium">${escapeHTML(item.description || 'Sem descrição')}</div>
-            <div class="text-slate-400 text-xs mt-1">${escapeHTML(date)} • ${escapeHTML(bankLabel)} • ${escapeHTML(item.category || 'outros')}</div>
+          <div class="analysis-highlight-card" style="padding:14px 16px;">
+            <div class="text-slate-800 text-sm font-medium">${escapeHTML(item.description || 'Sem descrição')}</div>
+            <div class="text-slate-500 text-xs mt-1">${escapeHTML(date)} • ${escapeHTML(bankLabel)} • ${escapeHTML(item.category || 'outros')}</div>
             <div class="${amountClass} text-sm font-semibold mt-2">${sign}${formatCurrencyBRL(item.amount)}</div>
           </div>
         `;
@@ -8787,11 +9981,11 @@
       const outputDiv = document.getElementById('ai-insights-output');
 
       if (!auth.currentUser) {
-        outputDiv.innerHTML = '<p class="text-slate-400 text-center p-4">Faça login para ver seus insights financeiros.</p>';
+        outputDiv.innerHTML = '<div class="analysis-rich-card text-slate-500 text-center p-6">Faça login para ver seus insights financeiros.</div>';
         return;
       }
 
-      outputDiv.innerHTML = '<p class="text-slate-400 animate-pulse text-center p-4">🤖 Analisando seus dados financeiros... aguarde.</p>';
+      outputDiv.innerHTML = '<div class="analysis-rich-card text-slate-500 animate-pulse text-center p-6">🤖 Analisando seus dados financeiros... aguarde.</div>';
 
       try {
         const token = await auth.currentUser.getIdToken();
@@ -8838,7 +10032,7 @@
         renderAIAnalysis(data);
       } catch (error) {
         console.error('Erro fetchAIAnalysis:', error);
-        outputDiv.innerHTML = '<p class="text-red-400 text-center p-4">❌ ' + error.message + '</p>';
+        outputDiv.innerHTML = '<div class="analysis-rich-card text-red-500 text-center p-6">❌ ' + error.message + '</div>';
       }
     }
 
