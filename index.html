@@ -3264,6 +3264,24 @@
       font-size: 13px !important;
     }
 
+    .finance-columns {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.08fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .finance-column {
+      display: grid;
+      gap: 24px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    #finance-income {
+      display: block;
+    }
+
     #finance-income,
     #finance-accounts,
     #finance-loans,
@@ -3703,6 +3721,77 @@
       letter-spacing: -0.01em;
     }
 
+    .stitch-date-cell {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: #698096 !important;
+      min-width: 108px;
+    }
+
+    .stitch-page input[type="date"].input-field {
+      min-height: 52px;
+      font-variant-numeric: tabular-nums;
+      color: #12263f;
+      color-scheme: light;
+    }
+
+    .stitch-page input[type="date"].input-field::-webkit-calendar-picker-indicator {
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .stitch-page input[type="date"].input-field::-webkit-datetime-edit {
+      color: #12263f;
+    }
+
+    .stitch-page input[type="date"].input-field:invalid::-webkit-datetime-edit {
+      color: #8aa0b6;
+    }
+
+    .stitch-allocation-summary {
+      display: grid;
+      gap: 10px;
+      min-width: 210px;
+    }
+
+    .stitch-allocation-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .stitch-allocation-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      border: 1px solid #e1e9f1;
+      background: #f8fbfe;
+      color: #31465f;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .stitch-allocation-chip strong {
+      font-size: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .stitch-allocation-details {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stitch-disclosure.stitch-disclosure-inline summary {
+      padding: 8px 12px;
+      font-size: 11px;
+      background: #ffffff;
+    }
+
     .stitch-disclosure {
       display: grid;
       gap: 12px;
@@ -3799,6 +3888,7 @@
       #finance-report,
       #tab-commitments,
       #tab-projections,
+      .finance-columns,
       .stitch-ai-shell {
         grid-template-columns: 1fr;
       }
@@ -4368,42 +4458,47 @@
 
             <!-- Income View -->
             <div id="finance-income" class="finance-content">
-              <div class="section">
-                <div class="flex items-center justify-between mb-4">
-                  <h2 class="section-title mb-0">💼 Meus Salários</h2>
-                  <button onclick="openModal('salary')" class="btn btn-primary px-4 py-2 text-sm">➕ Novo</button>
-                </div>
-                <div id="salaries-list" class="space-y-3">
-                  <p class="text-slate-400 text-center py-8">Nenhum salário cadastrado</p>
-                </div>
-              </div>
-
-              <div class="section">
-                <h2 class="section-title">➕ Ganho Extra</h2>
-                <div class="card stitch-form-card rounded-2xl p-6">
-                  <div class="stitch-form-title">Add New Income</div>
-                  <div class="form-row">
-                    <input type="text" id="extra-income-desc" class="input-field" placeholder="Descrição">
-                    <select id="income-category" class="input-field">
-                      <option value="salario">💰 Salário</option>
-                    </select>
-                    <input type="number" id="extra-income-amount" class="input-field" placeholder="Valor">
-                    <input type="date" id="extra-income-date" class="input-field">
+              <div class="finance-columns">
+                <div class="finance-column">
+                  <div class="section">
+                    <div class="flex items-center justify-between mb-4">
+                      <h2 class="section-title mb-0">💼 Meus Salários</h2>
+                      <button onclick="openModal('salary')" class="btn btn-primary px-4 py-2 text-sm">➕ Novo</button>
+                    </div>
+                    <div id="salaries-list" class="space-y-3">
+                      <p class="text-slate-400 text-center py-8">Nenhum salário cadastrado</p>
+                    </div>
                   </div>
-                  <div class="mt-3">
-                    <label class="block text-sm text-slate-400 mb-1">🏦 Conta bancária</label>
-                    <select id="income-account" class="input-field w-full">
-                      <option value="">Selecione uma conta bancária</option>
-                    </select>
-                  </div>
-                  <button onclick="addExtraIncome()" class="btn btn-primary w-full mt-3">➕ Adicionar</button>
-                </div>
-              </div>
 
-              <div class="section">
-                <h2 class="section-title">📜 Histórico de Entradas</h2>
-                <div id="income-history" class="space-y-3">
-                  <p class="text-slate-400 text-center py-8">Nenhuma entrada</p>
+                  <div class="section">
+                    <h2 class="section-title">➕ Ganho Extra</h2>
+                    <div class="card stitch-form-card rounded-2xl p-6">
+                      <div class="stitch-form-title">Add New Income</div>
+                      <div class="form-row">
+                        <input type="text" id="extra-income-desc" class="input-field" placeholder="Descrição">
+                        <select id="income-category" class="input-field">
+                          <option value="salario">💰 Salário</option>
+                        </select>
+                        <input type="number" id="extra-income-amount" class="input-field" placeholder="Valor">
+                        <input type="date" id="extra-income-date" class="input-field">
+                      </div>
+                      <div class="mt-3">
+                        <label class="block text-sm text-slate-400 mb-1">🏦 Conta bancária</label>
+                        <select id="income-account" class="input-field w-full">
+                          <option value="">Selecione uma conta bancária</option>
+                        </select>
+                      </div>
+                      <button onclick="addExtraIncome()" class="btn btn-primary w-full mt-3">➕ Adicionar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="finance-column">
+                  <div class="section">
+                    <h2 class="section-title">📜 Histórico de Entradas</h2>
+                    <div id="income-history" class="space-y-3">
+                      <p class="text-slate-400 text-center py-8">Nenhuma entrada</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -6821,10 +6916,11 @@
           const formatCurr = (typeof formatCurrency === 'function') ? formatCurrency : (v) => 'R$ ' + v.toFixed(2);
           const account = findBankAccountInCache(getTransactionAccountId(inc));
           const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(inc.bank || 'Banco não definido');
+          const allocationItems = buildIncomeAllocationItems(expensesAmount, investAmount, titheAmount, emergencyAmount);
 
           return `
             <tr>
-              <td class="muted">${formatDisplayDate(inc.date)}</td>
+              <td class="muted stitch-date-cell">${formatDisplayDate(inc.date)}</td>
               <td>
                 <div style="display:grid;gap:4px;">
                   <strong style="font-size:14px;">${escapeHTML(inc.description || 'Sem descrição')}</strong>
@@ -6832,30 +6928,7 @@
                 </div>
               </td>
               <td class="muted">${escapeHTML(bankLabel)}</td>
-              <td>
-                <div class="stitch-mini-metrics" style="grid-template-columns:repeat(2,minmax(0,1fr));">
-                  <div class="stitch-mini-metric">
-                    <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.expenses || 'Despesas')}</div>
-                    <div class="stitch-mini-metric-value stitch-value-negative">${formatCurr(expensesAmount)}</div>
-                  </div>
-                  <div class="stitch-mini-metric">
-                    <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.invest || 'Investimentos')}</div>
-                    <div class="stitch-mini-metric-value" style="color:#1d4ed8;">${formatCurr(investAmount)}</div>
-                  </div>
-                  ${tithePercent > 0 ? `
-                    <div class="stitch-mini-metric">
-                      <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.tithe || 'Dízimo')}</div>
-                      <div class="stitch-mini-metric-value" style="color:#7c3aed;">${formatCurr(titheAmount)}</div>
-                    </div>
-                  ` : ''}
-                  ${emergencyPercent > 0 ? `
-                    <div class="stitch-mini-metric">
-                      <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.emergency || 'Reserva')}</div>
-                      <div class="stitch-mini-metric-value" style="color:#d97706;">${formatCurr(emergencyAmount)}</div>
-                    </div>
-                  ` : ''}
-                </div>
-              </td>
+              <td>${renderIncomeAllocationSummary(allocationItems)}</td>
               <td class="align-right stitch-value-positive">+${formatCurr(inc.amount)}</td>
               <td class="align-right">
                 <div class="stitch-row-actions">
@@ -6928,7 +7001,7 @@
 
           return `
             <tr data-category="${exp.category || 'outros'}">
-              <td class="muted">${formatDisplayDate(exp.date)}</td>
+              <td class="muted stitch-date-cell">${formatDisplayDate(exp.date)}</td>
               <td>
                 <div style="display:grid;gap:4px;">
                   <strong style="font-size:14px;">${escapeHTML(exp.description || 'Sem descrição')}</strong>
@@ -7662,7 +7735,7 @@
                   <tbody>
                     ${rows.map(transaction => `
                       <tr>
-                        <td class="muted">${escapeHTML(formatDisplayDate(transaction.date))}</td>
+                        <td class="muted stitch-date-cell">${escapeHTML(formatDisplayDate(transaction.date))}</td>
                         <td>${escapeHTML(transaction.description || 'Sem descrição')}</td>
                         <td class="muted">${escapeHTML(getCategoryLabelForReport(transaction.category))}</td>
                         <td><span class="stitch-badge ${transaction.type === 'income' ? 'stitch-badge-success' : 'stitch-badge-danger'}">${transaction.type === 'income' ? 'Entrada' : 'Saída'}</span></td>
@@ -8985,7 +9058,7 @@
                 const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(tx.bank || 'Banco não definido');
                 return `
                   <tr>
-                    <td class="muted">${formatDisplayDate(tx.date)}</td>
+                    <td class="muted stitch-date-cell">${formatDisplayDate(tx.date)}</td>
                     <td>
                       <div style="display:grid;gap:4px;">
                         <strong style="font-size:14px;">${escapeHTML(tx.description || tx.type)}</strong>
@@ -11463,6 +11536,50 @@
         valueClass: isIncome ? 'stitch-value-positive' : 'stitch-value-negative',
         badgeClass: isIncome ? 'stitch-badge-success' : 'stitch-badge-danger'
       };
+    }
+
+    function buildIncomeAllocationItems(expensesAmount, investAmount, titheAmount, emergencyAmount) {
+      return [
+        { label: commitmentLabels.expenses || 'Despesas', amount: expensesAmount, color: '#b91c1c' },
+        { label: commitmentLabels.invest || 'Investimentos', amount: investAmount, color: '#1d4ed8' },
+        ...(titheAmount > 0 ? [{ label: commitmentLabels.tithe || 'Dízimo', amount: titheAmount, color: '#7c3aed' }] : []),
+        ...(emergencyAmount > 0 ? [{ label: commitmentLabels.emergency || 'Reserva', amount: emergencyAmount, color: '#d97706' }] : [])
+      ];
+    }
+
+    function renderIncomeAllocationSummary(items) {
+      const visibleItems = items.slice(0, 2);
+      const remainingItems = items.slice(2);
+
+      return `
+        <div class="stitch-allocation-summary">
+          <div class="stitch-allocation-chips">
+            ${visibleItems.map(item => `
+              <span class="stitch-allocation-chip">
+                <span>${escapeHTML(item.label)}</span>
+                <strong style="color:${item.color};">${formatCurrency(item.amount)}</strong>
+              </span>
+            `).join('')}
+            ${remainingItems.length ? `<span class="stitch-badge stitch-badge-soft">+${remainingItems.length}</span>` : ''}
+          </div>
+          ${remainingItems.length ? `
+            <details class="stitch-disclosure stitch-disclosure-inline">
+              <summary>
+                <span class="when-closed">Ver rateio</span>
+                <span class="when-open">Ocultar rateio</span>
+              </summary>
+              <div class="stitch-allocation-details">
+                ${items.map(item => `
+                  <span class="stitch-allocation-chip">
+                    <span>${escapeHTML(item.label)}</span>
+                    <strong style="color:${item.color};">${formatCurrency(item.amount)}</strong>
+                  </span>
+                `).join('')}
+              </div>
+            </details>
+          ` : ''}
+        </div>
+      `;
     }
 
     function renderActionIconButton(label, onclick, danger = false) {
