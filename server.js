@@ -18,6 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 import analysisHandler from './api/analysis.js';
+import importCSVHandler from './api/importCSV.js';
+import importStatementHandler from './api/importStatement.js';
+import bankReportHandler from './api/report/banks.js';
+import transactionsHandler from './api/transactions.js';
 import uploadPDFHandler from './api/uploadPDF.js';
 import resetPasswordHandler from './api/resetPassword.js';
 
@@ -31,7 +35,12 @@ async function runHandler(handler, req, res, label) {
 }
 
 // Primary API routes (same shape used in production on Vercel)
+app.get('/api/analysis', async (req, res) => runHandler(analysisHandler, req, res, 'analysis'));
 app.post('/api/analysis', async (req, res) => runHandler(analysisHandler, req, res, 'analysis'));
+app.post('/api/importCSV', async (req, res) => runHandler(importCSVHandler, req, res, 'importCSV'));
+app.post('/api/importStatement', async (req, res) => runHandler(importStatementHandler, req, res, 'importStatement'));
+app.get('/api/report/banks', async (req, res) => runHandler(bankReportHandler, req, res, 'reportBanks'));
+app.post('/api/transactions', async (req, res) => runHandler(transactionsHandler, req, res, 'transactions'));
 app.post('/api/uploadPDF', async (req, res) => runHandler(uploadPDFHandler, req, res, 'uploadPDF'));
 app.post('/api/resetPassword', async (req, res) => runHandler(resetPasswordHandler, req, res, 'resetPassword'));
 app.get('/api/config', (req, res) => {
@@ -40,7 +49,12 @@ app.get('/api/config', (req, res) => {
 });
 
 // Backward-compatible aliases
+app.get('/analysis', async (req, res) => runHandler(analysisHandler, req, res, 'analysis'));
 app.post('/analysis', async (req, res) => runHandler(analysisHandler, req, res, 'analysis'));
+app.post('/importCSV', async (req, res) => runHandler(importCSVHandler, req, res, 'importCSV'));
+app.post('/importStatement', async (req, res) => runHandler(importStatementHandler, req, res, 'importStatement'));
+app.get('/report/banks', async (req, res) => runHandler(bankReportHandler, req, res, 'reportBanks'));
+app.post('/transactions', async (req, res) => runHandler(transactionsHandler, req, res, 'transactions'));
 app.post('/uploadPDF', async (req, res) => runHandler(uploadPDFHandler, req, res, 'uploadPDF'));
 app.post('/resetPassword', async (req, res) => runHandler(resetPasswordHandler, req, res, 'resetPassword'));
 app.get('/config', (req, res) => {

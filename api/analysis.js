@@ -1,107 +1,54 @@
-import admin from "firebase-admin";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-function getFirebaseCredential() {
-  const rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!rawServiceAccount) return null;
-
-  try {
-    return admin.credential.cert(JSON.parse(rawServiceAccount));
-  } catch (error) {
-    throw new Error("Variavel de ambiente FIREBASE_SERVICE_ACCOUNT invalida");
-  }
-}
-
-const firebaseCredential = getFirebaseCredential();
-
-if (!admin.apps.length) {
-  if (firebaseCredential) {
-    admin.initializeApp({
-      credential: firebaseCredential,
-    });
-  } else {
-    admin.initializeApp();
-  }
-}
-const db = admin.firestore();
-
-function getGeminiClient() {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("Variavel de ambiente GEMINI_API_KEY nao configurada");
-  }
-  return new GoogleGenerativeAI(apiKey);
-}
-
-function getGeminiModelName() {
-  return process.env.GEMINI_MODEL || "gemini-2.5-flash";
-}
+import { aggregateTransactions, fetchTransactionsForScope, saveAiReport } from "./_lib/analytics.js";
+import { getGeminiModel } from "./_lib/gemini.js";
+import { resolveFamilyId, verifyRequest } from "./_lib/firebase.js";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
+  if (req.method !== "GET" && req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  if (!firebaseCredential && process.env.VERCEL) {
-    return res.status(500).json({ error: "Variavel de ambiente FIREBASE_SERVICE_ACCOUNT nao configurada" });
-  }
-
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.split("Bearer ")[1] : null;
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  let uid;
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
-    uid = decoded.uid;
-  } catch (err) {
-    console.error("Invalid token", err);
-    return res.status(401).json({ error: "Invalid token" });
-  }
-
-  try {
-    const body = req.body || {};
-    const { familyId } = body;
-
-    let query;
-    if (familyId) {
-      query = db.collection("transactions").where("familyId", "==", familyId);
-    } else {
-      query = db.collection("transactions").where("userId", "==", uid);
-    }
-
-    const snap = await query.get();
-    const transactions = [];
-    snap.forEach((doc) => {
-      transactions.push(doc.data());
+    const context = await verifyRequest(req);
+    const familyId = resolveFamilyId(req, context);
+    const transactions = await fetchTransactionsForScope({
+      uid: context.uid,
+      familyId,
     });
 
-    const genAI = getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: getGeminiModelName() });
+    const summary = aggregateTransactions(transactions);
+    const model = getGeminiModel();
+    const prompt = `Voce e um analista financeiro de uma plataforma familiar.
 
-    const prompt = `
-Analise as seguintes transacoes financeiras e forneca:
+Dados resumidos:
+${JSON.stringify(summary, null, 2)}
 
+Retorne:
 1. resumo financeiro
-2. categorias com maiores gastos
-3. possiveis excessos
-4. recomendacoes para economizar
-5. sugestoes para melhorar a saude financeira
+2. principais padroes de gasto
+3. alertas de risco
+4. sugestoes praticas para economizar
 
-Transacoes:
-${JSON.stringify(transactions, null, 2)}
-
-Retorne o resultado em texto claro para o usuario.
-`;
+Responda em portugues claro e objetivo.`;
 
     const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    res.status(200).json({ analysis: text });
+    const analysis = result.response.text();
+    const reportId = await saveAiReport({
+      familyId,
+      uid: context.uid,
+      summary,
+      analysis,
+    });
+
+    return res.status(200).json({
+      analysis,
+      summary,
+      reportId,
+    });
   } catch (error) {
-    console.error("analysis error", error);
-    const message = error && error.message ? error.message : "Erro na analise";
-    res.status(500).json({ error: message });
+    const status =
+      error && (error.message === "Unauthorized" || error.message === "Invalid token") ? 401 : 500;
+    return res.status(status).json({
+      error: error && error.message ? error.message : "Erro na analise",
+    });
   }
 }

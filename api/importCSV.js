@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     req.body = {
       ...(req.body || {}),
-      fileType: req.body && req.body.csvBase64 ? "csv" : "pdf",
+      fileType: "csv",
     };
   }
 
