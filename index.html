@@ -3155,6 +3155,10 @@
       background: linear-gradient(90deg, #21b19c, #49c46b);
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     /* === STITCH TABS FINAL PASS === */
     .stitch-page {
       background: linear-gradient(180deg, #f9fbfe 0%, #eef3f8 100%);
@@ -3697,6 +3701,68 @@
       color: #12263f;
       font-size: 15px;
       letter-spacing: -0.01em;
+    }
+
+    .stitch-disclosure {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stitch-disclosure summary {
+      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid #d9e4ef;
+      background: #f7fafc;
+      color: #20344f;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .stitch-disclosure summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .stitch-disclosure .when-open {
+      display: none;
+    }
+
+    .stitch-disclosure[open] .when-open {
+      display: inline;
+    }
+
+    .stitch-disclosure[open] .when-closed {
+      display: none;
+    }
+
+    .stitch-disclosure-preview {
+      color: #61758d;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
+    .stitch-disclosure-content {
+      display: none;
+      color: #61758d;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
+    .stitch-disclosure[open] .stitch-disclosure-preview {
+      display: none;
+    }
+
+    .stitch-disclosure[open] .stitch-disclosure-content {
+      display: block;
     }
 
     #recent-transactions,
@@ -11335,6 +11401,33 @@
       `;
     }
 
+    function renderCollapsibleText(text, options = {}) {
+      const rawText = String(text || '').trim();
+      if (!rawText) return '';
+
+      const previewChars = Number(options.previewChars || 320);
+      const moreLabel = options.moreLabel || 'Ver mais';
+      const lessLabel = options.lessLabel || 'Ocultar';
+      const className = options.className || '';
+
+      if (rawText.length <= previewChars) {
+        return `<div class="${className}" style="white-space:pre-line;">${escapeHTML(rawText)}</div>`;
+      }
+
+      const preview = `${rawText.slice(0, previewChars).trim()}...`;
+
+      return `
+        <details class="stitch-disclosure">
+          <summary>
+            <span class="when-closed">${escapeHTML(moreLabel)}</span>
+            <span class="when-open">${escapeHTML(lessLabel)}</span>
+          </summary>
+          <div class="stitch-disclosure-preview ${className}">${escapeHTML(preview)}</div>
+          <div class="stitch-disclosure-content ${className}">${escapeHTML(rawText)}</div>
+        </details>
+      `;
+    }
+
     function formatDisplayDate(dateStr) {
       if (!dateStr) return '—';
       if (typeof formatDate === 'function') return formatDate(dateStr);
@@ -11383,7 +11476,12 @@
             <span class="text-indigo-500">🧾</span>
             <span>Resumo da IA</span>
           </div>
-          <div class="text-slate-600 leading-7 whitespace-pre-line">${escapeHTML(text || 'Sem resposta da IA')}</div>
+          ${renderCollapsibleText(text || 'Sem resposta da IA', {
+            previewChars: 260,
+            moreLabel: 'Ler resumo completo',
+            lessLabel: 'Ocultar resumo',
+            className: 'text-slate-600 leading-7'
+          })}
         </div>
       `;
     }
@@ -11491,7 +11589,12 @@
                 <span class="text-cyan-400">🧠</span>
                 <span>Leitura da IA</span>
               </div>
-              <div class="text-slate-600 leading-7 whitespace-pre-line">${escapeHTML(narrative)}</div>
+              ${renderCollapsibleText(narrative, {
+                previewChars: 420,
+                moreLabel: 'Ler análise completa',
+                lessLabel: 'Ocultar análise',
+                className: 'text-slate-600 leading-7'
+              })}
             </div>
           ` : ''}
         </div>
@@ -11531,13 +11634,18 @@
     }
 
     function renderBotChatMessage(payload) {
-      const answer = escapeHTML(payload.answer || payload.analysis || 'Sem resposta').replace(/\n/g, '<br>');
+      const answerText = payload.answer || payload.analysis || 'Sem resposta';
       const evidenceHtml = renderChatEvidence(payload.evidence);
       const badge = payload.deterministic
         ? '<span class="inline-flex items-center rounded-full bg-emerald-500/15 text-emerald-300 text-[11px] px-2 py-1 mb-3">Baseado nos dados salvos</span>'
         : '<span class="inline-flex items-center rounded-full bg-indigo-500/15 text-indigo-300 text-[11px] px-2 py-1 mb-3">Resposta assistida por IA</span>';
 
-      return `${badge}<div class="leading-6">${answer}</div>${evidenceHtml}`;
+      return `${badge}${renderCollapsibleText(answerText, {
+        previewChars: 280,
+        moreLabel: 'Ler resposta completa',
+        lessLabel: 'Ocultar resposta',
+        className: 'leading-6'
+      })}${evidenceHtml}`;
     }
 
     async function fetchAIAnalysis() {
@@ -11668,7 +11776,15 @@
         msgDiv.innerHTML = renderBotChatMessage(payload);
       } else {
         const text = String(payload || '');
-        msgDiv.innerHTML = escapeHTML(text).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+        if (sender === 'bot' && text.length > 280) {
+          msgDiv.innerHTML = renderCollapsibleText(text, {
+            previewChars: 280,
+            moreLabel: 'Ler resposta completa',
+            lessLabel: 'Ocultar resposta'
+          });
+        } else {
+          msgDiv.innerHTML = escapeHTML(text).replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+        }
       }
       chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
