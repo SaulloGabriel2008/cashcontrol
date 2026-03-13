@@ -22,6 +22,7 @@ import askPDFHandler from './api/askPDF.js';
 import importCSVHandler from './api/importCSV.js';
 import importStatementHandler from './api/importStatement.js';
 import bankReportHandler from './api/report/banks.js';
+import bankTransactionsReportHandler from './api/report/bank-transactions.js';
 import transactionsHandler from './api/transactions.js';
 import uploadPDFHandler from './api/uploadPDF.js';
 import resetPasswordHandler from './api/resetPassword.js';
@@ -42,6 +43,8 @@ app.post('/api/askPDF', async (req, res) => runHandler(askPDFHandler, req, res, 
 app.post('/api/importCSV', async (req, res) => runHandler(importCSVHandler, req, res, 'importCSV'));
 app.post('/api/importStatement', async (req, res) => runHandler(importStatementHandler, req, res, 'importStatement'));
 app.get('/api/report/banks', async (req, res) => runHandler(bankReportHandler, req, res, 'reportBanks'));
+app.get('/api/report/bank-transactions', async (req, res) => runHandler(bankTransactionsReportHandler, req, res, 'reportBankTransactions'));
+app.post('/api/transactions/create', async (req, res) => runHandler(transactionsHandler, req, res, 'transactionsCreate'));
 app.post('/api/transactions', async (req, res) => runHandler(transactionsHandler, req, res, 'transactions'));
 app.post('/api/uploadPDF', async (req, res) => runHandler(uploadPDFHandler, req, res, 'uploadPDF'));
 app.post('/api/resetPassword', async (req, res) => runHandler(resetPasswordHandler, req, res, 'resetPassword'));
@@ -57,6 +60,8 @@ app.post('/askPDF', async (req, res) => runHandler(askPDFHandler, req, res, 'ask
 app.post('/importCSV', async (req, res) => runHandler(importCSVHandler, req, res, 'importCSV'));
 app.post('/importStatement', async (req, res) => runHandler(importStatementHandler, req, res, 'importStatement'));
 app.get('/report/banks', async (req, res) => runHandler(bankReportHandler, req, res, 'reportBanks'));
+app.get('/report/bank-transactions', async (req, res) => runHandler(bankTransactionsReportHandler, req, res, 'reportBankTransactions'));
+app.post('/transactions/create', async (req, res) => runHandler(transactionsHandler, req, res, 'transactionsCreate'));
 app.post('/transactions', async (req, res) => runHandler(transactionsHandler, req, res, 'transactions'));
 app.post('/uploadPDF', async (req, res) => runHandler(uploadPDFHandler, req, res, 'uploadPDF'));
 app.post('/resetPassword', async (req, res) => runHandler(resetPasswordHandler, req, res, 'resetPassword'));

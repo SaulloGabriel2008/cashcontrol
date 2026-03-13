@@ -24,16 +24,14 @@ export default async function handler(req, res) {
         bank: entry.bank,
         name: entry.name,
         emoji: entry.emoji,
-        income: entry.income,
-        expense: entry.expense,
-        balance: entry.balance,
+        transactions: entry.transactions,
       })),
     });
   } catch (error) {
     const status =
       error && (error.message === "Unauthorized" || error.message === "Invalid token") ? 401 : 500;
     return res.status(status).json({
-      error: error && error.message ? error.message : "Erro ao gerar relatorio por banco",
+      error: error && error.message ? error.message : "Erro ao listar transacoes por banco",
     });
   }
 }

@@ -3,5 +3,11 @@
     "api/**/*.js": {
       "includeFiles": "node_modules/protobufjs/**/*"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/transactions/create",
+      "destination": "/api/transactions"
+    }
+  ]
 }

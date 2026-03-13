@@ -314,6 +314,7 @@ function shapeTransaction(rawTransaction, context) {
     familyId: context.familyId || null,
     userId: context.uid,
     bankAccountId: context.bankAccountId || null,
+    accountId: context.bankAccountId || null,
     bank: context.bank,
     date: rawTransaction.date,
     description: cleanDescription(rawTransaction.description),
@@ -323,7 +324,7 @@ function shapeTransaction(rawTransaction, context) {
     subscription: false,
     installmentNumber: installment.installmentNumber,
     installmentTotal: installment.installmentTotal,
-    source: "pdf_import",
+    source: context.source || "pdf_import",
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 }
@@ -422,6 +423,7 @@ async function importStatementData({
       familyId,
       bank,
       bankAccountId: resolvedBankAccount.bankAccountId,
+      source: fileType === "csv" ? "csv_import" : "pdf_import",
     })
   );
 

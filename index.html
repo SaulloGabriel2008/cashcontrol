@@ -1957,9 +1957,9 @@
                     <input type="date" id="extra-income-date" class="input-field">
                   </div>
                   <div class="mt-3">
-                    <label class="block text-sm text-slate-400 mb-1">🏦 Conta (opcional)</label>
+                    <label class="block text-sm text-slate-400 mb-1">🏦 Conta bancária</label>
                     <select id="income-account" class="input-field w-full">
-                      <option value="">Sem conta específica</option>
+                      <option value="">Selecione uma conta bancária</option>
                     </select>
                   </div>
                   <button onclick="addExtraIncome()" class="btn btn-primary w-full mt-3">➕ Adicionar</button>
@@ -2043,9 +2043,9 @@
 
                   <!-- Conta bancária -->
                   <div>
-                    <label class="block text-sm text-slate-400 mb-1">🏦 Conta (opcional)</label>
+                    <label class="block text-sm text-slate-400 mb-1">🏦 Conta bancária</label>
                     <select id="expense-account" class="input-field w-full">
-                      <option value="">Sem conta específica</option>
+                      <option value="">Selecione uma conta bancária</option>
                     </select>
                   </div>
 
@@ -2089,8 +2089,20 @@
                     <div style="flex:3;">
                       <label class="block text-sm font-semibold text-slate-300 mb-2">Nome da Conta</label>
                       <input type="text" id="account-name" class="input-field w-full"
-                        placeholder="Ex: Nubank, Caixa, C6...">
+                        placeholder="Ex: Conta Principal">
                     </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-semibold text-slate-300 mb-2">🏛️ Banco</label>
+                    <select id="account-bank" class="input-field w-full">
+                      <option value="Nubank">Nubank</option>
+                      <option value="Inter">Inter</option>
+                      <option value="Itaú">Itaú</option>
+                      <option value="Santander">Santander</option>
+                      <option value="Bradesco">Bradesco</option>
+                      <option value="Caixa">Caixa</option>
+                      <option value="Outro">Outro</option>
+                    </select>
                   </div>
                   <div>
                     <label class="block text-sm font-semibold text-slate-300 mb-2">💰 Saldo Inicial (R$)</label>
@@ -4460,6 +4472,109 @@
     // Income Functions
     // Satisfaction functionality removed
 
+    async function getAuthTokenOrThrow() {
+      if (!auth?.currentUser) {
+        throw new Error('Usuário não autenticado');
+      }
+      return auth.currentUser.getIdToken();
+    }
+
+    async function fetchJsonWithAuth(url, options = {}) {
+      const token = await getAuthTokenOrThrow();
+      const headers = {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${token}`
+      };
+      const response = await fetch(url, {
+        ...options,
+        headers
+      });
+
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json')
+        ? await response.json().catch(() => ({}))
+        : await response.text().catch(() => '');
+
+      if (!response.ok) {
+        const message = typeof data === 'string'
+          ? data
+          : data?.error || `Erro ${response.status}`;
+        throw new Error(message);
+      }
+
+      return data;
+    }
+
+    function getTransactionAccountId(transaction) {
+      return transaction?.bankAccountId || transaction?.accountId || '';
+    }
+
+    function normalizeBankAccountRecord(record) {
+      return {
+        id: record.id,
+        familyId: record.familyId || currentFamily,
+        userId: record.userId || currentUser?.uid || null,
+        name: record.name || record.bank || 'Sem conta',
+        bank: record.bank || 'Banco não definido',
+        emoji: record.emoji || '🏦',
+        initialBalance: Number(record.initialBalance || 0),
+        active: record.active !== false
+      };
+    }
+
+    function mergeBankAccounts(records) {
+      const merged = new Map();
+
+      records.forEach((rawRecord) => {
+        const record = normalizeBankAccountRecord(rawRecord);
+        if (!record.id || record.active === false) return;
+
+        const existing = merged.get(record.id);
+        if (!existing) {
+          merged.set(record.id, record);
+          return;
+        }
+
+        merged.set(record.id, {
+          ...existing,
+          ...record,
+          bank: record.bank && record.bank !== 'Banco não definido' ? record.bank : existing.bank,
+          name: record.name && record.name !== 'Sem conta' ? record.name : existing.name,
+          emoji: record.emoji && record.emoji !== '🏦' ? record.emoji : existing.emoji,
+          initialBalance: Number(record.initialBalance || existing.initialBalance || 0)
+        });
+      });
+
+      return Array.from(merged.values()).sort((left, right) => {
+        return `${left.bank} ${left.name}`.localeCompare(`${right.bank} ${right.name}`, 'pt-BR');
+      });
+    }
+
+    function findBankAccountInCache(accountId) {
+      return bankAccountsCache.find(acc => acc.id === accountId) || null;
+    }
+
+    function getBankAccountLabel(account) {
+      if (!account) return 'Banco não definido';
+      return `${account.emoji || '🏦'} ${account.bank || 'Banco não definido'}${account.name ? ` • ${account.name}` : ''}`;
+    }
+
+    function getCategoryLabelForReport(category) {
+      const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
+      const found = allCats.find(c => c.value === category);
+      return found ? found.label : (category || 'Outros');
+    }
+
+    async function createManualTransaction(payload) {
+      return fetchJsonWithAuth(`${getApiBaseUrl()}/transactions/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+
     async function addExtraIncome() {
       if (!currentFamily || !currentUser) {
         if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
@@ -4469,34 +4584,38 @@
       const category = document.getElementById('income-category').value;
       const amount = Number(document.getElementById('extra-income-amount').value) || 0;
       const date = document.getElementById('extra-income-date').value;
+      const bankAccountId = document.getElementById('income-account').value;
+      const bankAccount = findBankAccountInCache(bankAccountId);
 
-      if (!desc || !category || amount <= 0 || !date) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos');
+      if (!desc || !category || amount <= 0 || !date || !bankAccountId || !bankAccount) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos e selecione uma conta');
         return;
       }
 
       try {
-        await db.collection('transactions').add({
+        await createManualTransaction({
           familyId: currentFamily,
-          userId: currentUser.uid,
           userName: currentUser.displayName || currentUser.email,
           type: 'income',
           description: desc,
           category: category,
           amount: amount,
           date: date,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          bankAccountId,
+          bank: bankAccount.bank
         });
         document.getElementById('extra-income-desc').value = '';
         document.getElementById('income-category').value = 'salario';
         document.getElementById('extra-income-amount').value = '';
         document.getElementById('extra-income-date').value = '';
+        document.getElementById('income-account').value = '';
         if (typeof showToast === 'function') showToast('✅', 'Ganho extra adicionado!');
         if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
         if (typeof updateDashboard === 'function') updateDashboard();
       } catch (error) {
         console.error('Error adding extra income:', error);
-        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar');
+        if (typeof showToast === 'function') showToast('❌', error.message || 'Erro ao adicionar');
       }
     }
 
@@ -4512,48 +4631,347 @@
       const date = document.getElementById('expense-date').value;
       const paymentMethod = document.getElementById('expense-payment').value;
       const installments = document.getElementById('expense-installments')?.value || '1';
+      const bankAccountId = document.getElementById('expense-account').value;
+      const bankAccount = findBankAccountInCache(bankAccountId);
+      const notes = document.getElementById('expense-notes')?.value || '';
 
-      if (!desc || !category || amount <= 0 || !date) {
-        if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos');
+      if (!desc || !category || amount <= 0 || !date || !bankAccountId || !bankAccount) {
+        if (typeof showToast === 'function') showToast('⚠️', 'Preencha todos os campos e selecione uma conta');
         return;
       }
 
       try {
-        const payload = {
+        await createManualTransaction({
           familyId: currentFamily,
-          userId: currentUser.uid,
           userName: currentUser.displayName || currentUser.email,
           type: 'expense',
           description: desc,
           category: category,
           amount: amount,
           date: date,
+          bankAccountId,
+          bank: bankAccount.bank,
           paymentMethod: paymentMethod,
           installments: parseInt(installments),
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        // Add photo if exists
-        if (expensePhotoBase64) {
-          payload.photoBase64 = expensePhotoBase64;
-        }
-
-        await db.collection('transactions').add(payload);
+          notes,
+          photoBase64: expensePhotoBase64 || null
+        });
         document.getElementById('expense-desc').value = '';
         document.getElementById('expense-category').value = '';
         document.getElementById('expense-amount').value = '';
         document.getElementById('expense-date').value = '';
         document.getElementById('expense-payment').value = 'dinheiro';
         document.getElementById('expense-installments').value = '1';
+        document.getElementById('expense-account').value = '';
         document.getElementById('expense-photo').value = '';
         document.getElementById('expense-photo-preview').textContent = '';
+        document.getElementById('expense-notes').value = '';
         expensePhotoBase64 = null;
         if (typeof showToast === 'function') showToast('✅', 'Despesa adicionada!');
         if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
         if (typeof updateDashboard === 'function') updateDashboard();
       } catch (error) {
         console.error('Error adding expense:', error);
-        if (typeof showToast === 'function') showToast('❌', 'Erro ao adicionar');
+        if (typeof showToast === 'function') showToast('❌', error.message || 'Erro ao adicionar');
+      }
+    }
+
+    function buildReportTransactionsTab(transactions) {
+      if (transactions.length === 0) {
+        return `
+          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 p-6 text-center text-slate-400">
+            Nenhuma transação no período selecionado.
+          </div>
+        `;
+      }
+
+      window._reportTransactions = transactions;
+      window._selectedTransactionIds = new Set();
+
+      const incomes = transactions.filter(t => t.type === 'income' || t.type === 'salary');
+      const expenses = transactions.filter(t => t.type === 'expense');
+
+      const getPaymentDisplay = (method, installments) => {
+        if (method === 'cartao' && installments > 1) return `${installments}x no 💳`;
+        const icons = { dinheiro: '💵', pix: '📲', cartao: '💳' };
+        return icons[method] || method || '—';
+      };
+
+      const renderSection = (title, items) => {
+        if (items.length === 0) return '';
+        const total = items.reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
+
+        return `
+          <div class="mb-6">
+            <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700">
+              <h3 class="font-bold text-white text-lg flex-1">${title}</h3>
+              <span class="text-sm font-semibold ${title.includes('Entradas') ? 'text-emerald-400' : 'text-red-400'}">
+                ${formatCurrency(total)}
+              </span>
+            </div>
+            <div class="space-y-2">
+              ${items.map(transaction => `
+                <label class="report-item flex items-center gap-3 p-3 bg-slate-800/40 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors">
+                  <input type="checkbox" class="transaction-checkbox" value="${transaction.id}" onchange="updateReportSelection()">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex gap-2 items-center">
+                      <span class="font-medium text-white truncate">${escapeHTML(transaction.description)}</span>
+                      <span class="text-xs text-slate-500 flex-shrink-0">${escapeHTML(getCategoryLabelForReport(transaction.category))}</span>
+                    </div>
+                    <div class="text-sm text-slate-400">
+                      ${escapeHTML(transaction.date)} • ${escapeHTML(getPaymentDisplay(transaction.paymentMethod, transaction.installments))}
+                    </div>
+                  </div>
+                  <span class="font-semibold text-right flex-shrink-0 ${transaction.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
+                    ${transaction.type === 'expense' ? '-' : '+'} ${formatCurrency(transaction.amount)}
+                  </span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      };
+
+      return `
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <label class="flex items-center gap-2 cursor-pointer text-white font-semibold">
+              <input type="checkbox" id="select-all-transactions" onchange="toggleSelectAllTransactions()" style="width:18px;height:18px;">
+              Selecionar Todos
+            </label>
+            <button onclick="filterReportByPayment('todas')" class="text-xs px-2 py-1 bg-slate-700 rounded hover:bg-slate-600">✓ Todas</button>
+          </div>
+          <div class="space-y-4 max-h-96 overflow-y-auto">
+            ${renderSection('📥 Entradas', incomes)}
+            ${renderSection('📤 Despesas', expenses)}
+          </div>
+        </div>
+        <div class="report-stats">
+          <div>
+            <p class="text-sm text-slate-400">Selecionados</p>
+            <p class="text-lg font-bold text-white" id="report-selected-count">0</p>
+          </div>
+          <div>
+            <p class="text-sm text-slate-400">Total Selecionado</p>
+            <p class="text-lg font-bold text-emerald-400" id="report-selected-total">R$ 0,00</p>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchBankReportData(startDate, endDate, paymentFilter) {
+      const params = new URLSearchParams({
+        familyId: currentFamily,
+        startDate,
+        endDate,
+        paymentFilter: paymentFilter || 'todas'
+      });
+
+      const [summaryData, transactionsData] = await Promise.all([
+        fetchJsonWithAuth(`${getApiBaseUrl()}/report/banks?${params.toString()}`),
+        fetchJsonWithAuth(`${getApiBaseUrl()}/report/bank-transactions?${params.toString()}`)
+      ]);
+
+      return {
+        summaryBanks: Array.isArray(summaryData?.banks) ? summaryData.banks : [],
+        transactionBanks: Array.isArray(transactionsData?.banks) ? transactionsData.banks : []
+      };
+    }
+
+    function buildBankReportModel(summaryBanks, transactionBanks) {
+      const grouped = new Map();
+
+      bankAccountsCache.forEach(account => {
+        grouped.set(account.id, {
+          bankAccountId: account.id,
+          bank: account.bank || 'Banco não definido',
+          name: account.name || 'Sem conta',
+          emoji: account.emoji || '🏦',
+          income: 0,
+          expense: 0,
+          balance: 0,
+          transactions: []
+        });
+      });
+
+      summaryBanks.forEach(bankItem => {
+        const key = bankItem.bankAccountId || `bank:${bankItem.bank || 'Banco não definido'}`;
+        const base = grouped.get(key) || {
+          bankAccountId: bankItem.bankAccountId || null,
+          bank: bankItem.bank || 'Banco não definido',
+          name: bankItem.name || (bankItem.bankAccountId ? bankItem.bank : 'Sem conta'),
+          emoji: bankItem.emoji || '🏦',
+          income: 0,
+          expense: 0,
+          balance: 0,
+          transactions: []
+        };
+        grouped.set(key, {
+          ...base,
+          income: Number(bankItem.income || 0),
+          expense: Number(bankItem.expense || 0),
+          balance: Number(bankItem.balance || 0)
+        });
+      });
+
+      transactionBanks.forEach(bankItem => {
+        const key = bankItem.bankAccountId || `bank:${bankItem.bank || 'Banco não definido'}`;
+        const base = grouped.get(key) || {
+          bankAccountId: bankItem.bankAccountId || null,
+          bank: bankItem.bank || 'Banco não definido',
+          name: bankItem.name || (bankItem.bankAccountId ? bankItem.bank : 'Sem conta'),
+          emoji: bankItem.emoji || '🏦',
+          income: 0,
+          expense: 0,
+          balance: 0,
+          transactions: []
+        };
+        grouped.set(key, {
+          ...base,
+          transactions: Array.isArray(bankItem.transactions) ? bankItem.transactions : []
+        });
+      });
+
+      return Array.from(grouped.values()).sort((left, right) => {
+        return `${left.bank} ${left.name}`.localeCompare(`${right.bank} ${right.name}`, 'pt-BR');
+      });
+    }
+
+    function renderBankReportTab(banks) {
+      if (!bankAccountsCache.length && !banks.length) {
+        return `
+          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/30 p-6 text-center text-slate-400">
+            Nenhuma conta bancária cadastrada. Cadastre uma conta para acompanhar entradas e saídas por banco.
+          </div>
+        `;
+      }
+
+      const cardsHtml = banks.map(bankItem => `
+        <div class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-5">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <div class="text-white font-bold text-lg">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(bankItem.bank || 'Banco não definido')}</div>
+              <div class="text-slate-400 text-sm">${escapeHTML(bankItem.name || 'Sem conta')}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Saldo</div>
+              <div class="font-bold text-lg ${Number(bankItem.balance || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}">${formatCurrencyBRL(bankItem.balance)}</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 text-sm">
+            <div class="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3">
+              <div class="text-emerald-300 mb-1">Entradas</div>
+              <div class="font-semibold text-emerald-400">${formatCurrencyBRL(bankItem.income)}</div>
+            </div>
+            <div class="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3">
+              <div class="text-rose-300 mb-1">Saídas</div>
+              <div class="font-semibold text-rose-400">${formatCurrencyBRL(bankItem.expense)}</div>
+            </div>
+            <div class="rounded-xl bg-slate-800/80 border border-slate-700/60 p-3">
+              <div class="text-slate-300 mb-1">Saldo líquido</div>
+              <div class="font-semibold ${Number(bankItem.balance || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'}">${formatCurrencyBRL(bankItem.balance)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      const tablesHtml = banks.map(bankItem => {
+        const rows = Array.isArray(bankItem.transactions) ? bankItem.transactions : [];
+        return `
+          <div class="rounded-2xl border border-slate-700/60 bg-slate-900/35 p-5">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h4 class="text-white font-bold text-lg">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(bankItem.bank || 'Banco não definido')}</h4>
+                <p class="text-slate-400 text-sm">${escapeHTML(bankItem.name || 'Sem conta')}</p>
+              </div>
+              <div class="text-sm text-slate-400">${rows.length} transação(ões)</div>
+            </div>
+            ${rows.length ? `
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                  <thead>
+                    <tr class="text-slate-400 border-b border-slate-700">
+                      <th class="text-left py-2 pr-4">Data</th>
+                      <th class="text-left py-2 pr-4">Descrição</th>
+                      <th class="text-left py-2 pr-4">Categoria</th>
+                      <th class="text-left py-2 pr-4">Tipo</th>
+                      <th class="text-right py-2">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows.map(transaction => `
+                      <tr class="border-b border-slate-800/80">
+                        <td class="py-3 pr-4 text-slate-300 whitespace-nowrap">${escapeHTML((typeof formatDate === 'function') ? formatDate(transaction.date) : transaction.date)}</td>
+                        <td class="py-3 pr-4 text-white">${escapeHTML(transaction.description || 'Sem descrição')}</td>
+                        <td class="py-3 pr-4 text-slate-300">${escapeHTML(getCategoryLabelForReport(transaction.category))}</td>
+                        <td class="py-3 pr-4 ${transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'}">${transaction.type === 'income' ? 'Entrada' : 'Saída'}</td>
+                        <td class="py-3 text-right font-semibold ${transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'}">${formatCurrencyBRL(transaction.amount)}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            ` : `
+              <div class="rounded-xl border border-dashed border-slate-700 bg-slate-900/30 px-4 py-6 text-center text-slate-400">
+                Nenhuma transação vinculada a esta conta no período selecionado.
+              </div>
+            `}
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-white font-bold text-lg mb-3">🏦 Resumo por banco</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${cardsHtml}</div>
+          </div>
+          <div>
+            <h3 class="text-white font-bold text-lg mb-3">📋 Detalhamento por banco</h3>
+            <div class="space-y-4">${tablesHtml}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildReportShell(transactionsHtml, banksHtml) {
+      return `
+        <div class="space-y-5">
+          <div class="flex flex-wrap gap-2">
+            <button id="report-tab-summary-btn" type="button" onclick="setReportTab('summary')" class="btn btn-primary !w-auto !min-h-0 !px-4 !py-2">📊 Resumo</button>
+            <button id="report-tab-banks-btn" type="button" onclick="setReportTab('banks')" class="btn btn-outline !w-auto !min-h-0 !px-4 !py-2">🏦 Bancos</button>
+          </div>
+          <div id="report-tab-summary" class="report-tab-panel">${transactionsHtml}</div>
+          <div id="report-tab-banks" class="report-tab-panel hidden">${banksHtml}</div>
+        </div>
+      `;
+    }
+
+    function setReportTab(view) {
+      const panels = {
+        summary: document.getElementById('report-tab-summary'),
+        banks: document.getElementById('report-tab-banks')
+      };
+      const buttons = {
+        summary: document.getElementById('report-tab-summary-btn'),
+        banks: document.getElementById('report-tab-banks-btn')
+      };
+
+      Object.entries(panels).forEach(([key, panel]) => {
+        if (!panel) return;
+        panel.classList.toggle('hidden', key !== view);
+      });
+
+      Object.entries(buttons).forEach(([key, button]) => {
+        if (!button) return;
+        button.classList.toggle('btn-primary', key === view);
+        button.classList.toggle('btn-outline', key !== view);
+      });
+
+      window._activeReportTab = view;
+      if (view === 'summary' && typeof updateReportSelection === 'function') {
+        updateReportSelection();
       }
     }
 
@@ -4606,97 +5024,15 @@
         });
 
         transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const { summaryBanks, transactionBanks } = await fetchBankReportData(startDate, endDate, paymentFilter);
+        const bankModel = buildBankReportModel(summaryBanks, transactionBanks);
 
-        if (transactions.length === 0) {
-          reportEl.innerHTML = '<p class="text-slate-500 text-center py-8">Nenhuma transação no período</p>';
-          document.getElementById('report-export-section').classList.add('hidden');
-          return;
-        }
-
-        // Initialize global state for report selection
-        window._reportTransactions = transactions;
-        window._selectedTransactionIds = new Set();
-
-        // Separar entradas e despesas (Incluindo 'salary' nas entradas)
-        const incomes = transactions.filter(t => t.type === 'income' || t.type === 'salary');
-        const expenses = transactions.filter(t => t.type === 'expense');
-
-        // Função auxiliar para obter label da categoria
-        const getCategoryLabel = (catValue) => {
-          const allCats = [...DEFAULT_CATEGORIES, ...customCategories];
-          const found = allCats.find(c => c.value === catValue);
-          return found ? found.label : catValue;
-        };
-
-        const getPaymentDisplay = (method, installments) => {
-          if (method === 'cartao' && installments > 1) return `${installments}x no 💳`;
-          const icons = { dinheiro: '💵', pix: '📲', cartao: '💳' };
-          return icons[method] || method;
-        };
-
-        const renderSection = (title, icon, items, bgColor) => {
-          if (items.length === 0) return '';
-
-          const total = items.reduce((sum, t) => sum + t.amount, 0);
-          return `
-            <div class="mb-6">
-              <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700">
-                <span class="text-xl">${icon}</span>
-                <h3 class="font-bold text-white text-lg flex-1">${title}</h3>
-                <span class="text-sm font-semibold ${title.includes('Entrada') ? 'text-emerald-400' : 'text-red-400'}">
-                  ${formatCurrency(total)}
-                </span>
-              </div>
-              <div class="space-y-2">
-                ${items.map(t => `
-                  <label class="report-item flex items-center gap-3 p-3 bg-slate-800/40 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors">
-                    <input type="checkbox" class="transaction-checkbox" value="${t.id}" onchange="updateReportSelection()">
-                    <div class="flex-1 min-w-0">
-                      <div class="flex gap-2 items-center">
-                        <span class="font-medium text-white truncate">${t.description}</span>
-                        <span class="text-xs text-slate-500 flex-shrink-0">${getCategoryLabel(t.category)}</span>
-                      </div>
-                      <div class="text-sm text-slate-400">${t.date} • ${getPaymentDisplay(t.paymentMethod, t.installments)}</div>
-                    </div>
-                    <span class="font-semibold text-right flex-shrink-0 ${t.type === 'expense' ? 'text-red-400' : 'text-emerald-400'}">
-                      ${t.type === 'expense' ? '-' : '+'} ${formatCurrency(t.amount)}
-                    </span>
-                  </label>
-                `).join('')}
-              </div>
-            </div>
-          `;
-        };
-
-        const html = `
-          <div class="mb-4">
-            <div class="flex items-center justify-between mb-4">
-              <label class="flex items-center gap-2 cursor-pointer text-white font-semibold">
-                <input type="checkbox" id="select-all-transactions" onchange="toggleSelectAllTransactions()" style="width:18px;height:18px;">
-                Selecionar Todos
-              </label>
-              <button onclick="filterReportByPayment('todas')" class="text-xs px-2 py-1 bg-slate-700 rounded hover:bg-slate-600">✓ Todas</button>
-            </div>
-            <div class="space-y-4 max-h-96 overflow-y-auto">
-              ${renderSection('📥 Entradas', '💵', incomes, 'emerald')}
-              ${renderSection('📤 Despesas', '💸', expenses, 'red')}
-            </div>
-          </div>
-          <div class="report-stats">
-            <div>
-              <p class="text-sm text-slate-400">Selecionados</p>
-              <p class="text-lg font-bold text-white" id="report-selected-count">0</p>
-            </div>
-            <div>
-              <p class="text-sm text-slate-400">Total Selecionado</p>
-              <p class="text-lg font-bold text-emerald-400" id="report-selected-total">R$ 0,00</p>
-            </div>
-          </div>
-        `;
-
-        reportEl.innerHTML = html;
-        document.getElementById('report-export-section').classList.remove('hidden');
-        updateReportSelection();
+        reportEl.innerHTML = buildReportShell(
+          buildReportTransactionsTab(transactions),
+          renderBankReportTab(bankModel)
+        );
+        document.getElementById('report-export-section').classList.toggle('hidden', transactions.length === 0);
+        setReportTab(window._activeReportTab || 'summary');
       } catch (error) {
         console.error('Error generating report:', error);
         showToast('❌', 'Erro ao gerar relatório');
@@ -4704,6 +5040,10 @@
     }
 
     function updateReportSelection() {
+      if (!Array.isArray(window._reportTransactions)) {
+        return;
+      }
+
       const checkboxes = document.querySelectorAll('.transaction-checkbox:checked');
       window._selectedTransactionIds = new Set(Array.from(checkboxes).map(cb => cb.value));
 
@@ -4713,8 +5053,10 @@
         if (tx) total += tx.amount;
       });
 
-      document.getElementById('report-selected-count').textContent = window._selectedTransactionIds.size;
-      document.getElementById('report-selected-total').textContent = formatCurrency(total);
+      const countEl = document.getElementById('report-selected-count');
+      const totalEl = document.getElementById('report-selected-total');
+      if (countEl) countEl.textContent = window._selectedTransactionIds.size;
+      if (totalEl) totalEl.textContent = formatCurrency(total);
 
       const selectAllCheckbox = document.getElementById('select-all-transactions');
       if (selectAllCheckbox) {
@@ -4724,6 +5066,7 @@
 
     function toggleSelectAllTransactions() {
       const selectAllCheckbox = document.getElementById('select-all-transactions');
+      if (!selectAllCheckbox) return;
       const checkboxes = document.querySelectorAll('.transaction-checkbox');
       checkboxes.forEach(cb => {
         cb.checked = selectAllCheckbox.checked;
@@ -6968,22 +7311,31 @@
     async function addBankAccount() {
       if (!currentFamily || !currentUser) { showToast('⚠️', 'Selecione uma família'); return; }
       const name = document.getElementById('account-name')?.value.trim();
+      const bank = document.getElementById('account-bank')?.value.trim() || '';
       const emoji = document.getElementById('account-emoji')?.value.trim() || '🏦';
       const initialBalance = Number(document.getElementById('account-initial-balance')?.value) || 0;
 
-      if (!name) { showToast('⚠️', 'Informe o nome da conta'); return; }
+      if (!name || !bank) { showToast('⚠️', 'Informe o banco e o nome da conta'); return; }
 
       try {
-        await db.collection('bankAccounts').add({
+        const newAccountRef = db.collection('bankAccounts').doc();
+        const accountPayload = {
+          id: newAccountRef.id,
           familyId: currentFamily,
           userId: currentUser.uid,
           name: name,
+          bank: bank,
           emoji: emoji,
           initialBalance: initialBalance,
           active: true,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection('bankAccounts').doc(newAccountRef.id).set(accountPayload, { merge: true });
+        await db.collection('bank_accounts').doc(newAccountRef.id).set(accountPayload, { merge: true }).catch((error) => {
+          console.warn('Espelho opcional em bank_accounts falhou:', error);
         });
         document.getElementById('account-name').value = '';
+        document.getElementById('account-bank').value = 'Nubank';
         document.getElementById('account-initial-balance').value = '';
         document.getElementById('account-emoji').value = '🏦';
         showToast('✅', 'Conta cadastrada!');
@@ -7000,14 +7352,24 @@
       const container = document.getElementById('accounts-list');
 
       try {
-        const snap = await db.collection('bankAccounts')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .where('active', '==', true)
-          .get();
+        const [newCollectionSnap, legacySnap] = await Promise.all([
+          db.collection('bank_accounts')
+            .where('familyId', '==', currentFamily)
+            .get()
+            .catch(() => ({ docs: [] })),
+          db.collection('bankAccounts')
+            .where('familyId', '==', currentFamily)
+            .get()
+        ]);
 
-        bankAccountsCache = [];
-        snap.forEach(doc => bankAccountsCache.push({ id: doc.id, ...doc.data() }));
+        const rawAccounts = [];
+        (newCollectionSnap.docs || []).forEach(doc => rawAccounts.push({ id: doc.id, ...doc.data() }));
+        legacySnap.forEach(doc => rawAccounts.push({ id: doc.id, ...doc.data() }));
+
+        bankAccountsCache = mergeBankAccounts(rawAccounts.filter(account => {
+          if (account.active === false) return false;
+          return !account.userId || account.userId === currentUser.uid;
+        }));
 
         // Atualizar selects de contas em formulários
         await updateAccountSelects();
@@ -7028,10 +7390,11 @@
         const balanceByAccount = {};
         txSnap.forEach(doc => {
           const tx = doc.data();
-          if (!tx.accountId) return;
-          if (!balanceByAccount[tx.accountId]) balanceByAccount[tx.accountId] = 0;
+          const accountId = getTransactionAccountId(tx);
+          if (!accountId) return;
+          if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
           const amt = Number(tx.amount) || 0;
-          balanceByAccount[tx.accountId] += tx.type === 'income' ? amt : -amt;
+          balanceByAccount[accountId] += tx.type === 'income' ? amt : -amt;
         });
 
         const html = bankAccountsCache.map(acc => {
@@ -7042,7 +7405,7 @@
               <span style="font-size:28px;">${acc.emoji}</span>
               <div class="flex-1">
                 <p class="font-bold text-white">${acc.name}</p>
-                <p class="text-xs text-slate-400">Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
+                <p class="text-xs text-slate-400">${acc.bank || 'Banco não definido'} • Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
               </div>
               <div class="text-right">
                 <p class="font-bold text-lg ${total < 0 ? 'text-red-400' : 'text-emerald-400'}">${formatCurrency(total)}</p>
@@ -7066,14 +7429,14 @@
         const sel = document.getElementById(selectId);
         if (!sel) continue;
         const currentVal = sel.value;
-        sel.innerHTML = '<option value="">Sem conta específica</option>';
+        sel.innerHTML = '<option value="">Selecione uma conta bancária</option>';
         bankAccountsCache.forEach(acc => {
           const opt = document.createElement('option');
           opt.value = acc.id;
-          opt.textContent = `${acc.emoji} ${acc.name}`;
+          opt.textContent = getBankAccountLabel(acc);
           sel.appendChild(opt);
         });
-        sel.value = currentVal;
+        sel.value = bankAccountsCache.some(acc => acc.id === currentVal) ? currentVal : '';
       }
     }
 
@@ -7095,10 +7458,11 @@
       const balanceByAccount = {};
       txSnap.forEach(doc => {
         const tx = doc.data();
-        if (!tx.accountId) return;
-        if (!balanceByAccount[tx.accountId]) balanceByAccount[tx.accountId] = 0;
+        const accountId = getTransactionAccountId(tx);
+        if (!accountId) return;
+        if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
         const amt = Number(tx.amount) || 0;
-        balanceByAccount[tx.accountId] += tx.type === 'income' ? amt : -amt;
+        balanceByAccount[accountId] += tx.type === 'income' ? amt : -amt;
       });
 
       const cards = bankAccountsCache.map(acc => {
@@ -7108,6 +7472,7 @@
           <div class="account-card">
             <div class="account-card-emoji">${acc.emoji}</div>
             <div class="account-card-name">${acc.name}</div>
+            <div class="text-[11px] text-slate-400 mt-1">${acc.bank || 'Banco não definido'}</div>
             <div class="account-card-balance ${total < 0 ? 'negative' : ''}">${formatCurrency(total)}</div>
             <button onclick="startAiScan('${acc.id}')" class="text-[10px] text-emerald-400 border border-emerald-400/30 rounded px-2 py-0.5 mt-2 w-full hover:bg-emerald-400/10">✨ Escanear IA</button>
           </div>
@@ -7120,7 +7485,10 @@
     async function deleteBankAccount(accountId) {
       if (!confirm('Remover esta conta?')) return;
       try {
-        await db.collection('bankAccounts').doc(accountId).update({ active: false });
+        await db.collection('bankAccounts').doc(accountId).set({ active: false }, { merge: true });
+        await db.collection('bank_accounts').doc(accountId).set({ active: false }, { merge: true }).catch((error) => {
+          console.warn('Espelho opcional em bank_accounts falhou:', error);
+        });
         showToast('✅', 'Conta removida');
         await loadBankAccounts();
         updateDashboard();
@@ -7950,10 +8318,13 @@ Exemplo:
       try {
         const batch = db.batch();
         const now = firebase.firestore.FieldValue.serverTimestamp();
+        const linkedAccount = findBankAccountInCache(pendingImportAccountId);
+        const linkedBank = linkedAccount?.bank || 'Banco não definido';
 
         pendingImportTransactions.forEach(t => {
           const ref = db.collection('transactions').doc();
           batch.set(ref, {
+            id: ref.id,
             type: t.type === 'income' ? 'income' : 'expense',
             description: t.description || 'Sem descrição',
             amount: Number(t.amount) || 0,
@@ -7961,9 +8332,12 @@ Exemplo:
             category: t.category || 'outros',
             paymentMethod: t.paymentMethod || 'outros',
             observations: t.observations || '',
+            bankAccountId: pendingImportAccountId || '',
             accountId: pendingImportAccountId || '',
+            bank: linkedBank,
             familyId: currentFamily,
             userId: currentUser.uid,
+            source: 'pdf_import',
             importedFromAI: true,
             createdAt: now
           });
