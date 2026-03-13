@@ -15,6 +15,10 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+function getGeminiModelName() {
+  return process.env.GEMINI_MODEL || "gemini-2.5-flash";
+}
+
 // simple regex-based text parser (not perfect but works for basic statements)
 function parseTransactionsFromText(text) {
   const lines = text.split(/\r?\n/);
@@ -55,14 +59,19 @@ function parseCsv(csvString) {
 async function categorizeTransactions(descriptions) {
   if (!descriptions || !descriptions.length) return [];
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const prompt = `Classifique as seguintes transações financeiras nas categorias:
+  const model = genAI.getGenerativeModel({ model: getGeminiModelName() });
+  const serializedDescriptions = JSON.stringify(
+    descriptions.map((description) => ({ description })),
+    null,
+    2
+  );
+  const prompt = `Classifique as seguintes transacoes financeiras nas categorias:
 Alimentação, Transporte, Moradia, Compras, Lazer, Assinaturas, Saúde, Educação, Investimentos ou Outros.
 
-Retorne apenas um JSON array com objetos no formato { "category": "<categoria>" } na mesma ordem das transações.
+Retorne apenas um JSON array com objetos no formato {{ "category": "<categoria>" }} na mesma ordem das transacoes.
 
-Transações:
-${JSON.stringify(descriptions.map(d => ({ description: d })), null, 2))}
+Transacoes:
+${serializedDescriptions}
 `;
   const result = await model.generateContent(prompt);
   const text = result.response.text();
@@ -177,3 +186,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: msg });
   }
 }
+
