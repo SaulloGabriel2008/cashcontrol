@@ -1,5 +1,5 @@
 // base URL para chamadas à API (mesma lógica de index.html)
-const API_BASE = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : '/api';
+const API_BASE = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL : ((typeof location !== 'undefined' && location.protocol === 'file:') ? 'http://localhost:3000/api' : '/api');
 
 const pdfInput = document.getElementById("pdfInput");
 const uploadStatus = document.getElementById("uploadStatus");

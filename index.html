@@ -37,27 +37,42 @@
     }
   </script>
   <script>
-    // Obtemos a URL da API a partir de uma rota que lê a variável de
-    // ambiente do Vercel. Isso mantém o endereço real oculto no bundle.
+    // Resolve API base URL for local and production environments.
+    function getDefaultApiBase() {
+      if (location.protocol === 'file:') return 'http://localhost:3000/api';
+      return '/api';
+    }
+
+    function normalizeApiBase(url) {
+      const value = (url || '').toString().trim().replace(/\/+$/, '');
+      if (!value || value === '/' || value === './') return getDefaultApiBase();
+      if (/^https?:\/\/[^/]+$/i.test(value)) return value + '/api';
+      return value;
+    }
+
+    function getApiBaseUrl() {
+      if (window.API_BASE_URL) return window.API_BASE_URL;
+      window.API_BASE_URL = getDefaultApiBase();
+      return window.API_BASE_URL;
+    }
+
     async function loadApiConfig() {
+      if (location.protocol === 'file:') {
+        window.API_BASE_URL = getDefaultApiBase();
+        return;
+      }
+
       try {
-        const res = await fetch('/api/config');
-        if (res.ok) {
-          const j = await res.json();
-          window.API_BASE_URL = j.apiBaseUrl || '';
-        }
+        const res = await fetch('/api/config', { cache: 'no-store' });
+        if (!res.ok) throw new Error('status ' + res.status);
+        const j = await res.json();
+        window.API_BASE_URL = normalizeApiBase(j.apiBaseUrl);
       } catch (e) {
-        console.warn('Não foi possível obter config da API', e);
-      } finally {
-        if (typeof API_BASE_URL === 'undefined') {
-          if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-            window.API_BASE_URL = 'http://localhost:3000';
-          } else {
-            window.API_BASE_URL = '/api';
-          }
-        }
+        window.API_BASE_URL = getDefaultApiBase();
+        console.warn('Nao foi possivel obter config da API; usando fallback:', window.API_BASE_URL, e);
       }
     }
+
     loadApiConfig();
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
@@ -7557,7 +7572,7 @@
           });
           const token = currentUser ? await auth.currentUser.getIdToken() : null;
           if (!token) throw new Error('Usuário não autenticado');
-          const res = await fetch(`${API_BASE_URL}/uploadPDF`, {
+          const res = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -7624,7 +7639,7 @@
               reader.onload = async (e) => {
                 const b64 = e.target.result.split(',')[1];
                 try {
-                  await fetch(`${API_BASE_URL}/uploadPDF`, {
+                  await fetch(`${getApiBaseUrl()}/uploadPDF`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({
@@ -8268,7 +8283,7 @@ Exemplo:
           payload.fileBase64 = b64.split(',')[1];
         }
 
-        const res = await fetch(`${API_BASE_URL}/uploadPDF`, {
+        const res = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -8307,7 +8322,7 @@ Exemplo:
 
       try {
         const token = await auth.currentUser.getIdToken();
-        const res = await fetch(`${API_BASE_URL}/analysis`, {
+        const res = await fetch(`${getApiBaseUrl()}/analysis`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -8319,6 +8334,12 @@ Exemplo:
         // Se a resposta não for OK, leia o corpo como texto para mostrar o erro
         const contentType = res.headers.get('content-type') || '';
         if (!res.ok) {
+          if (contentType.includes('application/json')) {
+            const errorData = await res.json().catch(() => null);
+            const errorMessage = errorData && errorData.error ? errorData.error : '<sem corpo retornado>';
+            throw new Error(`Erro ${res.status}: ${errorMessage}`);
+          }
+
           const bodyText = await res.text().catch(() => '<sem corpo retornado>');
           throw new Error(`Erro ${res.status}: ${bodyText}`);
         }
