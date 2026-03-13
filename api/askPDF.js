@@ -13,6 +13,10 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+function getGeminiModelName() {
+  return process.env.GEMINI_MODEL || "gemini-2.5-flash";
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -40,7 +44,7 @@ export default async function handler(req, res) {
     snap.forEach((doc) => transactions.push(doc.data()));
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: getGeminiModelName() });
 
     const prompt = `Baseado nas transações abaixo, responda à pergunta.
 

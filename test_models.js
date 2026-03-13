@@ -1,6 +1,9 @@
 
 async function testGemini() {
-    const API_KEY = "AIzaSyBjFgPKU8s9r6jU2LVwNXm8syuSouQbuCY";
+    const API_KEY = process.env.GEMINI_API_KEY;
+    if (!API_KEY) {
+        throw new Error("GEMINI_API_KEY nao configurada");
+    }
     const modelsUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${API_KEY}`;
 
     try {
