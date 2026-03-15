@@ -3749,18 +3749,6 @@
       color: #8aa0b6;
     }
 
-    .stitch-allocation-summary {
-      display: grid;
-      gap: 10px;
-      min-width: 210px;
-    }
-
-    .stitch-allocation-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
     .stitch-allocation-chip {
       display: inline-flex;
       align-items: center;
@@ -3780,10 +3768,83 @@
       letter-spacing: -0.01em;
     }
 
-    .stitch-allocation-details {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .stitch-income-division {
+      display: inline-grid;
+      justify-items: start;
       gap: 8px;
+      min-width: 138px;
+    }
+
+    .stitch-income-division > summary {
+      list-style: none;
+    }
+
+    .stitch-income-division > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .stitch-income-division-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid #dbe5ef;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      color: #1d3a68;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .stitch-income-division[open] .stitch-income-division-trigger,
+    .stitch-income-division-trigger:hover {
+      transform: translateY(-1px);
+      border-color: #9db4d3;
+      box-shadow: 0 14px 28px rgba(29, 58, 104, 0.12);
+    }
+
+    .stitch-income-division-trigger .caret {
+      font-size: 10px;
+      color: #6a7f99;
+      transition: transform 0.18s ease;
+    }
+
+    .stitch-income-division[open] .stitch-income-division-trigger .caret {
+      transform: rotate(180deg);
+    }
+
+    .stitch-income-division-panel {
+      display: grid;
+      gap: 8px;
+      width: min(260px, 100%);
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid #dbe5ef;
+      background: #ffffff;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .stitch-income-division-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #f8fbff;
+      border: 1px solid #e6edf4;
+      color: #425971;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stitch-income-division-item strong {
+      font-size: 12px;
+      letter-spacing: -0.01em;
     }
 
     .stitch-disclosure.stitch-disclosure-inline summary {
@@ -4471,9 +4532,15 @@
                   </div>
 
                   <div class="section">
-                    <h2 class="section-title">➕ Ganho Extra</h2>
+                    <div class="stitch-panel-head mb-4">
+                      <div>
+                        <span class="stitch-panel-kicker">Entradas</span>
+                        <h2 class="section-title mb-2">➕ Ganho Extra</h2>
+                        <p class="stitch-panel-subtitle">Cadastre receitas avulsas vinculando cada entrada a uma conta bancária da família.</p>
+                      </div>
+                    </div>
                     <div class="card stitch-form-card rounded-2xl p-6">
-                      <div class="stitch-form-title">Add New Income</div>
+                      <div class="stitch-form-title">Nova entrada manual</div>
                       <div class="form-row">
                         <input type="text" id="extra-income-desc" class="input-field" placeholder="Descrição">
                         <select id="income-category" class="input-field">
@@ -4494,7 +4561,13 @@
                 </div>
                 <div class="finance-column">
                   <div class="section">
-                    <h2 class="section-title">📜 Histórico de Entradas</h2>
+                    <div class="stitch-panel-head mb-4">
+                      <div>
+                        <span class="stitch-panel-kicker">Histórico</span>
+                        <h2 class="section-title mb-2">📜 Histórico de Entradas</h2>
+                        <p class="stitch-panel-subtitle">Veja as entradas lançadas sem poluição visual. A divisão fica disponível apenas quando você quiser abrir.</p>
+                      </div>
+                    </div>
                     <div id="income-history" class="space-y-3">
                       <p class="text-slate-400 text-center py-8">Nenhuma entrada</p>
                     </div>
@@ -6928,7 +7001,7 @@
                 </div>
               </td>
               <td class="muted">${escapeHTML(bankLabel)}</td>
-              <td>${renderIncomeAllocationSummary(allocationItems)}</td>
+              <td>${renderIncomeAllocationSummary(allocationItems, doc.id)}</td>
               <td class="align-right stitch-value-positive">+${formatCurr(inc.amount)}</td>
               <td class="align-right">
                 <div class="stitch-row-actions">
@@ -6956,7 +7029,7 @@
                     <th>Data</th>
                     <th>Descrição</th>
                     <th>Banco</th>
-                    <th>Distribuição</th>
+                    <th>Divisão</th>
                     <th class="align-right">Valor</th>
                     <th class="align-right">Ações</th>
                   </tr>
@@ -11547,38 +11620,24 @@
       ];
     }
 
-    function renderIncomeAllocationSummary(items) {
-      const visibleItems = items.slice(0, 2);
-      const remainingItems = items.slice(2);
-
+    function renderIncomeAllocationSummary(items, transactionId = '') {
+      const safeId = String(transactionId || `income-${Math.random().toString(36).slice(2, 8)}`)
+        .replace(/[^a-zA-Z0-9_-]/g, '');
       return `
-        <div class="stitch-allocation-summary">
-          <div class="stitch-allocation-chips">
-            ${visibleItems.map(item => `
-              <span class="stitch-allocation-chip">
+        <details class="stitch-income-division" id="income-division-${safeId}">
+          <summary class="stitch-income-division-trigger">
+            <span>Ver divisão</span>
+            <span class="caret">▾</span>
+          </summary>
+          <div class="stitch-income-division-panel">
+            ${items.map(item => `
+              <div class="stitch-income-division-item">
                 <span>${escapeHTML(item.label)}</span>
                 <strong style="color:${item.color};">${formatCurrency(item.amount)}</strong>
-              </span>
-            `).join('')}
-            ${remainingItems.length ? `<span class="stitch-badge stitch-badge-soft">+${remainingItems.length}</span>` : ''}
-          </div>
-          ${remainingItems.length ? `
-            <details class="stitch-disclosure stitch-disclosure-inline">
-              <summary>
-                <span class="when-closed">Ver rateio</span>
-                <span class="when-open">Ocultar rateio</span>
-              </summary>
-              <div class="stitch-allocation-details">
-                ${items.map(item => `
-                  <span class="stitch-allocation-chip">
-                    <span>${escapeHTML(item.label)}</span>
-                    <strong style="color:${item.color};">${formatCurrency(item.amount)}</strong>
-                  </span>
-                `).join('')}
               </div>
-            </details>
-          ` : ''}
-        </div>
+            `).join('')}
+          </div>
+        </details>
       `;
     }
 
