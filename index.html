@@ -1846,6 +1846,183 @@
       box-shadow: 0 16px 34px rgba(20, 184, 106, 0.28);
     }
 
+    .mobile-nav-trigger,
+    .mobile-nav-overlay,
+    .mobile-nav-drawer {
+      display: none;
+    }
+
+    .mobile-nav-trigger {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: #eff6ff;
+      border-radius: 18px;
+      padding: 10px 12px;
+      min-height: 46px;
+      min-width: 0;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      backdrop-filter: blur(18px);
+    }
+
+    .mobile-nav-trigger-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .mobile-nav-trigger-copy {
+      display: grid;
+      gap: 2px;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .mobile-nav-trigger-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8fb6dd;
+    }
+
+    .mobile-nav-trigger-current {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 138px;
+    }
+
+    .mobile-nav-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      z-index: 69;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+
+    .mobile-nav-drawer {
+      position: fixed;
+      top: 78px;
+      left: 0;
+      right: 0;
+      z-index: 70;
+      padding: 0 12px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-12px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .mobile-nav-sheet {
+      border-radius: 24px;
+      border: 1px solid rgba(199, 220, 244, 0.9);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(243, 248, 253, 0.98));
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.18);
+      padding: 16px;
+    }
+
+    .mobile-nav-sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .mobile-nav-sheet-title {
+      margin: 0;
+      color: #18263c;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .mobile-nav-sheet-subtitle {
+      margin: 4px 0 0;
+      color: #61758d;
+      font-size: 12px;
+    }
+
+    .mobile-nav-close {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #dbe5ef;
+      border-radius: 14px;
+      background: #ffffff;
+      color: #18263c;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .mobile-nav-links {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid #dbe5ef;
+      background: #ffffff;
+      color: #18263c;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mobile-nav-link:hover {
+      border-color: #bfd2e8;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .mobile-nav-link.active {
+      background: linear-gradient(135deg, rgba(20, 184, 106, 0.96), rgba(31, 143, 255, 0.96));
+      border-color: rgba(20, 184, 106, 0.18);
+      color: #ffffff;
+      box-shadow: 0 18px 34px rgba(20, 184, 106, 0.24);
+    }
+
+    .mobile-nav-link small {
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 0.72;
+    }
+
+    body.mobile-nav-open {
+      overflow: hidden;
+    }
+
+    body.mobile-nav-open .mobile-nav-overlay,
+    body.mobile-nav-open .mobile-nav-drawer {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.mobile-nav-open .mobile-nav-drawer {
+      transform: translateY(0);
+    }
+
+    body.mobile-nav-open .fab {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+    }
+
     .login-container {
       padding: 32px;
       background:
@@ -3712,6 +3889,105 @@
       max-width: 620px;
     }
 
+    .stitch-mobile-list {
+      display: grid;
+      gap: 12px;
+      padding: 0 14px 14px;
+    }
+
+    .stitch-mobile-card {
+      border: 1px solid #e3ebf3;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      padding: 14px;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
+      display: grid;
+      gap: 12px;
+    }
+
+    .stitch-mobile-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stitch-mobile-card-date {
+      color: #6b7f97;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .stitch-mobile-card-title {
+      color: #18263c;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-top: 3px;
+    }
+
+    .stitch-mobile-card-subtitle {
+      color: #61758d;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .stitch-mobile-card-amount {
+      flex-shrink: 0;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      text-align: right;
+    }
+
+    .stitch-mobile-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stitch-mobile-data-point {
+      display: grid;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #f5f9fd;
+      border: 1px solid #e5edf5;
+      min-width: 0;
+    }
+
+    .stitch-mobile-data-point span {
+      color: #7a8da4;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stitch-mobile-data-point strong {
+      color: #20354f;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .stitch-mobile-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stitch-mobile-card-actions .stitch-row-actions {
+      justify-content: flex-end;
+    }
+
     .stitch-table-wrap {
       overflow-x: auto;
     }
@@ -3806,6 +4082,7 @@
       align-items: center;
       gap: 8px;
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
 
     .stitch-icon-btn {
@@ -4590,6 +4867,257 @@
         height: 560px;
       }
     }
+
+    @media (max-width: 768px) {
+      nav.app-tabs-nav {
+        display: none;
+      }
+
+      .mobile-nav-trigger {
+        display: inline-flex;
+      }
+
+      header.app-topbar .container {
+        padding: 12px 10px;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+      }
+
+      .header-left {
+        min-width: 0;
+      }
+
+      .header-brand {
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .header-brand-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+      }
+
+      .header-info h1 {
+        max-width: none;
+        font-size: 15px;
+      }
+
+      .header-info p,
+      #plan-badge {
+        display: none;
+      }
+
+      main {
+        padding: 12px 10px 96px;
+      }
+
+      #main-screen .container {
+        max-width: none;
+      }
+
+      .tab-content.stitch-page {
+        padding: 14px;
+        border-radius: 20px;
+      }
+
+      .stitch-page .section,
+      .stitch-page .card,
+      .stitch-loan-card,
+      .stitch-account-panel,
+      .stitch-dashboard-card,
+      .stitch-table-card,
+      .analysis-rich-card,
+      .analysis-highlight-card {
+        border-radius: 20px;
+      }
+
+      .dash-hero,
+      .scanner-feature-card,
+      .tab-intro-card,
+      .section-surface {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .tab-intro-preview,
+      .dash-hero-preview {
+        display: none;
+      }
+
+      .tab-intro-title {
+        font-size: 26px;
+      }
+
+      .tab-intro-description,
+      .stitch-panel-subtitle {
+        max-width: none;
+      }
+
+      .dash-hero-balance {
+        font-size: 32px;
+      }
+
+      .dash-section-header,
+      .dashboard-control-row,
+      .scanner-feature-content,
+      .stitch-table-card-header,
+      .subscriptions-head,
+      .stitch-panel-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .dashboard-grid-2,
+      .stitch-summary-cards,
+      .stitch-subscriptions-unified,
+      .stitch-commitment-kpis,
+      .unified-goals-grid,
+      .stitch-account-cards-grid,
+      .stitch-ai-shell,
+      .finance-columns,
+      #finance-income .finance-columns,
+      #finance-income,
+      #finance-expenses,
+      #finance-accounts,
+      #finance-loans,
+      #finance-report,
+      #tab-commitments_goals {
+        grid-template-columns: 1fr;
+      }
+
+      .finance-column,
+      .stitch-ai-main-column,
+      .stitch-ai-side-column {
+        gap: 16px;
+      }
+
+      .stitch-page .btn-grid-mobile {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stitch-page .btn-grid-mobile .btn,
+      .stitch-analysis-toggle-btn,
+      .scanner-feature-actions .btn {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .stitch-finance-nav .btn {
+        flex: initial;
+      }
+
+      .goal-management-grid,
+      .stitch-slider-row,
+      .stitch-slider-control,
+      .unified-goal-top,
+      .report-stats,
+      .stitch-mobile-meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stitch-percent-symbol {
+        display: none;
+      }
+
+      .stitch-mini-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .stitch-mobile-card-head,
+      .stitch-mobile-card-actions {
+        align-items: stretch;
+      }
+
+      .stitch-mobile-card-amount {
+        text-align: left;
+      }
+
+      .stitch-mobile-card-actions .stitch-row-actions {
+        justify-content: flex-start;
+      }
+
+      .stitch-income-division-panel {
+        width: min(320px, calc(100vw - 72px));
+      }
+
+      .report-item {
+        display: grid !important;
+        grid-template-columns: 22px minmax(0, 1fr);
+        align-items: start !important;
+      }
+
+      .report-item > span:last-child {
+        grid-column: 2;
+        text-align: left !important;
+      }
+
+      .report-tab-panel .max-h-96 {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .bottom-sheet {
+        max-height: 82vh;
+        border-radius: 22px 22px 0 0;
+      }
+
+      .bottom-sheet-content {
+        padding: 16px;
+      }
+
+      .modal-content {
+        width: calc(100% - 16px);
+        max-width: none;
+        max-height: calc(100vh - 24px);
+        padding: 18px;
+        border-radius: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .mobile-nav-drawer {
+        top: 70px;
+        padding: 0 8px;
+      }
+
+      .mobile-nav-sheet {
+        border-radius: 20px;
+        padding: 14px;
+      }
+
+      main {
+        padding: 10px 6px 92px;
+      }
+
+      .tab-content.stitch-page {
+        padding: 12px;
+        border-radius: 18px;
+      }
+
+      .dash-hero,
+      .scanner-feature-card,
+      .tab-intro-card,
+      .section-surface {
+        padding: 14px;
+        border-radius: 18px;
+      }
+
+      .tab-intro-title {
+        font-size: 22px;
+      }
+
+      .stitch-page .btn-grid-mobile {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-nav-trigger-current {
+        max-width: 104px;
+      }
+    }
   </style>
 </head>
 
@@ -4819,6 +5347,13 @@
             </div>
           </div>
           <div class="flex gap-2">
+            <button type="button" id="mobile-nav-trigger" onclick="toggleMobileNavigation()" class="mobile-nav-trigger" aria-label="Abrir navegação" aria-expanded="false">
+              <span class="mobile-nav-trigger-icon">☰</span>
+              <span class="mobile-nav-trigger-copy">
+                <span class="mobile-nav-trigger-label">Seção</span>
+                <span class="mobile-nav-trigger-current" id="mobile-nav-current">Dashboard</span>
+              </span>
+            </button>
             <button onclick="togglePrivacyMode()" id="privacy-toggle-btn"
               class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0" title="Alternar Visibilidade">👁️</button>
             <button onclick="openModal('settings')" class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0"
@@ -4838,6 +5373,37 @@
           </div>
         </div>
       </nav>
+
+      <div class="mobile-nav-overlay" onclick="closeMobileNavigation()"></div>
+      <div class="mobile-nav-drawer">
+        <div class="mobile-nav-sheet">
+          <div class="mobile-nav-sheet-header">
+            <div>
+              <p class="mobile-nav-sheet-title">Navegação</p>
+              <p class="mobile-nav-sheet-subtitle">Acesse rapidamente as áreas principais do app.</p>
+            </div>
+            <button type="button" class="mobile-nav-close" onclick="closeMobileNavigation()" aria-label="Fechar navegação">×</button>
+          </div>
+          <div class="mobile-nav-links">
+            <button type="button" class="mobile-nav-link active" data-tab="dashboard" onclick="switchTab('dashboard')">
+              <span>📊 Dashboard</span>
+              <small>Resumo geral</small>
+            </button>
+            <button type="button" class="mobile-nav-link" data-tab="finances" onclick="switchTab('finances')">
+              <span>💰 Finanças</span>
+              <small>Entradas e despesas</small>
+            </button>
+            <button type="button" class="mobile-nav-link" data-tab="commitments_goals" onclick="switchTab('commitments_goals')">
+              <span>📋 Divisões &amp; Objetivos</span>
+              <small>Planejamento</small>
+            </button>
+            <button type="button" class="mobile-nav-link" data-tab="ai_analysis" onclick="switchTab('ai_analysis')">
+              <span>🤖 Análise da IA</span>
+              <small>Insights e chat</small>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- FAB -->
       <button onclick="openBottomSheet()" class="fab">➕</button>
@@ -5928,7 +6494,91 @@
       document.getElementById('generic-modal').classList.remove('active');
     }
 
+    function isMobileLayout() {
+      return typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+    }
+
+    function getPrimaryTabLabel(tabName) {
+      const labels = {
+        dashboard: 'Dashboard',
+        finances: 'Finanças',
+        commitments_goals: 'Divisões & Objetivos',
+        ai_analysis: 'Análise da IA'
+      };
+      return labels[normalizePrimaryTabName(tabName)] || 'Dashboard';
+    }
+
+    function syncMobileNavigationState(tabName) {
+      const normalizedTab = normalizePrimaryTabName(tabName);
+      const currentLabel = document.getElementById('mobile-nav-current');
+      if (currentLabel) currentLabel.textContent = getPrimaryTabLabel(normalizedTab);
+
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === normalizedTab);
+      });
+
+      const trigger = document.getElementById('mobile-nav-trigger');
+      if (trigger) trigger.setAttribute('aria-expanded', document.body.classList.contains('mobile-nav-open') ? 'true' : 'false');
+    }
+
+    function openMobileNavigation() {
+      if (!isMobileLayout()) return;
+      document.body.classList.add('mobile-nav-open');
+      syncMobileNavigationState(window._activePrimaryTab || 'dashboard');
+    }
+
+    function closeMobileNavigation() {
+      document.body.classList.remove('mobile-nav-open');
+      syncMobileNavigationState(window._activePrimaryTab || 'dashboard');
+    }
+
+    function toggleMobileNavigation() {
+      if (document.body.classList.contains('mobile-nav-open')) closeMobileNavigation();
+      else openMobileNavigation();
+    }
+
+    let lastMobileLayoutState = isMobileLayout();
+
+    async function refreshCurrentTabForResponsiveLayout() {
+      const activeTab = window._activePrimaryTab || 'dashboard';
+
+      if (activeTab === 'finances') {
+        if (typeof loadSalariesList === 'function') await loadSalariesList();
+        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
+        if (typeof loadLoans === 'function') await loadLoans();
+
+        const reportStart = document.getElementById('report-start')?.value;
+        const reportEnd = document.getElementById('report-end')?.value;
+        if (reportStart && reportEnd && typeof generateReport === 'function') {
+          await generateReport();
+        }
+      } else if (activeTab === 'dashboard') {
+        if (typeof updateDashboard === 'function') await updateDashboard();
+      } else if (activeTab === 'commitments_goals') {
+        if (typeof loadGoalsList === 'function') await loadGoalsList();
+        if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
+      } else if (activeTab === 'ai_analysis') {
+        if (typeof renderSubscriptions === 'function') await renderSubscriptions();
+        if (typeof fetchAIAnalysis === 'function') await fetchAIAnalysis();
+      }
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMobileNavigation();
+    });
+
+    window.addEventListener('resize', () => {
+      if (!isMobileLayout()) closeMobileNavigation();
+      const nextMobileState = isMobileLayout();
+      if (nextMobileState === lastMobileLayoutState) return;
+      lastMobileLayoutState = nextMobileState;
+      refreshCurrentTabForResponsiveLayout();
+    });
+
     function openBottomSheet() {
+      closeMobileNavigation();
       const sheet = document.getElementById('bottom-sheet');
       const overlay = document.querySelector('.bottom-sheet-overlay');
       if (sheet) sheet.classList.add('active');
@@ -7448,7 +8098,7 @@
           return;
         }
 
-        const rows = snap.docs.map(doc => {
+        const itemsHtml = snap.docs.map(doc => {
           const inc = doc.data();
           const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
           const investPercent = parseFloat(document.getElementById('commit-invest').value) || 20;
@@ -7468,6 +8118,32 @@
           const account = findBankAccountInCache(getTransactionAccountId(inc));
           const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(inc.bank || 'Banco não definido');
           const allocationItems = buildIncomeAllocationItems(expensesAmount, investAmount, titheAmount, emergencyAmount);
+
+          if (isMobileLayout()) {
+            return `
+              <div class="stitch-mobile-card">
+                <div class="stitch-mobile-card-head">
+                  <div class="min-w-0">
+                    <div class="stitch-mobile-card-date">${formatDisplayDate(inc.date)}</div>
+                    <div class="stitch-mobile-card-title">${escapeHTML(inc.description || 'Sem descrição')}</div>
+                    <div class="stitch-mobile-card-subtitle">${escapeHTML(catLabel)}</div>
+                  </div>
+                  <div class="stitch-mobile-card-amount stitch-value-positive">+${formatCurr(inc.amount)}</div>
+                </div>
+                <div class="stitch-mobile-meta-grid">
+                  ${renderMobileDataPoint('Banco', escapeHTML(bankLabel))}
+                  ${renderMobileDataPoint('Status', '<span class="stitch-badge stitch-badge-success">Entrada</span>')}
+                </div>
+                <div class="stitch-mobile-card-actions">
+                  ${renderIncomeAllocationSummary(allocationItems, doc.id)}
+                  <div class="stitch-row-actions">
+                    ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'income')`)}
+                    ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
 
           return `
             <tr>
@@ -7500,20 +8176,24 @@
               </div>
               <span class="stitch-badge stitch-badge-soft">${snap.size} itens</span>
             </div>
-            <div class="stitch-table-wrap">
-              <table class="stitch-table">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Banco</th>
-                    <th class="align-right">Valor</th>
-                    <th class="align-right">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-              </table>
-            </div>
+            ${isMobileLayout() ? `
+              <div class="stitch-mobile-list">${itemsHtml}</div>
+            ` : `
+              <div class="stitch-table-wrap">
+                <table class="stitch-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Descrição</th>
+                      <th>Banco</th>
+                      <th class="align-right">Valor</th>
+                      <th class="align-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>${itemsHtml}</tbody>
+                </table>
+              </div>
+            `}
           </div>
         `;
       } catch (error) {
@@ -7543,11 +8223,37 @@
           return;
         }
 
-        const rows = snap.docs.map(doc => {
+        const itemsHtml = snap.docs.map(doc => {
           const exp = doc.data();
           const paymentDisplay = getPaymentMethodDisplay(exp.paymentMethod || 'dinheiro', exp.installments || 1);
           const account = findBankAccountInCache(getTransactionAccountId(exp));
           const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(exp.bank || 'Banco não definido');
+
+          if (isMobileLayout()) {
+            return `
+              <div class="stitch-mobile-card" data-category="${exp.category || 'outros'}">
+                <div class="stitch-mobile-card-head">
+                  <div class="min-w-0">
+                    <div class="stitch-mobile-card-date">${formatDisplayDate(exp.date)}</div>
+                    <div class="stitch-mobile-card-title">${escapeHTML(exp.description || 'Sem descrição')}</div>
+                    <div class="stitch-mobile-card-subtitle">${escapeHTML(getCategoryLabelForReport(exp.category))}</div>
+                  </div>
+                  <div class="stitch-mobile-card-amount stitch-value-negative">-${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ ' + exp.amount.toFixed(2)}</div>
+                </div>
+                <div class="stitch-mobile-meta-grid">
+                  ${renderMobileDataPoint('Banco', escapeHTML(bankLabel))}
+                  ${renderMobileDataPoint('Pagamento', `<span class="stitch-badge stitch-badge-info">${escapeHTML(paymentDisplay)}</span>`)}
+                </div>
+                <div class="stitch-mobile-card-actions">
+                  ${exp.photoBase64 ? renderActionIconButton('📸', `currentViewingPhotoDocId='${doc.id}'; viewExpensePhoto('${exp.photoBase64}')`) : '<span></span>'}
+                  <div class="stitch-row-actions">
+                    ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'expense')`)}
+                    ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
 
           return `
             <tr data-category="${exp.category || 'outros'}">
@@ -7581,21 +8287,25 @@
               </div>
               <span class="stitch-badge stitch-badge-soft">${snap.size} itens</span>
             </div>
-            <div class="stitch-table-wrap">
-              <table class="stitch-table">
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Banco</th>
-                    <th>Pagamento</th>
-                    <th class="align-right">Valor</th>
-                    <th class="align-right">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-              </table>
-            </div>
+            ${isMobileLayout() ? `
+              <div class="stitch-mobile-list">${itemsHtml}</div>
+            ` : `
+              <div class="stitch-table-wrap">
+                <table class="stitch-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Descrição</th>
+                      <th>Banco</th>
+                      <th>Pagamento</th>
+                      <th class="align-right">Valor</th>
+                      <th class="align-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>${itemsHtml}</tbody>
+                </table>
+              </div>
+            `}
           </div>
         `;
       } catch (error) {
@@ -8227,6 +8937,8 @@
         return renderSurfaceEmptyState('Nenhuma conta bancária cadastrada', 'Cadastre uma conta para acompanhar entradas, saídas e saldo agrupados por banco.');
       }
 
+      const mobileLayout = isMobileLayout();
+
       const cardsHtml = banks.map(bankItem => `
         <div class="stitch-account-panel" style="${getBankThemeStyle(bankItem.bank)}">
           <div class="flex items-center justify-between gap-3 mb-4">
@@ -8258,6 +8970,51 @@
 
       const tablesHtml = banks.map(bankItem => {
         const rows = Array.isArray(bankItem.transactions) ? bankItem.transactions : [];
+        const detailsHtml = mobileLayout ? `
+          <div class="stitch-mobile-list" style="padding:0;">
+            ${rows.map(transaction => `
+              <div class="stitch-mobile-card">
+                <div class="stitch-mobile-card-head">
+                  <div class="min-w-0">
+                    <div class="stitch-mobile-card-date">${escapeHTML(formatDisplayDate(transaction.date))}</div>
+                    <div class="stitch-mobile-card-title">${escapeHTML(transaction.description || 'Sem descrição')}</div>
+                    <div class="stitch-mobile-card-subtitle">${escapeHTML(getCategoryLabelForReport(transaction.category))}</div>
+                  </div>
+                  <div class="stitch-mobile-card-amount ${transaction.type === 'income' ? 'stitch-value-positive' : 'stitch-value-negative'}">${formatCurrencyBRL(transaction.amount)}</div>
+                </div>
+                <div class="stitch-mobile-meta-grid">
+                  ${renderMobileDataPoint('Tipo', `<span class="stitch-badge ${transaction.type === 'income' ? 'stitch-badge-success' : 'stitch-badge-danger'}">${transaction.type === 'income' ? 'Entrada' : 'Saída'}</span>`)}
+                  ${renderMobileDataPoint('Data', escapeHTML(formatDisplayDate(transaction.date)))}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="stitch-table-wrap">
+            <table class="stitch-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Categoria</th>
+                  <th>Tipo</th>
+                  <th class="align-right">Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map(transaction => `
+                  <tr>
+                    <td class="muted stitch-date-cell">${escapeHTML(formatDisplayDate(transaction.date))}</td>
+                    <td>${escapeHTML(transaction.description || 'Sem descrição')}</td>
+                    <td class="muted">${escapeHTML(getCategoryLabelForReport(transaction.category))}</td>
+                    <td><span class="stitch-badge ${transaction.type === 'income' ? 'stitch-badge-success' : 'stitch-badge-danger'}">${transaction.type === 'income' ? 'Entrada' : 'Saída'}</span></td>
+                    <td class="align-right font-semibold ${transaction.type === 'income' ? 'stitch-value-positive' : 'stitch-value-negative'}">${formatCurrencyBRL(transaction.amount)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
         return `
           <div class="stitch-table-card">
             <div class="flex items-center justify-between gap-3 mb-4">
@@ -8268,30 +9025,7 @@
               <div class="stitch-badge stitch-badge-soft">${rows.length} transação(ões)</div>
             </div>
             ${rows.length ? `
-              <div class="stitch-table-wrap">
-                <table class="stitch-table">
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Descrição</th>
-                      <th>Categoria</th>
-                      <th>Tipo</th>
-                      <th class="align-right">Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${rows.map(transaction => `
-                      <tr>
-                        <td class="muted stitch-date-cell">${escapeHTML(formatDisplayDate(transaction.date))}</td>
-                        <td>${escapeHTML(transaction.description || 'Sem descrição')}</td>
-                        <td class="muted">${escapeHTML(getCategoryLabelForReport(transaction.category))}</td>
-                        <td><span class="stitch-badge ${transaction.type === 'income' ? 'stitch-badge-success' : 'stitch-badge-danger'}">${transaction.type === 'income' ? 'Entrada' : 'Saída'}</span></td>
-                        <td class="align-right font-semibold ${transaction.type === 'income' ? 'stitch-value-positive' : 'stitch-value-negative'}">${formatCurrencyBRL(transaction.amount)}</td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
+              ${detailsHtml}
             ` : `
               ${renderSurfaceEmptyState('Nenhuma transação vinculada a esta conta', 'Selecione outro período ou importe um novo extrato para este banco.')}
             `}
@@ -9731,6 +10465,7 @@
 
     function switchTab(tabName) {
       tabName = normalizePrimaryTabName(tabName);
+      window._activePrimaryTab = tabName;
 
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       const target = document.getElementById(`tab-${tabName}`);
@@ -9746,6 +10481,8 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
       if (btn) btn.classList.add('active');
+      syncMobileNavigationState(tabName);
+      closeMobileNavigation();
 
       if (tabName === 'finances') {
         setFinanceView(currentFinanceView || 'income');
@@ -12140,6 +12877,15 @@
       };
     }
 
+    function renderMobileDataPoint(label, valueHtml) {
+      return `
+        <div class="stitch-mobile-data-point">
+          <span>${escapeHTML(label)}</span>
+          <strong>${valueHtml || '—'}</strong>
+        </div>
+      `;
+    }
+
     function buildIncomeAllocationItems(expensesAmount, investAmount, titheAmount, emergencyAmount) {
       return [
         { label: commitmentLabels.expenses || 'Despesas', amount: expensesAmount, color: '#b91c1c' },
@@ -12469,6 +13215,9 @@
         });
       }
     });
+
+    window._activePrimaryTab = window._activePrimaryTab || 'dashboard';
+    syncMobileNavigationState(window._activePrimaryTab);
 
     async function sendAIChatMessage() {
       if (!auth.currentUser) return showToast('⚠️', 'Faça login para conversar com a IA.');
