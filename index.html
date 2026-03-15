@@ -1609,7 +1609,7 @@
       color: #e2e8f0;
       font-size: 14px;
       line-height: 1.6;
-      white-space: pre-wrap;
+      white-space: normal;
       margin-top: 20px;
     }
 
@@ -3328,45 +3328,324 @@
       grid-column: 2;
     }
 
-    #tab-commitments,
-    #tab-projections {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-      gap: 24px;
-      align-items: start;
-    }
-
-    #tab-commitments > #tab-intro-commitments,
-    #tab-projections > #tab-intro-projections,
-    #tab-subscriptions > #tab-intro-subscriptions,
+    #tab-commitments_goals > #tab-intro-commitments_goals,
     #tab-ai_analysis > #tab-intro-ai_analysis {
-      grid-column: 1 / -1;
       margin-bottom: 0 !important;
     }
 
-    #tab-commitments > .section:nth-of-type(1),
-    #tab-projections > .section:nth-of-type(1) {
-      grid-column: 1;
-    }
-
-    #tab-commitments > .section:nth-of-type(2),
-    #tab-projections > .section:nth-of-type(2) {
-      grid-column: 2;
-    }
-
-    #tab-projections > .section:nth-of-type(3) {
-      grid-column: 1 / -1;
-    }
-
-    #tab-commitments > .section,
-    #tab-projections > .section,
-    #tab-subscriptions > .section,
+    #tab-commitments_goals > .section,
     #tab-ai_analysis > .section {
       background: #ffffff;
       border: 1px solid #dbe5ef;
       border-radius: 28px;
       padding: 24px;
       box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+    }
+
+    .stitch-unified-shell {
+      display: grid;
+      gap: 24px;
+    }
+
+    .stitch-unified-section {
+      padding: 28px;
+    }
+
+    .stitch-commitments-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid #dde6ef;
+      border-radius: 26px;
+      padding: 24px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+    }
+
+    .stitch-commitments-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #18263c;
+      margin-bottom: 18px;
+    }
+
+    .stitch-slider-list {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .stitch-slider-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 250px) minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+    }
+
+    .stitch-slider-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #1c2d47;
+      font-weight: 700;
+    }
+
+    .stitch-slider-icon {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: #eef5fb;
+      border: 1px solid #dbe5ef;
+      font-size: 20px;
+    }
+
+    .stitch-slider-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 84px 18px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .stitch-slider-control input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(21, 184, 155, 0.95), rgba(79, 208, 124, 0.9));
+      outline: none;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 999px rgba(148, 163, 184, 0.25);
+    }
+
+    .stitch-slider-control input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #18b8a0;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(24, 184, 160, 0.28);
+    }
+
+    .stitch-percent-input {
+      text-align: center;
+      font-weight: 800;
+      min-width: 0;
+    }
+
+    .stitch-percent-symbol {
+      color: #6f8298;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .stitch-total-track {
+      position: relative;
+      min-height: 30px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #e8eef4;
+      border: 1px solid #dbe5ef;
+    }
+
+    .stitch-total-track-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      background: repeating-linear-gradient(135deg, #1495c4, #1495c4 10px, #39c872 10px, #39c872 20px);
+      transition: width 0.2s ease;
+    }
+
+    .stitch-total-track-label {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .stitch-commitment-kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .stitch-commitment-kpi {
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid #dbe5ef;
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
+    }
+
+    .stitch-commitment-kpi[data-commitment-tone="expenses"] {
+      background: linear-gradient(135deg, rgba(186, 230, 253, 0.72), rgba(224, 242, 254, 0.96));
+    }
+
+    .stitch-commitment-kpi[data-commitment-tone="invest"] {
+      background: linear-gradient(135deg, rgba(187, 247, 208, 0.74), rgba(220, 252, 231, 0.96));
+    }
+
+    .stitch-commitment-kpi[data-commitment-tone="tithe"] {
+      background: linear-gradient(135deg, rgba(167, 243, 208, 0.74), rgba(204, 251, 241, 0.96));
+    }
+
+    .stitch-commitment-kpi[data-commitment-tone="emergency"] {
+      background: linear-gradient(135deg, rgba(220, 252, 231, 0.74), rgba(209, 250, 229, 0.96));
+    }
+
+    .stitch-commitment-kpi-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: #23415e;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .stitch-commitment-kpi-value {
+      font-size: 18px;
+      font-weight: 900;
+      color: #18263c;
+      letter-spacing: -0.03em;
+    }
+
+    .stitch-completed-goals-disclosure {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stitch-completed-goals-disclosure > summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      border: 1px solid #dbe5ef;
+      background: #f8fbff;
+      color: #18263c;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .stitch-completed-goals-disclosure > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .stitch-completed-goals-disclosure .caret {
+      transition: transform 0.18s ease;
+    }
+
+    .stitch-completed-goals-disclosure[open] .caret {
+      transform: rotate(180deg);
+    }
+
+    .unified-goals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+    }
+
+    .unified-goal-card {
+      background: #ffffff;
+      border: 1px solid #dbe5ef;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.05);
+      display: grid;
+      gap: 14px;
+    }
+
+    .unified-goal-top {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+    }
+
+    .goal-ring {
+      --progress: 0;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: conic-gradient(#36c17a calc(var(--progress) * 1%), #d8dee8 0);
+      display: grid;
+      place-items: center;
+    }
+
+    .goal-ring-inner {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: grid;
+      place-items: center;
+      color: #18263c;
+      font-weight: 900;
+    }
+
+    .unified-goal-name {
+      color: #18263c;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .unified-goal-meta {
+      color: #637991;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .unified-goal-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #dbe4ee;
+      overflow: hidden;
+    }
+
+    .unified-goal-bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #15b89b, #42c979);
+    }
+
+    .unified-goal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .unified-goal-actions .btn {
+      flex: 1 1 130px;
+    }
+
+    .goal-management-panel {
+      border: 1px solid #e6edf4;
+      border-radius: 16px;
+      padding: 14px;
+      background: #f8fbff;
+      display: grid;
+      gap: 12px;
+    }
+
+    .goal-management-grid {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .goal-management-grid .btn {
+      min-height: 42px;
     }
 
     .stitch-panel,
@@ -3626,6 +3905,179 @@
       align-items: start;
     }
 
+    .stitch-ai-main-column,
+    .stitch-ai-side-column {
+      display: grid;
+      gap: 20px;
+      align-self: start;
+    }
+
+    .stitch-smart-summary-panel {
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .stitch-smart-summary-panel .stitch-panel-head {
+      margin-bottom: 16px;
+    }
+
+    .stitch-smart-summary-layout {
+      display: grid;
+      gap: 14px;
+    }
+
+    .stitch-summary-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stitch-summary-card {
+      display: grid;
+      gap: 10px;
+      padding: 18px 18px 16px;
+      border: 1px solid #dbe5ef;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+      color: #12263f;
+    }
+
+    .stitch-summary-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .stitch-summary-card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .stitch-summary-card[data-tone="positive"] .stitch-summary-card-icon {
+      background: rgba(34, 197, 94, 0.12);
+      color: #15803d;
+    }
+
+    .stitch-summary-card[data-tone="negative"] .stitch-summary-card-icon {
+      background: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+    }
+
+    .stitch-summary-card[data-tone="neutral"] .stitch-summary-card-icon {
+      background: rgba(99, 102, 241, 0.12);
+      color: #4338ca;
+    }
+
+    .stitch-summary-card-label {
+      color: #5e738f;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .stitch-summary-card-value {
+      color: #12263f;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .stitch-smart-insights {
+      padding: 18px 20px;
+      border-radius: 22px;
+      border: 1px solid #dbe5ef;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+      color: #12263f;
+    }
+
+    .stitch-smart-insights-title {
+      margin: 0 0 14px;
+      color: #12263f;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .stitch-smart-insights-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stitch-smart-insight-item {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      color: #20354f;
+      line-height: 1.55;
+    }
+
+    .stitch-smart-insight-item strong {
+      color: #12263f;
+    }
+
+    .stitch-smart-summary-actions {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .stitch-analysis-toggle-btn {
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(37, 99, 235, 0.18);
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(29, 78, 216, 0.18);
+      transition: var(--transition);
+    }
+
+    .stitch-analysis-toggle-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(29, 78, 216, 0.22);
+    }
+
+    .stitch-analysis-details {
+      display: none;
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid #dbe5ef;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+      color: #12263f;
+    }
+
+    .stitch-analysis-details.is-open {
+      display: block;
+    }
+
+    .stitch-analysis-details-title {
+      margin: 0 0 10px;
+      color: #12263f;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .stitch-analysis-details-body {
+      color: #5e738f;
+      line-height: 1.75;
+      white-space: pre-wrap;
+    }
+
     .stitch-ai-note {
       padding: 18px 20px;
       border-radius: 22px;
@@ -3702,6 +4154,33 @@
       color: #61758d !important;
     }
 
+    .stitch-ai-subscriptions {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stitch-ai-subscriptions .subscriptions-head {
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .stitch-subscriptions-unified {
+      display: grid;
+      gap: 16px;
+    }
+
+    .stitch-subscriptions-unified #subscriptions-list {
+      order: 1;
+    }
+
+    .stitch-subscriptions-unified .subscriptions-summary-card {
+      order: 2;
+      background:
+        radial-gradient(circle at top right, rgba(99,102,241,0.14), transparent 28%),
+        linear-gradient(180deg, #ffffff, #f7fbff);
+    }
+
     .surface-empty-state {
       display: grid;
       gap: 6px;
@@ -3769,18 +4248,9 @@
     }
 
     .stitch-income-division {
-      display: inline-grid;
-      justify-items: start;
-      gap: 8px;
-      min-width: 138px;
-    }
-
-    .stitch-income-division > summary {
-      list-style: none;
-    }
-
-    .stitch-income-division > summary::-webkit-details-marker {
-      display: none;
+      position: relative;
+      display: inline-flex;
+      justify-content: flex-start;
     }
 
     .stitch-income-division-trigger {
@@ -3800,7 +4270,7 @@
       transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .stitch-income-division[open] .stitch-income-division-trigger,
+    .stitch-income-division.is-open .stitch-income-division-trigger,
     .stitch-income-division-trigger:hover {
       transform: translateY(-1px);
       border-color: #9db4d3;
@@ -3813,19 +4283,40 @@
       transition: transform 0.18s ease;
     }
 
-    .stitch-income-division[open] .stitch-income-division-trigger .caret {
+    .stitch-income-division.is-open .stitch-income-division-trigger .caret {
       transform: rotate(180deg);
     }
 
     .stitch-income-division-panel {
-      display: grid;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      z-index: 30;
+      display: none;
       gap: 8px;
-      width: min(260px, 100%);
+      width: min(260px, calc(100vw - 48px));
       padding: 12px;
       border-radius: 16px;
       border: 1px solid #dbe5ef;
       background: #ffffff;
       box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .stitch-income-division.is-open .stitch-income-division-panel {
+      display: grid;
+    }
+
+    .stitch-income-division-panel::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      right: 18px;
+      width: 14px;
+      height: 14px;
+      border-top: 1px solid #dbe5ef;
+      border-left: 1px solid #dbe5ef;
+      background: #ffffff;
+      transform: rotate(45deg);
     }
 
     .stitch-income-division-item {
@@ -3845,6 +4336,18 @@
     .stitch-income-division-item strong {
       font-size: 12px;
       letter-spacing: -0.01em;
+    }
+
+    @media (max-width: 768px) {
+      .stitch-income-division-panel {
+        right: auto;
+        left: 0;
+      }
+
+      .stitch-income-division-panel::before {
+        right: auto;
+        left: 18px;
+      }
     }
 
     .stitch-disclosure.stitch-disclosure-inline summary {
@@ -3947,8 +4450,7 @@
       #finance-accounts,
       #finance-loans,
       #finance-report,
-      #tab-commitments,
-      #tab-projections,
+      #tab-commitments_goals,
       .finance-columns,
       .stitch-ai-shell {
         grid-template-columns: 1fr;
@@ -3959,14 +4461,23 @@
       #finance-loans .section:nth-child(2),
       #finance-report .section:nth-child(2),
       #finance-expenses .section:nth-child(2),
-      #tab-commitments > .section:nth-of-type(2),
-      #tab-projections > .section:nth-of-type(2) {
-        grid-column: auto;
-        grid-row: auto;
+      .stitch-slider-row,
+      .goal-management-grid,
+      .unified-goal-top {
+        grid-template-columns: 1fr;
+      }
+
+      .stitch-slider-control {
+        grid-template-columns: minmax(0, 1fr) 74px 18px;
       }
 
       .auth-visual-panel {
         min-height: auto;
+      }
+
+      .stitch-summary-cards,
+      .stitch-subscriptions-unified {
+        grid-template-columns: 1fr;
       }
 
       .tab-intro-preview,
@@ -4306,11 +4817,8 @@
           <div class="tabs">
             <button onclick="switchTab('dashboard')" class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
             <button onclick="switchTab('finances')" class="tab-btn" data-tab="finances">💰 Finanças</button>
-            <button onclick="switchTab('commitments')" class="tab-btn" data-tab="commitments">📋 Divisões</button>
-            <button onclick="switchTab('projections')" class="tab-btn" data-tab="projections">🎯 Objetivos</button>
+            <button onclick="switchTab('commitments_goals')" class="tab-btn" data-tab="commitments_goals">📋 Divisões &amp; Objetivos</button>
             <button onclick="switchTab('ai_analysis')" class="tab-btn" data-tab="ai_analysis">🤖 Análise da IA</button>
-            <button onclick="switchTab('subscriptions')" class="tab-btn" data-tab="subscriptions">🔄
-              Assinaturas</button>
           </div>
         </div>
       </nav>
@@ -4335,12 +4843,10 @@
               class="bottom-sheet-action">💼 Novo Salário</button>
             <button onclick="switchTab('finances'); setFinanceView('loans'); closeBottomSheet()"
               class="bottom-sheet-action">🏦 Novo Empréstimo</button>
-            <button onclick="switchTab('projections'); openModal('goal'); closeBottomSheet()"
+            <button onclick="switchTab('commitments_goals'); openModal('goal'); closeBottomSheet()"
               class="bottom-sheet-action">🎯 Nova Meta</button>
             <button onclick="switchTab('ai_analysis'); closeBottomSheet()" class="bottom-sheet-action">🤖 Análise da
               IA</button>
-            <button onclick="switchTab('subscriptions'); closeBottomSheet()" class="bottom-sheet-action">🔄
-              Assinaturas</button>
           </div>
         </div>
       </div>
@@ -4859,245 +5365,167 @@
             </div>
           </div>
 
-          <!-- Commitments Tab -->
-          <div id="tab-commitments" class="tab-content stitch-page hidden">
-            <div id="tab-intro-commitments" class="tab-intro-card mb-6" data-tab-intro="commitments" data-intro-theme="commitments">
-              <button type="button" class="tab-intro-close" onclick="dismissTabIntro('commitments')" aria-label="Fechar introdução de Divisões">×</button>
+          <!-- Commitments + Goals Tab -->
+          <div id="tab-commitments_goals" class="tab-content stitch-page hidden">
+            <div id="tab-intro-commitments_goals" class="tab-intro-card mb-6" data-tab-intro="commitments_goals" data-intro-theme="commitments">
+              <button type="button" class="tab-intro-close" onclick="dismissTabIntro('commitments_goals')" aria-label="Fechar introdução de Divisões e Objetivos">×</button>
               <div class="tab-intro-inner">
                 <div class="tab-intro-copy">
-                  <span class="tab-intro-badge">Divisões</span>
-                  <h2 class="tab-intro-title">Distribuição de renda e compromissos com o visual limpo da referência.</h2>
+                  <span class="tab-intro-badge">Divisões &amp; Objetivos</span>
+                  <h2 class="tab-intro-title">Distribuição de renda e metas unificadas em uma única visão.</h2>
                   <p class="tab-intro-description">
-                    Percentuais, blocos de compromisso e valores calculados passam a ocupar um painel mais claro,
-                    hierárquico e fácil de escanear, como no Stitch.
+                    Ajuste os percentuais com sliders, acompanhe os valores calculados e gerencie objetivos no mesmo fluxo,
+                    como na referência principal do Stitch.
                   </p>
                 </div>
                 <div class="tab-intro-preview">
                   <div class="tab-intro-device">
                     <div class="tab-intro-device-screen">
-                      <img src="stitch/interactive_divisions_and_goals_dashboard/screen.png" alt="Preview das divisões e metas">
+                      <img src="stitch/interactive_divisions_and_goals_dashboard/screen.png" alt="Preview de divisões e objetivos">
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="section">
-              <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
-                <div>
-                  <h2 class="section-title">📊 Divisão Percentual</h2>
-                  <p class="section-description">Configure como dividir sua renda entre compromissos</p>
-                </div>
-                <button onclick="openModal('labels')" class="btn btn-secondary">✏️ Editar Nomes</button>
-              </div>
 
-              <div class="card rounded-2xl p-6 space-y-4">
-                <div id="commitment-categories" class="space-y-3">
-                  <div
-                    class="commitment-row flex items-center gap-4 p-4 bg-slate-900/40 rounded-xl flex-col sm:flex-row">
-                    <span class="text-3xl">💳</span>
-                    <div class="flex-1">
-                      <label class="block text-sm font-600 mb-2 sm:mb-2" id="label-expenses">Gastos Gerais</label>
-                      <div class="flex items-center gap-2">
-                        <input type="number" id="commit-expenses" class="input-field w-full" value="70" min="0"
-                          max="100">
-                        <span class="text-slate-400 font-600">%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="commitment-row flex items-center gap-4 p-4 bg-slate-900/40 rounded-xl flex-col sm:flex-row">
-                    <span class="text-3xl">📈</span>
-                    <div class="flex-1">
-                      <label class="block text-sm font-600 mb-2 sm:mb-2" id="label-invest">Investimentos</label>
-                      <div class="flex items-center gap-2">
-                        <input type="number" id="commit-invest" class="input-field w-full" value="20" min="0" max="100">
-                        <span class="text-slate-400 font-600">%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="commitment-row flex items-center gap-4 p-4 bg-slate-900/40 rounded-xl flex-col sm:flex-row">
-                    <span class="text-3xl">⛪</span>
-                    <div class="flex-1">
-                      <label class="block text-sm font-600 mb-2 sm:mb-2" id="label-tithe">Dízimo/Doações</label>
-                      <div class="flex items-center gap-2">
-                        <input type="number" id="commit-tithe" class="input-field w-full" value="10" min="0" max="100">
-                        <span class="text-slate-400 font-600">%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="commitment-row flex items-center gap-4 p-4 bg-slate-900/40 rounded-xl flex-col sm:flex-row">
-                    <span class="text-3xl">🎯</span>
-                    <div class="flex-1">
-                      <label class="block text-sm font-600 mb-2 sm:mb-2" id="label-emergency">Reserva de
-                        Emergência</label>
-                      <div class="flex items-center gap-2">
-                        <input type="number" id="commit-emergency" class="input-field w-full" value="0" min="0"
-                          max="100">
-                        <span class="text-slate-400 font-600">%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex justify-between items-center">
-                  <span class="font-600">Total:</span>
-                  <span id="commit-total" class="text-2xl font-bold text-emerald-400">100%</span>
-                </div>
-
-                <button onclick="saveCommitments()" class="btn btn-primary w-full">💾 Salvar Divisão</button>
-              </div>
-            </div>
-
-            <div class="section">
-              <h2 class="section-title">💰 Valores Calculados</h2>
-              <p class="section-description">Baseado na sua renda mensal total</p>
-
-              <div class="grid-4">
-                <div class="card rounded-xl p-4">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="text-2xl">💳</span>
-                    <span class="text-sm text-slate-400" data-commitment-label="expenses">Despesas</span>
-                  </div>
-                  <p class="text-xl font-bold text-white" id="val-expenses">R$ 0,00</p>
-                </div>
-
-                <div class="card rounded-xl p-4">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="text-2xl">📈</span>
-                    <span class="text-sm text-slate-400" data-commitment-label="invest">Investimentos</span>
-                  </div>
-                  <p class="text-xl font-bold text-emerald-400" id="val-invest">R$ 0,00</p>
-                </div>
-
-                <div class="card rounded-xl p-4">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="text-2xl">⛪</span>
-                    <span class="text-sm text-slate-400" data-commitment-label="tithe">Dízimo</span>
-                  </div>
-                  <p class="text-xl font-bold text-purple-400" id="val-tithe">R$ 0,00</p>
-                </div>
-
-                <div class="card rounded-xl p-4">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="text-2xl">🎯</span>
-                    <span class="text-sm text-slate-400" data-commitment-label="emergency">Reserva</span>
-                  </div>
-                  <p class="text-xl font-bold text-blue-400" id="val-emergency">R$ 0,00</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Projections Tab -->
-          <div id="tab-projections" class="tab-content stitch-page hidden">
-            <div id="tab-intro-projections" class="tab-intro-card mb-6" data-tab-intro="projections" data-intro-theme="projections">
-              <button type="button" class="tab-intro-close" onclick="dismissTabIntro('projections')" aria-label="Fechar introdução de Objetivos">×</button>
-              <div class="tab-intro-inner">
-                <div class="tab-intro-copy">
-                  <span class="tab-intro-badge">Objetivos</span>
-                  <h2 class="tab-intro-title">Metas e progresso financeiro apresentados como um painel de produto.</h2>
-                  <p class="tab-intro-description">
-                    O acompanhamento de objetivos, histórico e opções de investimento passa a seguir uma composição mais
-                    clara, previsível e fiel ao Stitch.
-                  </p>
-                </div>
-                <div class="tab-intro-preview">
-                  <div class="tab-intro-device">
-                    <div class="tab-intro-device-screen">
-                      <img src="stitch/interactive_divisions_and_goals_dashboard/screen.png" alt="Preview da tela de objetivos">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="section">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="section-title mb-0">🎯 Meus Objetivos</h2>
-                <button onclick="openModal('goal')" class="btn btn-primary px-4 py-2 text-sm">➕ Novo</button>
-              </div>
-              <div id="goals-list" class="space-y-3">
-                <p class="text-slate-400 text-center py-8">Nenhum objetivo cadastrado</p>
-              </div>
-            </div>
-
-            <div class="section">
-              <h2 class="section-title">📜 Histórico de Objetivos Concluídos</h2>
-              <div id="completed-goals-list" class="space-y-3">
-                <p class="text-slate-400 text-center py-8">Nenhum objetivo concluído</p>
-              </div>
-            </div>
-
-            <div class="section">
-              <h2 class="section-title">💡 Opções de Investimento</h2>
-              <div class="grid-3" id="investment-options">
-                <div class="card rounded-xl p-4">
-                  <div class="flex items-center gap-2 mb-2">
-                    <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
-                    <span class="font-6 text-white">SELIC</span>
-                  </div>
-                  <p class="text-sm text-slate-400 mb-1">Taxa atual: 10,75% a.a.</p>
-                  <p class="text-xs text-slate-500">Baixo risco, liquidez diária</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Subscriptions Tab -->
-          <div id="tab-subscriptions" class="tab-content stitch-page hidden">
-            <div id="tab-intro-subscriptions" class="tab-intro-card mb-6" data-tab-intro="subscriptions" data-intro-theme="subscriptions">
-              <button type="button" class="tab-intro-close" onclick="dismissTabIntro('subscriptions')" aria-label="Fechar introdução de Assinaturas">×</button>
-              <div class="tab-intro-inner">
-                <div class="tab-intro-copy">
-                  <span class="tab-intro-badge">Assinaturas</span>
-                  <h2 class="tab-intro-title">Recorrências e impacto mensal com visual fiel ao layout do Stitch.</h2>
-                  <p class="tab-intro-description">
-                    Total mensal, alertas e itens recorrentes passam a dividir o mesmo contexto visual, com leitura mais
-                    clara e contraste melhor.
-                  </p>
-                </div>
-                <div class="tab-intro-preview">
-                  <div class="tab-intro-device">
-                    <div class="tab-intro-device-screen">
-                      <img src="stitch/ai_insights_and_subscription_management/screen.png" alt="Preview da área de assinaturas">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="section">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="section-title mb-0">🔄 Minhas Assinaturas</h2>
-                <button onclick="openModal('subscription')" class="btn btn-primary px-4 py-2 text-sm">➕ Nova</button>
-              </div>
-
-              <!-- Card de Resumo -->
-              <div class="card subscriptions-summary-card rounded-2xl p-5 mb-5"
-                style="background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08)); border-color:rgba(99,102,241,0.3);">
-                <div class="flex items-center justify-between mb-3">
+            <div class="stitch-unified-shell">
+              <section class="section stitch-unified-section">
+                <div class="stitch-panel-head mb-5">
                   <div>
-                    <p class="text-sm text-slate-400 font-semibold">Total Mensal em Assinaturas</p>
-                    <p class="text-2xl font-extrabold text-white mt-1" id="subscriptions-total">R$ 0,00</p>
+                    <span class="stitch-panel-kicker">Planejamento</span>
+                    <h2 class="section-title mb-2">Divisão Percentual Interativa</h2>
+                    <p class="stitch-panel-subtitle">Configure a divisão da renda da família e veja o impacto mensal refletido nos objetivos.</p>
                   </div>
-                  <span class="text-3xl">💳</span>
+                  <button onclick="openModal('labels')" class="btn btn-secondary !w-auto">✏️ Editar Nomes</button>
                 </div>
-                <div id="subscriptions-alert"
-                  class="hidden mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                  <p class="text-sm text-amber-400 font-semibold">⚠️ Alerta de Economia</p>
-                  <p class="text-xs text-amber-300/80 mt-1" id="subscriptions-alert-text">Suas assinaturas representam
-                    mais de 15% da sua renda!</p>
-                </div>
-              </div>
 
-              <!-- Lista de Assinaturas -->
-              <div id="subscriptions-list" class="space-y-3">
-                <p class="text-slate-400 text-center py-8">Nenhuma assinatura cadastrada</p>
-              </div>
+                <div class="stitch-commitments-card">
+                  <div class="stitch-commitments-title">Configurar Divisão</div>
+                  <div id="commitment-categories" class="stitch-slider-list">
+                    <div class="stitch-slider-row">
+                      <div class="stitch-slider-label">
+                        <span class="stitch-slider-icon">💳</span>
+                        <label for="commit-expenses" id="label-expenses">Gastos Gerais</label>
+                      </div>
+                      <div class="stitch-slider-control">
+                        <input type="range" id="commit-expenses-range" min="0" max="100" value="70">
+                        <input type="number" id="commit-expenses" class="input-field stitch-percent-input" value="70" min="0" max="100">
+                        <span class="stitch-percent-symbol">%</span>
+                      </div>
+                    </div>
+
+                    <div class="stitch-slider-row">
+                      <div class="stitch-slider-label">
+                        <span class="stitch-slider-icon">📈</span>
+                        <label for="commit-invest" id="label-invest">Investimentos</label>
+                      </div>
+                      <div class="stitch-slider-control">
+                        <input type="range" id="commit-invest-range" min="0" max="100" value="20">
+                        <input type="number" id="commit-invest" class="input-field stitch-percent-input" value="20" min="0" max="100">
+                        <span class="stitch-percent-symbol">%</span>
+                      </div>
+                    </div>
+
+                    <div class="stitch-slider-row">
+                      <div class="stitch-slider-label">
+                        <span class="stitch-slider-icon">⛪</span>
+                        <label for="commit-tithe" id="label-tithe">Dízimo/Doações</label>
+                      </div>
+                      <div class="stitch-slider-control">
+                        <input type="range" id="commit-tithe-range" min="0" max="100" value="10">
+                        <input type="number" id="commit-tithe" class="input-field stitch-percent-input" value="10" min="0" max="100">
+                        <span class="stitch-percent-symbol">%</span>
+                      </div>
+                    </div>
+
+                    <div class="stitch-slider-row">
+                      <div class="stitch-slider-label">
+                        <span class="stitch-slider-icon">🎯</span>
+                        <label for="commit-emergency" id="label-emergency">Reserva de Emergência</label>
+                      </div>
+                      <div class="stitch-slider-control">
+                        <input type="range" id="commit-emergency-range" min="0" max="100" value="0">
+                        <input type="number" id="commit-emergency" class="input-field stitch-percent-input" value="0" min="0" max="100">
+                        <span class="stitch-percent-symbol">%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="stitch-total-track">
+                    <div id="commit-total-bar" class="stitch-total-track-fill" style="width:100%;"></div>
+                    <div id="commit-total" class="stitch-total-track-label">Total: 100%</div>
+                  </div>
+
+                  <button onclick="saveCommitments()" class="btn btn-primary w-full">💾 Salvar Divisão</button>
+                </div>
+              </section>
+
+              <section class="section stitch-unified-section">
+                <div class="stitch-panel-head mb-5">
+                  <div>
+                    <span class="stitch-panel-kicker">Resumo</span>
+                    <h2 class="section-title mb-2">Valores Calculados</h2>
+                    <p class="stitch-panel-subtitle">Os cards abaixo acompanham a renda mensal e a distribuição percentual configurada.</p>
+                  </div>
+                </div>
+
+                <div class="stitch-commitment-kpis">
+                  <div class="stitch-commitment-kpi" data-commitment-tone="expenses">
+                    <div class="stitch-commitment-kpi-head">
+                      <span>💳</span>
+                      <span data-commitment-label="expenses">Despesas</span>
+                    </div>
+                    <div class="stitch-commitment-kpi-value" id="val-expenses">R$ 0,00</div>
+                  </div>
+                  <div class="stitch-commitment-kpi" data-commitment-tone="invest">
+                    <div class="stitch-commitment-kpi-head">
+                      <span>📈</span>
+                      <span data-commitment-label="invest">Investimentos</span>
+                    </div>
+                    <div class="stitch-commitment-kpi-value" id="val-invest">R$ 0,00</div>
+                  </div>
+                  <div class="stitch-commitment-kpi" data-commitment-tone="tithe">
+                    <div class="stitch-commitment-kpi-head">
+                      <span>⛪</span>
+                      <span data-commitment-label="tithe">Dízimo</span>
+                    </div>
+                    <div class="stitch-commitment-kpi-value" id="val-tithe">R$ 0,00</div>
+                  </div>
+                  <div class="stitch-commitment-kpi" data-commitment-tone="emergency">
+                    <div class="stitch-commitment-kpi-head">
+                      <span>🎯</span>
+                      <span data-commitment-label="emergency">Reserva</span>
+                    </div>
+                    <div class="stitch-commitment-kpi-value" id="val-emergency">R$ 0,00</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="section stitch-unified-section">
+                <div class="stitch-panel-head mb-5">
+                  <div>
+                    <span class="stitch-panel-kicker">Metas</span>
+                    <h2 class="section-title mb-2">Meus Objetivos</h2>
+                    <p class="stitch-panel-subtitle">Objetivos ativos da família com progresso, aporte mensal sugerido e ações rápidas.</p>
+                  </div>
+                  <button onclick="openModal('goal')" class="btn btn-primary !w-auto">➕ Novo Objetivo</button>
+                </div>
+                <div id="goals-list" class="space-y-3">
+                  <p class="text-slate-400 text-center py-8">Nenhum objetivo cadastrado</p>
+                </div>
+              </section>
+
+              <section class="section stitch-unified-section">
+                <details class="stitch-completed-goals-disclosure">
+                  <summary>
+                    <span>📜 Histórico de Objetivos Concluídos</span>
+                    <span class="caret">▾</span>
+                  </summary>
+                  <div id="completed-goals-list" class="space-y-3 pt-4">
+                    <p class="text-slate-400 text-center py-8">Nenhum objetivo concluído</p>
+                  </div>
+                </details>
+              </section>
             </div>
           </div>
 
@@ -5133,20 +5561,22 @@
               </div>
 
               <div id="ai-insights-container" class="stitch-ai-shell">
-                <div class="stitch-panel">
-                  <div class="stitch-panel-head">
-                    <div>
-                      <span class="stitch-panel-kicker">Smart Summary</span>
-                      <h3 class="stitch-panel-title">Resumo Inteligente</h3>
-                      <p class="stitch-panel-subtitle">Leitura consolidada de entradas, saídas, categorias, alertas e próximos passos.</p>
+                <div class="stitch-ai-main-column">
+                  <div class="stitch-panel stitch-smart-summary-panel">
+                    <div class="stitch-panel-head">
+                      <div>
+                        <span class="stitch-panel-kicker">Smart Summary</span>
+                        <h3 class="stitch-panel-title">Resumo Inteligente</h3>
+                        <p class="stitch-panel-subtitle">Visão rápida de entradas, saídas, saldo, alertas e próximos passos da sua família.</p>
+                      </div>
                     </div>
-                  </div>
-                  <div id="ai-insights-output" class="ai-analysis-output">
-                    <div class="analysis-rich-card text-slate-500 text-center p-6">Importe um extrato no Dashboard para atualizar este resumo automaticamente.</div>
+                    <div id="ai-insights-output" class="ai-analysis-output">
+                      <div class="analysis-rich-card text-slate-500 text-center p-6">Importe um extrato no Dashboard para atualizar este resumo automaticamente.</div>
+                    </div>
                   </div>
                 </div>
 
-                <div class="space-y-4">
+                <div class="stitch-ai-side-column">
                   <div class="stitch-ai-note">
                     O chat responde usando somente as movimentações da família selecionada. Perguntas por pessoa, banco, categoria e período agora são tratadas com contexto real dos documentos salvos.
                   </div>
@@ -5169,6 +5599,37 @@
                       <button class="ai-chat-send-btn" onclick="sendAIChatMessage()">
                         <span>🚀</span>
                       </button>
+                    </div>
+                  </div>
+
+                  <div class="stitch-ai-subscriptions">
+                    <div class="stitch-panel-head subscriptions-head">
+                      <div>
+                        <span class="stitch-panel-kicker">Assinaturas</span>
+                        <h3 class="stitch-panel-title" style="font-size:26px;margin-top:10px;">Minhas Assinaturas</h3>
+                        <p class="stitch-panel-subtitle">Serviços recorrentes e impacto mensal reunidos na mesma leitura da IA.</p>
+                      </div>
+                      <button onclick="openModal('subscription')" class="btn btn-primary px-4 py-2 text-sm">➕ Nova</button>
+                    </div>
+
+                    <div class="stitch-subscriptions-unified">
+                      <div id="subscriptions-list" class="space-y-3">
+                        <p class="text-slate-400 text-center py-8">Nenhuma assinatura cadastrada</p>
+                      </div>
+
+                      <div class="card subscriptions-summary-card rounded-2xl p-5">
+                        <div class="flex items-center justify-between mb-3">
+                          <div>
+                            <p class="text-sm text-slate-400 font-semibold">Total Mensal em Assinaturas</p>
+                            <p class="text-2xl font-extrabold text-white mt-1" id="subscriptions-total">R$ 0,00</p>
+                          </div>
+                          <span class="text-3xl">💳</span>
+                        </div>
+                        <div id="subscriptions-alert" class="hidden mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                          <p class="text-sm text-amber-400 font-semibold">⚠️ Alerta de Economia</p>
+                          <p class="text-xs text-amber-300/80 mt-1" id="subscriptions-alert-text">Suas assinaturas representam mais de 15% da sua renda!</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -5272,7 +5733,7 @@
       dismissedTabIntros: {}
     };
 
-    const TAB_INTRO_KEYS = ['finances', 'commitments', 'projections', 'subscriptions', 'ai_analysis'];
+    const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'subscriptions', 'ai_analysis'];
 
     function normalizeUserUiPreferences(data = {}) {
       const intros = data?.ui?.dismissedTabIntros || data?.dismissedTabIntros || {};
@@ -6955,6 +7416,7 @@
     async function loadIncomeHistory() {
       if (!currentFamily || !currentUser) return;
       try {
+        closeIncomeDivisionPopover();
         const query = db.collection('transactions')
           .where('familyId', '==', currentFamily)
           .where('type', '==', 'income')
@@ -7001,10 +7463,10 @@
                 </div>
               </td>
               <td class="muted">${escapeHTML(bankLabel)}</td>
-              <td>${renderIncomeAllocationSummary(allocationItems, doc.id)}</td>
               <td class="align-right stitch-value-positive">+${formatCurr(inc.amount)}</td>
               <td class="align-right">
                 <div class="stitch-row-actions">
+                  ${renderIncomeAllocationSummary(allocationItems, doc.id)}
                   ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'income')`)}
                   ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
                 </div>
@@ -7029,7 +7491,6 @@
                     <th>Data</th>
                     <th>Descrição</th>
                     <th>Banco</th>
-                    <th>Divisão</th>
                     <th class="align-right">Valor</th>
                     <th class="align-right">Ações</th>
                   </tr>
@@ -7186,64 +7647,61 @@
               const id = doc.id;
               window._goalsCache[id] = { progress: Number(g.progress || 0), target: Number(g.targetAmount || 0) };
               const progress = ((g.progress || 0) / (g.targetAmount || 1)) * 100;
+              const safeProgress = Math.max(0, Math.min(progress, 100));
+              const currentValue = Number(g.progress || 0);
+              const targetValue = Number(g.targetAmount || 0);
+              const deadlineText = g.deadline ? formatDisplayDate(g.deadline) : 'Sem data objetivo';
 
               html.push(`
-                <div class="stitch-goal-card" id="goal-${id}">
-                  <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="unified-goal-card" id="goal-${id}">
+                  <div class="unified-goal-top">
+                    <div class="goal-ring" style="--progress:${safeProgress};">
+                      <div class="goal-ring-inner">${safeProgress.toFixed(0)}%</div>
+                    </div>
                     <div>
-                      <div class="meta">Objetivo ativo</div>
-                      <strong class="text-white truncate" style="display:block;font-size:20px;color:#12263f !important;margin-top:10px;">${escapeHTML(g.name)}</strong>
-                      ${g.deadline ? `<span class="stitch-badge stitch-badge-soft" style="margin-top:10px;">Prazo ${escapeHTML(formatDisplayDate(g.deadline))}</span>` : ''}
+                      <div class="unified-goal-name">${escapeHTML(g.name)}</div>
+                      <div class="unified-goal-meta">
+                        ${formatCurrency(currentValue)} de ${formatCurrency(targetValue)}<br>
+                        Data objetivo: ${escapeHTML(deadlineText)}
+                      </div>
                     </div>
-                    <span class="stitch-badge stitch-badge-info">${Math.min(progress, 100).toFixed(0)}%</span>
                   </div>
-                  <div class="stitch-progress-track mb-3">
-                    <div class="stitch-progress-fill" style="width: ${Math.min(progress, 100)}%"></div>
-                  </div>
-                  <div class="stitch-mini-metrics mb-4">
-                    <div class="stitch-mini-metric">
-                      <div class="stitch-mini-metric-label">Acumulado</div>
-                      <div class="stitch-mini-metric-value">${(typeof formatCurrency === 'function') ? formatCurrency(g.progress || 0) : 'R$ ' + (g.progress || 0).toFixed(2)}</div>
-                    </div>
-                    <div class="stitch-mini-metric">
-                      <div class="stitch-mini-metric-label">Meta</div>
-                      <div class="stitch-mini-metric-value">${(typeof formatCurrency === 'function') ? formatCurrency(g.targetAmount) : 'R$ ' + (g.targetAmount || 0).toFixed(2)}</div>
-                    </div>
+                  <div class="unified-goal-bar">
+                    <span style="width:${safeProgress}%;"></span>
                   </div>
 
-                  <div class="stitch-panel" style="padding:18px;margin-bottom:16px;background:linear-gradient(180deg,#ffffff,#f8fbfe);">
-                    <h5 style="font-size:14px;font-weight:800;color:#12263f;margin-bottom:12px;">Estimativa com aportes mensais</h5>
-                    <div class="flex flex-col sm:flex-row gap-2 mb-3 items-start sm:items-center">
-                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="input-field text-sm w-full sm:w-44 goal-monthly" placeholder="Aporte mensal (R$)">
-                      <button onclick="computeEstimatesForGoal('${id}')" class="btn btn-primary !w-auto !min-h-0 !px-4 !py-2 text-sm">Calcular</button>
-                      <button onclick="useAllInvestmentForGoal('${id}')" class="btn btn-outline !w-auto !min-h-0 !px-4 !py-2 text-sm">Usar investimento</button>
+                  <div class="goal-management-panel">
+                    <div class="goal-management-grid">
+                      <input type="number" min="0" step="0.01" id="goal-monthly-${id}" class="input-field text-sm goal-monthly" placeholder="Aporte mensal (R$)">
+                      <button onclick="computeEstimatesForGoal('${id}')" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">Calcular</button>
+                      <button onclick="useAllInvestmentForGoal('${id}')" class="btn btn-outline !w-auto !px-4 !py-2 text-sm">Usar investimento</button>
                     </div>
                     <div id="goal-estimates-${id}" class="space-y-2 text-sm text-slate-300">
                       <p class="text-slate-500">Insira um aporte mensal e clique em Calcular.</p>
                     </div>
+                    <div class="goal-management-grid">
+                      <input type="number" min="0" step="0.01" id="goal-add-${id}" class="input-field text-sm" placeholder="Adicionar valor"/>
+                      <button onclick="addToGoalProgress('${id}')" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">Adicionar aporte</button>
+                      <div></div>
+                    </div>
                   </div>
 
-                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-3">
-                    <input type="number" min="0" step="0.01" id="goal-add-${id}" class="input-field text-sm w-full sm:w-44" placeholder="Adicionar valor"/>
-                    <button onclick="addToGoalProgress('${id}')" class="btn btn-primary !w-auto !min-h-0 !px-4 !py-2 text-sm">Adicionar aporte</button>
-                  </div>
-
-                  <div class="stitch-inline-actions">
-                    <button onclick="editGoal('${id}')" class="btn btn-outline !w-auto !min-h-0 !px-4 !py-2 text-sm">✏️ Editar</button>
-                    <button onclick="completeGoal('${id}')" class="btn btn-primary !w-auto !min-h-0 !px-4 !py-2 text-sm">✅ Concluir</button>
-                    <button onclick="deleteGoal('${id}')" class="btn btn-outline !w-auto !min-h-0 !px-4 !py-2 text-sm" style="color:#b91c1c;border-color:rgba(220,38,38,0.18);">🗑️ Excluir</button>
+                  <div class="unified-goal-actions">
+                    <button onclick="editGoal('${id}')" class="btn btn-outline !w-auto !px-4 !py-2 text-sm">✏️ Editar</button>
+                    <button onclick="completeGoal('${id}')" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">✅ Concluir</button>
+                    <button onclick="deleteGoal('${id}')" class="btn btn-outline !w-auto !px-4 !py-2 text-sm" style="color:#b91c1c;border-color:rgba(220,38,38,0.18);">🗑️ Excluir</button>
                   </div>
                 </div>
               `);
             });
 
             if (!html.length) {
-              goalsContainer.innerHTML = renderSurfaceEmptyState('Nenhuma meta ativa no momento', 'As metas concluídas continuam disponíveis no histórico ao lado.');
+              goalsContainer.innerHTML = renderSurfaceEmptyState('Nenhuma meta ativa no momento', 'As metas concluídas continuam disponíveis no histórico recolhido logo abaixo.');
               if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
               return;
             }
 
-            goalsContainer.innerHTML = html.join('');
+            goalsContainer.innerHTML = `<div class="unified-goals-grid">${html.join('')}</div>`;
 
             // attach listeners to monthly inputs (enter key also triggers)
             document.querySelectorAll('.goal-monthly').forEach(input => {
@@ -9204,6 +9662,11 @@
           document.getElementById('commit-tithe').value = data.tithe || 10;
           document.getElementById('commit-emergency').value = data.emergency || 0;
         }
+        bindCommitmentSliders();
+        syncCommitmentSlider('commit-expenses');
+        syncCommitmentSlider('commit-invest');
+        syncCommitmentSlider('commit-tithe');
+        syncCommitmentSlider('commit-emergency');
 
         // Setup real-time listener para categorias personalizadas
         listenToCategoriesRealtime();
@@ -9237,18 +9700,19 @@
         if (typeof loadExpenseHistory === 'function') loadExpenseHistory();
       });
     });
+    bindCommitmentSliders();
 
     function sanitizeKey(name) {
       return name.replace(/\s+/g, '-').replace(/[^a-z0-9\-]/gi, '').toLowerCase();
     }
 
+    function normalizePrimaryTabName(tabName) {
+      if (tabName === 'commitments' || tabName === 'projections') return 'commitments_goals';
+      return tabName;
+    }
+
     function switchTab(tabName) {
-      // Bloquear aba de Assinaturas se não for Executivo
-      if (tabName === 'subscriptions' && !checkPlanAccess('executive')) {
-        showToast('⚠️', 'Gestão de Assinaturas requer o plano Executivo.');
-        openModal('plans', 'executive');
-        return;
-      }
+      tabName = normalizePrimaryTabName(tabName);
 
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       const target = document.getElementById(`tab-${tabName}`);
@@ -9270,9 +9734,13 @@
         if (typeof loadSalariesList === 'function') loadSalariesList();
         if (typeof loadIncomeHistory === 'function') loadIncomeHistory();
         if (typeof loadExpenseHistory === 'function') loadExpenseHistory();
+      } else if (tabName === 'commitments_goals') {
+        if (typeof loadGoalsList === 'function') loadGoalsList();
+        if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
       } else if (tabName === 'dashboard') {
         if (typeof updateDashboard === 'function') updateDashboard();
-      } else if (tabName === 'subscriptions') {
+      } else if (tabName === 'ai_analysis') {
+        if (typeof fetchAIAnalysis === 'function') fetchAIAnalysis();
         if (typeof renderSubscriptions === 'function') renderSubscriptions();
       }
     }
@@ -9410,8 +9878,51 @@
       const total = expenses + invest + tithe + emergency + customSum;
 
       const totalEl = document.getElementById('commit-total');
-      totalEl.textContent = total + '%';
-      totalEl.className = total === 100 ? 'text-2xl font-bold text-emerald-400' : 'text-2xl font-bold text-red-400';
+      const totalBarEl = document.getElementById('commit-total-bar');
+      const clampedTotal = Math.max(0, Math.min(total, 100));
+      totalEl.textContent = `Total: ${total}%`;
+      totalEl.style.color = total === 100 ? '#ffffff' : '#fee2e2';
+      if (totalBarEl) {
+        totalBarEl.style.width = `${clampedTotal}%`;
+        totalBarEl.style.background = total === 100
+          ? 'repeating-linear-gradient(135deg, #1495c4, #1495c4 10px, #39c872 10px, #39c872 20px)'
+          : 'repeating-linear-gradient(135deg, #ef4444, #ef4444 10px, #f97316 10px, #f97316 20px)';
+      }
+    }
+
+    function syncCommitmentSlider(sourceId) {
+      const numericInput = document.getElementById(sourceId);
+      const rangeInput = document.getElementById(`${sourceId}-range`);
+      if (!numericInput || !rangeInput) return;
+
+      let value = Number(numericInput.value);
+      if (Number.isNaN(value)) value = 0;
+      value = Math.max(0, Math.min(100, value));
+      numericInput.value = value;
+      rangeInput.value = value;
+    }
+
+    function setCommitmentValueFromRange(sourceId) {
+      const numericInput = document.getElementById(sourceId);
+      const rangeInput = document.getElementById(`${sourceId}-range`);
+      if (!numericInput || !rangeInput) return;
+      numericInput.value = rangeInput.value;
+      updateCommitmentTotal();
+      updateCommitmentValues();
+      if (typeof loadIncomeHistory === 'function') loadIncomeHistory();
+    }
+
+    function bindCommitmentSliders() {
+      ['commit-expenses', 'commit-invest', 'commit-tithe', 'commit-emergency'].forEach((id) => {
+        const numericInput = document.getElementById(id);
+        const rangeInput = document.getElementById(`${id}-range`);
+        if (!numericInput || !rangeInput || rangeInput.dataset.bound === '1') return;
+
+        rangeInput.addEventListener('input', () => setCommitmentValueFromRange(id));
+        numericInput.addEventListener('input', () => syncCommitmentSlider(id));
+        rangeInput.dataset.bound = '1';
+        syncCommitmentSlider(id);
+      });
     }
 
     const investmentOptions = [
@@ -11620,16 +12131,72 @@
       ];
     }
 
+    let activeIncomeDivisionId = null;
+
+    function closeIncomeDivisionPopover() {
+      if (!activeIncomeDivisionId) return;
+      const activePopover = document.getElementById(activeIncomeDivisionId);
+      if (activePopover) {
+        activePopover.classList.remove('is-open');
+        const trigger = activePopover.querySelector('.stitch-income-division-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      }
+      activeIncomeDivisionId = null;
+    }
+
+    function toggleIncomeDivisionPopover(transactionId) {
+      const safeId = String(transactionId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+      const popoverId = `income-division-${safeId}`;
+      const popover = document.getElementById(popoverId);
+      if (!popover) return;
+      const trigger = popover.querySelector('.stitch-income-division-trigger');
+
+      if (activeIncomeDivisionId && activeIncomeDivisionId !== popoverId) {
+        closeIncomeDivisionPopover();
+      }
+
+      const shouldOpen = !popover.classList.contains('is-open');
+      popover.classList.toggle('is-open', shouldOpen);
+      if (trigger) trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+      activeIncomeDivisionId = shouldOpen ? popoverId : null;
+    }
+
+    document.addEventListener('click', (event) => {
+      if (!activeIncomeDivisionId) return;
+      const activePopover = document.getElementById(activeIncomeDivisionId);
+      if (!activePopover) {
+        activeIncomeDivisionId = null;
+        return;
+      }
+
+      if (!activePopover.contains(event.target)) {
+        closeIncomeDivisionPopover();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeIncomeDivisionPopover();
+      }
+    });
+
     function renderIncomeAllocationSummary(items, transactionId = '') {
       const safeId = String(transactionId || `income-${Math.random().toString(36).slice(2, 8)}`)
         .replace(/[^a-zA-Z0-9_-]/g, '');
       return `
-        <details class="stitch-income-division" id="income-division-${safeId}">
-          <summary class="stitch-income-division-trigger">
+        <div class="stitch-income-division" id="income-division-${safeId}">
+          <button
+            type="button"
+            class="stitch-income-division-trigger"
+            onclick="toggleIncomeDivisionPopover('${safeId}')"
+            aria-expanded="false"
+            aria-controls="income-division-panel-${safeId}"
+            title="Ver divisão da entrada"
+          >
             <span>Ver divisão</span>
             <span class="caret">▾</span>
-          </summary>
-          <div class="stitch-income-division-panel">
+          </button>
+          <div class="stitch-income-division-panel" id="income-division-panel-${safeId}">
             ${items.map(item => `
               <div class="stitch-income-division-item">
                 <span>${escapeHTML(item.label)}</span>
@@ -11637,7 +12204,7 @@
               </div>
             `).join('')}
           </div>
-        </details>
+        </div>
       `;
     }
 
@@ -11680,101 +12247,90 @@
       const investmentTips = Array.isArray(data.investmentTips) ? data.investmentTips : [];
       const narrative = data.narrative || data.analysis || '';
       const balance = Number(summary.balance || 0);
-      const balanceClass = balance >= 0 ? 'text-emerald-400' : 'text-red-400';
+      const insightItems = [
+        ...riskAlerts.slice(0, 2).map((item) => ({ icon: '⚠️', label: 'Alerta', text: item })),
+        ...savingTips.slice(0, 2).map((item) => ({ icon: '💡', label: 'Dica', text: item })),
+        ...investmentTips.slice(0, 2).map((item) => ({ icon: '🧭', label: 'Próximo passo', text: item }))
+      ];
 
-      const categoryHtml = (topCategories.length ? topCategories : [{ name: 'Sem dados', amount: 0 }])
-        .map((item) => `
-          <div class="analysis-highlight-card flex items-center justify-between gap-3">
-            <div class="text-slate-700 font-medium">${escapeHTML(item.name || 'Outros')}</div>
-            <div class="text-slate-900 font-semibold">${formatCurrencyBRL(item.amount)}</div>
-          </div>
-        `)
-        .join('');
-
-      const renderItemCards = (items, accentClass, icon) => {
-        if (!items.length) {
-          return `<div class="analysis-highlight-card text-slate-500">Sem itens para este bloco.</div>`;
+      if (!insightItems.length) {
+        if (topCategories.length) {
+          insightItems.push(...topCategories.slice(0, 3).map((item) => ({
+            icon: '🧩',
+            label: 'Categoria',
+            text: `${item.name || 'Outros'} em destaque com ${formatCurrencyBRL(item.amount)}`
+          })));
+        } else {
+          insightItems.push({
+            icon: 'ℹ️',
+            label: 'Status',
+            text: 'Ainda não há dados suficientes para montar insights relevantes.'
+          });
         }
-
-        const accentStyle = accentClass.includes('red')
-          ? 'color:#dc2626;'
-          : accentClass.includes('amber')
-            ? 'color:#d97706;'
-            : 'color:#15803d;';
-
-        return items.map((item) => `
-          <div class="analysis-highlight-card flex items-start gap-3">
-            <span class="${accentClass} mt-0.5" style="${accentStyle}">${icon}</span>
-            <span class="text-slate-700 leading-6">${escapeHTML(item)}</span>
-          </div>
-        `).join('');
-      };
+      }
 
       outputDiv.innerHTML = `
-        <div class="space-y-6">
-          <div class="stitch-kpi-strip">
-            <div class="stitch-kpi-card" style="border-color:rgba(22,163,74,0.16);background:linear-gradient(180deg,rgba(22,163,74,0.08),rgba(255,255,255,0.98));">
-              <div class="label">Entradas</div>
-              <div class="value stitch-value-positive">${formatCurrencyBRL(summary.income)}</div>
+        <div class="stitch-smart-summary-layout">
+          <div class="stitch-summary-cards">
+            <div class="stitch-summary-card" data-tone="positive">
+              <div class="stitch-summary-card-head">
+                <span class="stitch-summary-card-icon">↑</span>
+                <span class="stitch-summary-card-label">Entradas</span>
+              </div>
+              <div class="stitch-summary-card-value">${formatCurrencyBRL(summary.income)}</div>
             </div>
-            <div class="stitch-kpi-card" style="border-color:rgba(244,63,94,0.16);background:linear-gradient(180deg,rgba(244,63,94,0.08),rgba(255,255,255,0.98));">
-              <div class="label">Saídas</div>
-              <div class="value stitch-value-negative">${formatCurrencyBRL(summary.expense)}</div>
+            <div class="stitch-summary-card" data-tone="negative">
+              <div class="stitch-summary-card-head">
+                <span class="stitch-summary-card-icon">↓</span>
+                <span class="stitch-summary-card-label">Saídas</span>
+              </div>
+              <div class="stitch-summary-card-value">${formatCurrencyBRL(summary.expense)}</div>
             </div>
-            <div class="stitch-kpi-card">
-              <div class="label">Saldo</div>
-              <div class="value ${balanceClass === 'text-emerald-400' ? 'stitch-value-positive' : 'stitch-value-negative'}">${formatCurrencyBRL(balance)}</div>
+            <div class="stitch-summary-card" data-tone="${balance >= 0 ? 'positive' : 'negative'}">
+              <div class="stitch-summary-card-head">
+                <span class="stitch-summary-card-icon">${balance >= 0 ? '↗' : '↘'}</span>
+                <span class="stitch-summary-card-label">Saldo</span>
+              </div>
+              <div class="stitch-summary-card-value">${formatCurrencyBRL(balance)}</div>
             </div>
           </div>
 
-          <div>
-            <h4 class="font-bold mb-3 flex items-center gap-2" style="color:#12263f;">
-              <span style="color:#4f46e5;">🧩</span>
-              <span>Onde você mais gasta</span>
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${categoryHtml}</div>
-          </div>
-
-          <div>
-            <h4 class="font-bold mb-3 flex items-center gap-2" style="color:#12263f;">
-              <span style="color:#dc2626;">🚨</span>
-              <span>Alertas financeiros</span>
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${renderItemCards(riskAlerts, 'text-red-400', '•')}</div>
-          </div>
-
-          <div>
-            <h4 class="font-bold mb-3 flex items-center gap-2" style="color:#12263f;">
-              <span style="color:#d97706;">💡</span>
-              <span>Dicas para economizar</span>
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${renderItemCards(savingTips, 'text-amber-400', '•')}</div>
-          </div>
-
-          <div>
-            <h4 class="font-bold mb-3 flex items-center gap-2" style="color:#12263f;">
-              <span style="color:#15803d;">✅</span>
-              <span>Próximos passos</span>
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${renderItemCards(investmentTips, 'text-emerald-400', '•')}</div>
+          <div class="stitch-smart-insights">
+            <h4 class="stitch-smart-insights-title">Smart Insights</h4>
+            <div class="stitch-smart-insights-list">
+              ${insightItems.map((item) => `
+                <div class="stitch-smart-insight-item">
+                  <span>${item.icon}</span>
+                  <span><strong>${escapeHTML(item.label)}:</strong> ${escapeHTML(item.text)}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
 
           ${narrative ? `
-            <div class="analysis-rich-card">
-              <div class="text-slate-800 font-semibold mb-2 flex items-center gap-2">
-                <span class="text-cyan-400">🧠</span>
-                <span>Leitura da IA</span>
-              </div>
-              ${renderCollapsibleText(narrative, {
-                previewChars: 420,
-                moreLabel: 'Ler análise completa',
-                lessLabel: 'Ocultar análise',
-                className: 'text-slate-600 leading-7'
-              })}
+            <div class="stitch-smart-summary-actions">
+              <button type="button" class="stitch-analysis-toggle-btn" onclick="toggleAIAnalysisDetails(this)">
+                Ver análise completa da IA
+              </button>
+            </div>
+            <div class="stitch-analysis-details" data-ai-analysis-details="true">
+              <h4 class="stitch-analysis-details-title">Análise completa da IA</h4>
+              <div class="stitch-analysis-details-body">${escapeHTML(narrative)}</div>
             </div>
           ` : ''}
         </div>
       `;
+    }
+
+    function toggleAIAnalysisDetails(button) {
+      const outputDiv = document.getElementById('ai-insights-output');
+      if (!outputDiv) return;
+
+      const details = outputDiv.querySelector('[data-ai-analysis-details="true"]');
+      if (!details || !button) return;
+
+      const isOpen = details.classList.toggle('is-open');
+      button.textContent = isOpen ? 'Ocultar análise completa da IA' : 'Ver análise completa da IA';
     }
 
     function setAIChatLoading(isLoading) {
