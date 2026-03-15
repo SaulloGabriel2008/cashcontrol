@@ -3334,6 +3334,7 @@
     }
 
     #tab-commitments_goals > .section,
+    .stitch-unified-section,
     #tab-ai_analysis > .section {
       background: #ffffff;
       border: 1px solid #dbe5ef;
@@ -5733,7 +5734,7 @@
       dismissedTabIntros: {}
     };
 
-    const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'subscriptions', 'ai_analysis'];
+    const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'ai_analysis'];
 
     function normalizeUserUiPreferences(data = {}) {
       const intros = data?.ui?.dismissedTabIntros || data?.dismissedTabIntros || {};
@@ -9667,6 +9668,7 @@
         syncCommitmentSlider('commit-invest');
         syncCommitmentSlider('commit-tithe');
         syncCommitmentSlider('commit-emergency');
+        updateCommitmentTotal();
 
         // Setup real-time listener para categorias personalizadas
         listenToCategoriesRealtime();
@@ -9708,6 +9710,7 @@
 
     function normalizePrimaryTabName(tabName) {
       if (tabName === 'commitments' || tabName === 'projections') return 'commitments_goals';
+      if (tabName === 'subscriptions') return 'ai_analysis';
       return tabName;
     }
 
