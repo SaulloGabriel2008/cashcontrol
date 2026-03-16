@@ -5282,6 +5282,42 @@
         min-height: auto;
       }
 
+      .auth-form-panel {
+        order: 1;
+      }
+
+      .auth-visual-panel {
+        order: 2;
+      }
+
+      .family-grid {
+        order: 1;
+      }
+
+      .family-hero-card {
+        order: 2;
+      }
+
+      #tab-finances,
+      #tab-commitments_goals,
+      #tab-ai_analysis {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #tab-finances > #tab-intro-finances,
+      #tab-commitments_goals > #tab-intro-commitments_goals,
+      #tab-ai_analysis > #tab-intro-ai_analysis {
+        order: 2;
+        margin-top: 18px;
+      }
+
+      #tab-finances > .section,
+      #tab-commitments_goals > .section,
+      #tab-ai_analysis > .section {
+        order: 1;
+      }
+
       .stitch-summary-cards,
       .stitch-subscriptions-unified {
         grid-template-columns: 1fr;
@@ -5332,6 +5368,12 @@
       .section-surface {
         padding: 20px;
         border-radius: 24px;
+      }
+
+      .auth-visual-panel,
+      .family-hero-card,
+      .tab-intro-card {
+        padding: 18px;
       }
 
       .tab-content.stitch-page {
