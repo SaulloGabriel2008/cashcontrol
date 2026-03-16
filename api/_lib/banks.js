@@ -190,7 +190,7 @@ async function createBankAccountForImport({ familyId, uid, bank }) {
   };
 }
 
-async function resolveImportBankAccount({ familyId, uid, bank, bankAccountId }) {
+async function resolveImportBankAccount({ familyId, uid, bank, bankAccountId, allowCreate = true }) {
   if (bankAccountId) {
     const existingAccount = await findBankAccountById(bankAccountId);
     if (existingAccount) {
@@ -240,6 +240,19 @@ async function resolveImportBankAccount({ familyId, uid, bank, bankAccountId }) 
       bankAccountId: existingByBank.id,
       created: false,
       syncCollections: await findBankAccountCollections(existingByBank.id),
+    };
+  }
+
+  if (!allowCreate) {
+    return {
+      bankAccountId: null,
+      familyId: familyId || null,
+      userId: uid || null,
+      bank: canonicalBank,
+      name: canonicalBank || DEFAULT_ACCOUNT_NAME,
+      emoji: getDefaultBankEmoji(canonicalBank),
+      created: true,
+      syncCollections: [PRIMARY_BANK_ACCOUNT_COLLECTION],
     };
   }
 

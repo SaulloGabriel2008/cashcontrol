@@ -13247,7 +13247,7 @@
     // === INTEGRAÇÃO COM IA (GEMINI) ===
     const GEMINI_API_KEY = "AIzaSyDzAE5Gx-KQDu8BHSr5o08-f-0DFiCtfXw";
     let pendingImportTransactions = [];
-    let pendingImportAccountId = null;
+    let pendingImportMeta = null;
 
     // === Parser de CSV do Nubank (e bancos compatíveis) ===
     function parseNubankCSV(text) {
@@ -13346,14 +13346,24 @@
     }
 
 
-    function showImportPreview(transactions, accountId) {
-      pendingImportTransactions = transactions;
-      pendingImportAccountId = accountId;
+    function getImportPreviewMeta() {
+      return pendingImportMeta || {};
+    }
+
+    function showImportPreview(transactions, meta = {}) {
+      pendingImportTransactions = Array.isArray(transactions) ? transactions : [];
+      pendingImportMeta = {
+        ...(pendingImportMeta || {}),
+        ...(meta || {})
+      };
 
       const incomes = transactions.filter(t => t.type === 'income');
       const expenses = transactions.filter(t => t.type === 'expense');
       const totalIncome = incomes.reduce((s, t) => s + (Number(t.amount) || 0), 0);
       const totalExpense = expenses.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+      const previewMeta = getImportPreviewMeta();
+      const bankLabel = getBankDisplayName(previewMeta.bank || '');
+      const accountLabel = previewMeta.bankAccountName || bankLabel || 'Conta a definir';
 
       const formatDate = (d) => {
         if (!d) return '—';
@@ -13374,9 +13384,12 @@
               <p class="text-xs text-slate-400">${formatDate(t.date)} • ${t.category || 'outros'} • ${t.paymentMethod || 'outros'}</p>
               ${t.observations ? `<p class="text-[10px] text-slate-500 italic mt-0.5 line-clamp-1">${t.observations}</p>` : ''}
             </div>
-            <div class="text-right flex-shrink-0 flex flex-col items-end">
+            <div class="text-right flex-shrink-0 flex flex-col items-end gap-1">
               <span class="text-sm font-bold ${colorClass}">${sign}${formatCurrency(Number(t.amount) || 0)}</span>
-              <button onclick="editImportItem(${i})" class="text-[11px] text-indigo-400 mt-1 hover:text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded cursor-pointer">✏️ Editar</button>
+              <div class="flex items-center gap-1">
+                <button onclick="editImportItem(${i})" class="text-[11px] text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded cursor-pointer">✏️ Editar</button>
+                <button onclick="deleteImportItem(${i})" class="text-[11px] text-rose-300 hover:text-rose-200 bg-rose-500/10 px-2 py-0.5 rounded cursor-pointer">🗑️ Excluir</button>
+              </div>
             </div>
           </div>`;
       }).join('');
@@ -13384,6 +13397,7 @@
       const modal = document.getElementById('ai-import-preview-modal');
       document.getElementById('ai-import-count').textContent = `${transactions.length} transação(ões) encontrada(s)`;
       document.getElementById('ai-import-summary').innerHTML = `
+        <span style="color:#cbd5e1;">${escapeHTML(accountLabel)}</span> &nbsp;|&nbsp;
         <span class="text-emerald-400">+${formatCurrency(totalIncome)}</span> entrada(s) &nbsp;|&nbsp;
         <span class="text-red-400">-${formatCurrency(totalExpense)}</span> saída(s)`;
       document.getElementById('ai-import-list').innerHTML = rows;
@@ -13437,13 +13451,30 @@
       t.paymentMethod = document.getElementById(`edit-pay-${i}`).value;
       t.observations = document.getElementById(`edit-obs-${i}`).value;
 
-      showImportPreview(pendingImportTransactions, pendingImportAccountId);
+      showImportPreview(pendingImportTransactions);
+    }
+
+    function deleteImportItem(i) {
+      pendingImportTransactions.splice(i, 1);
+
+      if (!pendingImportTransactions.length) {
+        closeImportPreview();
+        showToast('⚠️', 'Todas as transações foram removidas da prévia.');
+        return;
+      }
+
+      showImportPreview(pendingImportTransactions);
     }
 
     function closeImportPreview() {
       document.getElementById('ai-import-preview-modal').style.display = 'none';
       pendingImportTransactions = [];
-      pendingImportAccountId = null;
+      pendingImportMeta = null;
+      const btn = document.getElementById('ai-import-confirm-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '✅ Importar Transações';
+      }
     }
 
     async function confirmImportTransactions() {
@@ -13453,44 +13484,44 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Importando...'; }
 
       try {
-        const batch = db.batch();
-        const now = firebase.firestore.FieldValue.serverTimestamp();
-        const linkedAccount = findBankAccountInCache(pendingImportAccountId);
-        const linkedBank = linkedAccount?.bank || 'Banco não definido';
-
-        pendingImportTransactions.forEach(t => {
-          const ref = db.collection('transactions').doc();
-          batch.set(ref, {
-            id: ref.id,
-            type: t.type === 'income' ? 'income' : 'expense',
-            description: t.description || 'Sem descrição',
-            amount: Number(t.amount) || 0,
-            date: t.date || new Date().toISOString().split('T')[0],
-            category: t.category || 'outros',
-            paymentMethod: t.paymentMethod || 'outros',
-            observations: t.observations || '',
-            bankAccountId: pendingImportAccountId || '',
-            accountId: pendingImportAccountId || '',
-            bank: linkedBank,
-            familyId: currentFamily,
-            userId: currentUser.uid,
-            source: 'pdf_import',
-            importedFromAI: true,
-            createdAt: now
-          });
+        const token = await auth.currentUser.getIdToken();
+        const previewMeta = getImportPreviewMeta();
+        const approvedCount = pendingImportTransactions.length;
+        const res = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            mode: 'apply',
+            fileType: previewMeta.fileType || 'pdf',
+            familyId: currentFamily || null,
+            fileName: previewMeta.fileName || 'statement',
+            bank: previewMeta.bank || null,
+            bankAccountId: previewMeta.bankAccountId || null,
+            transactions: pendingImportTransactions
+          })
         });
+        if (!res.ok) {
+          const contentType = res.headers.get('content-type') || '';
+          const body = contentType.includes('application/json')
+            ? await res.json().catch(() => ({}))
+            : await res.text().catch(() => '');
+          const message = typeof body === 'string' ? body : body?.error || `Servidor retornou ${res.status}`;
+          throw new Error(message);
+        }
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Falha na importação');
 
-        await batch.commit();
-
+        renderDashboardScanFeedback(data);
         closeImportPreview();
-        showToast('✅', `${pendingImportTransactions.length > 0 ? pendingImportTransactions.length : ''} transações importadas com sucesso!`);
-        if (typeof updateDashboard === 'function') updateDashboard();
-        if (typeof loadTransactions === 'function') loadTransactions();
-        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
+        showToast('✅', `${data.accountCreated ? 'Conta criada e ' : ''}importadas ${data.count || data.transactionCount || approvedCount} transações para ${data.bankAccountName || getBankDisplayName(data.bank)}.`);
+        await refreshAfterStatementImport();
       } catch (error) {
         console.error('Erro ao importar transações:', error);
         showToast('❌', 'Erro ao importar: ' + error.message);
-        if (btn) { btn.disabled = false; btn.textContent = '✅ Importar Todas'; }
+        if (btn) { btn.disabled = false; btn.textContent = '✅ Importar Transações'; }
       }
     }
 
@@ -13508,7 +13539,21 @@
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
-        fullText += textContent.items.map(item => item.str).join(' ') + '\n';
+        const lineMap = new Map();
+        textContent.items.forEach((item) => {
+          const y = item?.transform?.[5];
+          const key = Number.isFinite(y) ? y.toFixed(1) : `line-${lineMap.size}`;
+          const current = lineMap.get(key) || [];
+          current.push(item.str || '');
+          lineMap.set(key, current);
+        });
+
+        const pageLines = [...lineMap.entries()]
+          .sort((a, b) => Number(b[0]) - Number(a[0]))
+          .map(([, parts]) => parts.join(' ').replace(/\s+/g, ' ').trim())
+          .filter(Boolean);
+
+        fullText += pageLines.join('\n') + '\n';
       }
       return fullText;
     }
@@ -13800,6 +13845,7 @@
       try {
         const token = await auth.currentUser.getIdToken();
         let payload = {
+          mode: 'preview',
           fileType: ext,
           familyId: currentFamily || null,
           fileName: file.name
@@ -13820,20 +13866,57 @@
           },
           body: JSON.stringify(payload)
         });
+        let data = null;
         if (!res.ok) {
           const contentType = res.headers.get('content-type') || '';
           const body = contentType.includes('application/json')
             ? await res.json().catch(() => ({}))
             : await res.text().catch(() => '');
           const message = typeof body === 'string' ? body : body?.error || `Servidor retornou ${res.status}`;
-          throw new Error(message);
+          const needsPdfBrowserFallback = ext === 'pdf' && /Nao foi possivel ler a estrutura deste PDF|Invalid PDF structure/i.test(message || '');
+          if (!needsPdfBrowserFallback) {
+            throw new Error(message);
+          }
+
+          const extractedText = await extractTextFromPDF(file);
+          const fallbackRes = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              mode: 'preview',
+              fileType: 'pdf',
+              familyId: currentFamily || null,
+              fileName: file.name,
+              rawText: extractedText
+            })
+          });
+          if (!fallbackRes.ok) {
+            const fallbackType = fallbackRes.headers.get('content-type') || '';
+            const fallbackBody = fallbackType.includes('application/json')
+              ? await fallbackRes.json().catch(() => ({}))
+              : await fallbackRes.text().catch(() => '');
+            const fallbackMessage = typeof fallbackBody === 'string' ? fallbackBody : fallbackBody?.error || `Servidor retornou ${fallbackRes.status}`;
+            throw new Error(fallbackMessage);
+          }
+          data = await fallbackRes.json();
+        } else {
+          data = await res.json();
         }
-        const data = await res.json();
         if (!data.success) throw new Error(data.error || 'Falha na importação');
 
-        renderDashboardScanFeedback(data);
-        showToast('✅', `${data.accountCreated ? 'Conta criada e ' : ''}importadas ${data.count || data.transactionCount || 0} transações para ${data.bankAccountName || getBankDisplayName(data.bank)}.`);
-        await refreshAfterStatementImport();
+        showImportPreview(data.transactions || [], {
+          bank: data.bank || '',
+          bankAccountId: data.bankAccountId || null,
+          bankAccountName: data.bankAccountName || '',
+          bankEmoji: data.bankEmoji || '',
+          accountCreatedPreview: Boolean(data.accountCreatedPreview),
+          fileType: ext,
+          fileName: file.name
+        });
+        showToast('✅', `Pré-visualização pronta: ${data.count || data.transactionCount || 0} transações encontradas para ${data.bankAccountName || getBankDisplayName(data.bank)}.`);
       } catch (error) {
         console.error('Erro uploadExtractForAI:', error);
         renderDashboardScanFeedback(null, error.message || 'Erro ao importar extrato');
@@ -14613,7 +14696,7 @@
       <!-- Header -->
       <div style="padding:20px 24px 16px; border-bottom:1px solid rgba(71,85,105,0.3); flex-shrink:0;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-          <h3 style="font-size:17px; font-weight:700; color:#e2e8f0;">✨ Transações Encontradas</h3>
+          <h3 style="font-size:17px; font-weight:700; color:#e2e8f0;">✨ Revisar transações encontradas</h3>
           <button onclick="closeImportPreview()"
             style="background:rgba(71,85,105,0.3); border:none; color:#94a3b8; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
         </div>
@@ -14628,7 +14711,7 @@
           style="flex:1; padding:12px; border-radius:12px; font-weight:600; color:#94a3b8; background:transparent; border:1.5px solid rgba(71,85,105,0.4); cursor:pointer;">Cancelar</button>
         <button id="ai-import-confirm-btn" onclick="confirmImportTransactions()"
           style="flex:2; padding:12px; border-radius:12px; font-weight:700; color:white; background:linear-gradient(135deg,#10b981,#059669); border:none; cursor:pointer; font-size:15px;">✅
-          Importar Todas</button>
+          Importar Transações</button>
       </div>
     </div>
   </div>

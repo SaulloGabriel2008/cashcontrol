@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     const context = await verifyRequest(req);
     const body = req.body || {};
     const fileType = body.fileType || (body.csvBase64 ? "csv" : "pdf");
+    const mode = body.mode === "preview" ? "preview" : "apply";
     const familyId = resolveFamilyId(req, context);
     const result = await importStatementData({
       uid: context.uid,
@@ -20,6 +21,9 @@ export default async function handler(req, res) {
       fileType,
       pdfBase64: body.pdfBase64 || (fileType === "pdf" ? body.fileBase64 || null : null),
       csvBase64: body.csvBase64 || (fileType === "csv" ? body.fileBase64 || null : null),
+      rawText: body.rawText || null,
+      transactions: Array.isArray(body.transactions) ? body.transactions : [],
+      mode,
     });
 
     return res.status(200).json({
@@ -33,6 +37,8 @@ export default async function handler(req, res) {
       message.includes("Nenhuma transacao") ||
       message.includes("Nao foi possivel reconhecer") ||
       message.includes("Nao foi possivel ler a estrutura deste PDF") ||
+      message.includes("Nao foi possivel detectar o banco do extrato") ||
+      message.includes("Nenhuma transacao aprovada para importar") ||
       message.includes("Limite de 1 extrato por dia") ||
       message.includes("Arquivo PDF nao informado") ||
       message.includes("Arquivo CSV nao informado") ||

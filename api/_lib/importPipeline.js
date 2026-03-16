@@ -359,6 +359,49 @@ async function extractTextFromPdfBuffer(buffer) {
   }
 }
 
+function parseStatementFile({ fileType, pdfBase64, csvBase64, rawText, fileName, providedBank }) {
+  let parsedText = normalizeText(rawText || "");
+  let parsedTransactions = [];
+
+  if (fileType === "pdf") {
+    if (!pdfBase64 && !parsedText) {
+      throw new Error("Arquivo PDF nao informado");
+    }
+
+    if (!parsedText) {
+      throw new Error("PDF_TEXT_REQUIRED");
+    }
+
+    const inferredBank = canonicalBankName(providedBank || inferBankByPatterns(`${parsedText || ""} ${fileName || ""}`));
+    parsedTransactions = inferredBank === "Nubank" ? parseNubankPdfTransactions(parsedText) : [];
+
+    if (!parsedTransactions.length) {
+      parsedTransactions = parseTransactionLines(parsedText);
+    }
+  } else if (fileType === "csv") {
+    if (!csvBase64 && !parsedText) {
+      throw new Error("Arquivo CSV nao informado");
+    }
+
+    parsedText = parsedText || Buffer.from(csvBase64, "base64").toString("utf8");
+    parsedTransactions = parseCsvRows(parsedText);
+  } else {
+    throw new Error("Tipo de arquivo nao suportado");
+  }
+
+  if (!parsedTransactions.length) {
+    throw new Error("Nao foi possivel reconhecer as transacoes deste arquivo. Tente o CSV oficial do banco ou um PDF mais nitido.");
+  }
+
+  return {
+    rawText: parsedText,
+    parsedTransactions,
+    bank: canonicalBankName(
+      providedBank || inferBankByPatterns(parsedText || parsedTransactions.map((item) => item.description).join(" "))
+    ),
+  };
+}
+
 async function findExistingTransactions({ familyId, uid }) {
   let query = familyId
     ? db.collection("transactions").where("familyId", "==", familyId)
@@ -411,6 +454,12 @@ function detectSubscriptions(transactions, existingTransactions) {
 function shapeTransaction(rawTransaction, context) {
   const amount = Number(rawTransaction.amount);
   const installment = detectInstallment(rawTransaction.description);
+  const normalizedType =
+    rawTransaction.type === "income" || rawTransaction.type === "expense"
+      ? rawTransaction.type
+      : amount >= 0
+        ? "income"
+        : "expense";
 
   return {
     familyId: context.familyId || null,
@@ -418,16 +467,44 @@ function shapeTransaction(rawTransaction, context) {
     bankAccountId: context.bankAccountId || null,
     accountId: context.bankAccountId || null,
     bank: context.bank,
-    date: rawTransaction.date,
+    date: normalizeDate(rawTransaction.date) || new Date().toISOString().split("T")[0],
     description: cleanDescription(rawTransaction.description),
     amount: Math.abs(amount),
-    type: amount >= 0 ? "income" : "expense",
-    category: inferCategory(rawTransaction.description),
+    type: normalizedType,
+    category: rawTransaction.category || inferCategory(rawTransaction.description),
+    paymentMethod: rawTransaction.paymentMethod || "outros",
+    observations: rawTransaction.observations || "",
     subscription: false,
     installmentNumber: installment.installmentNumber,
     installmentTotal: installment.installmentTotal,
     source: context.source || "pdf_import",
+    importedFromAI: true,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
+}
+
+function normalizePreviewTransaction(rawTransaction) {
+  const rawAmount = Number(rawTransaction.amount || 0);
+  const normalizedType =
+    rawTransaction.type === "income" || rawTransaction.type === "expense"
+      ? rawTransaction.type
+      : rawAmount >= 0
+        ? "income"
+        : "expense";
+  const date = normalizeDate(rawTransaction.date);
+  const description = cleanDescription(rawTransaction.description || "");
+  const amount = Math.abs(rawAmount);
+
+  if (!date || !description || !amount) return null;
+
+  return {
+    date,
+    description,
+    amount,
+    type: normalizedType,
+    category: rawTransaction.category || inferCategory(description),
+    paymentMethod: rawTransaction.paymentMethod || "outros",
+    observations: rawTransaction.observations || "",
   };
 }
 
@@ -486,7 +563,7 @@ async function persistImportedTransactions({
   return decoratedTransactions;
 }
 
-async function importStatementData({
+async function buildImportPreview({
   uid,
   familyId,
   bankAccountId,
@@ -495,48 +572,86 @@ async function importStatementData({
   fileType,
   pdfBase64,
   csvBase64,
+  rawText,
 }) {
-  let rawText = "";
-  let parsedTransactions = [];
+  let extractedRawText = normalizeText(rawText || "");
 
-  if (fileType === "pdf") {
+  if (fileType === "pdf" && !extractedRawText) {
     if (!pdfBase64) {
       throw new Error("Arquivo PDF nao informado");
     }
-
-    rawText = await extractTextFromPdfBuffer(Buffer.from(pdfBase64, "base64"));
-    const inferredBank = canonicalBankName(providedBank || inferBankByPatterns(`${rawText || ""} ${fileName || ""}`));
-    parsedTransactions =
-      inferredBank === "Nubank"
-        ? parseNubankPdfTransactions(rawText)
-        : [];
-
-    if (!parsedTransactions.length) {
-      parsedTransactions = parseTransactionLines(rawText);
-    }
-  } else if (fileType === "csv") {
-    if (!csvBase64) {
-      throw new Error("Arquivo CSV nao informado");
-    }
-
-    rawText = Buffer.from(csvBase64, "base64").toString("utf8");
-    parsedTransactions = parseCsvRows(rawText);
-  } else {
-    throw new Error("Tipo de arquivo nao suportado");
+    extractedRawText = await extractTextFromPdfBuffer(Buffer.from(pdfBase64, "base64"));
   }
 
-  if (!parsedTransactions.length) {
+  const parsed = parseStatementFile({
+    fileType,
+    pdfBase64,
+    csvBase64,
+    rawText: extractedRawText,
+    fileName,
+    providedBank,
+  });
+
+  const previewTransactions = parsed.parsedTransactions
+    .map((transaction) =>
+      normalizePreviewTransaction({
+        ...transaction,
+        amount: Math.abs(Number(transaction.amount || 0)),
+        type: Number(transaction.amount || 0) >= 0 ? "income" : "expense",
+      })
+    )
+    .filter(Boolean);
+
+  if (!previewTransactions.length) {
     throw new Error("Nao foi possivel reconhecer as transacoes deste arquivo. Tente o CSV oficial do banco ou um PDF mais nitido.");
   }
 
+  const resolvedBankAccount = await resolveImportBankAccount({
+    familyId,
+    uid,
+    bank: parsed.bank,
+    bankAccountId,
+    allowCreate: false,
+  });
+
+  return {
+    bank: parsed.bank,
+    bankAccountId: resolvedBankAccount.bankAccountId || null,
+    bankAccountName: resolvedBankAccount.name || parsed.bank,
+    bankEmoji: resolvedBankAccount.emoji || null,
+    accountCreatedPreview: Boolean(resolvedBankAccount.created),
+    transactionCount: previewTransactions.length,
+    count: previewTransactions.length,
+    transactions: previewTransactions,
+  };
+}
+
+async function applyImportTransactions({
+  uid,
+  familyId,
+  bankAccountId,
+  providedBank,
+  fileName,
+  fileType,
+  transactions,
+}) {
+  const approvedTransactions = Array.isArray(transactions)
+    ? transactions.map((transaction) => normalizePreviewTransaction(transaction)).filter(Boolean)
+    : [];
+
+  if (!approvedTransactions.length) {
+    throw new Error("Nenhuma transacao aprovada para importar.");
+  }
+
   const bank = canonicalBankName(
-    providedBank || inferBankByPatterns(rawText || parsedTransactions.map((item) => item.description).join(" "))
+    providedBank || inferBankByPatterns(approvedTransactions.map((item) => item.description).join(" "))
   );
   const resolvedBankAccount = await resolveImportBankAccount({
     familyId,
     uid,
     bank,
     bankAccountId,
+    allowCreate: true,
   });
   const today = new Date().toISOString().split("T")[0];
 
@@ -544,11 +659,11 @@ async function importStatementData({
     throw new Error("Limite de 1 extrato por dia atingido para este banco.");
   }
 
-  const shapedTransactions = parsedTransactions.map((transaction) =>
+  const shapedTransactions = approvedTransactions.map((transaction) =>
     shapeTransaction(transaction, {
       uid,
       familyId,
-      bank,
+      bank: resolvedBankAccount.bank || bank,
       bankAccountId: resolvedBankAccount.bankAccountId || null,
       source: fileType === "csv" ? "csv_import" : "pdf_import",
     })
@@ -557,15 +672,15 @@ async function importStatementData({
   const storedTransactions = await persistImportedTransactions({
     uid,
     familyId,
-    bank,
+    bank: resolvedBankAccount.bank || bank,
     bankAccount: resolvedBankAccount,
     fileName,
     transactions: shapedTransactions,
   });
 
   return {
-    bank,
-    bankAccountId: resolvedBankAccount.bankAccountId,
+    bank: resolvedBankAccount.bank || bank,
+    bankAccountId: resolvedBankAccount.bankAccountId || null,
     bankAccountName: resolvedBankAccount.name || bank,
     bankEmoji: resolvedBankAccount.emoji || null,
     accountCreated: Boolean(resolvedBankAccount.created),
@@ -575,7 +690,71 @@ async function importStatementData({
   };
 }
 
+async function importStatementData({
+  uid,
+  familyId,
+  bankAccountId,
+  providedBank,
+  fileName,
+  fileType,
+  pdfBase64,
+  csvBase64,
+  rawText,
+  transactions,
+  mode = "apply",
+}) {
+  if (mode === "preview") {
+    return buildImportPreview({
+      uid,
+      familyId,
+      bankAccountId,
+      providedBank,
+      fileName,
+      fileType,
+      pdfBase64,
+      csvBase64,
+      rawText,
+    });
+  }
+
+  if (!Array.isArray(transactions) || !transactions.length) {
+    const preview = await buildImportPreview({
+      uid,
+      familyId,
+      bankAccountId,
+      providedBank,
+      fileName,
+      fileType,
+      pdfBase64,
+      csvBase64,
+      rawText,
+    });
+
+    return applyImportTransactions({
+      uid,
+      familyId,
+      bankAccountId: preview.bankAccountId || bankAccountId,
+      providedBank: preview.bank || providedBank,
+      fileName,
+      fileType,
+      transactions: preview.transactions,
+    });
+  }
+
+  return applyImportTransactions({
+    uid,
+    familyId,
+    bankAccountId,
+    providedBank,
+    fileName,
+    fileType,
+    transactions,
+  });
+}
+
 export {
+  applyImportTransactions,
+  buildImportPreview,
   cleanDescription,
   detectInstallment,
   importStatementData,
