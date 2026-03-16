@@ -1845,6 +1845,22 @@
       padding: 18px 24px;
     }
 
+    header.family-topbar {
+      border-bottom: none;
+    }
+
+    #family-screen main {
+      padding-top: 10px;
+    }
+
+    .family-topbar .header-brand h1 {
+      color: #e9f2ff;
+    }
+
+    .family-topbar .header-brand p {
+      color: #c2d4ea;
+    }
+
     nav.app-tabs-nav {
       top: 74px;
     }
@@ -5835,6 +5851,10 @@
     body[data-theme="dark"] .stitch-page .stitch-commitment-kpi-head,
     body[data-theme="dark"] .stitch-page .stitch-commitment-kpi-value {
       color: #f8fafc !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-form-title {
+      color: #eaf2ff !important;
     }
 
     body[data-theme="dark"] .stitch-page .section-description,
@@ -11059,15 +11079,15 @@
         }
 
         familyList.innerHTML = families.map(family => `
-          <button onclick="selectFamily('${family.id}')" class="w-full p-4 bg-slate-800/50 hover:bg-slate-700/50 rounded-xl flex items-center justify-between transition-all group">
+          <button onclick="selectFamily('${family.id}')" class="w-full p-4 rounded-xl flex items-center justify-between transition-all group" style="background:#8791a0;border:1px solid #93a0b2;">
             <div class="flex items-center gap-3">
               <span class="text-2xl">${family.isOwner ? '👑' : '👨‍👩‍👧‍👦'}</span>
               <div class="text-left min-w-0">
-                <p class="font-medium text-white group-hover:text-emerald-400 transition-colors truncate">${family.name}</p>
-                <p class="text-xs text-slate-500">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
+                <p class="font-medium transition-colors truncate" style="color:#f7fbff;">${family.name}</p>
+                <p class="text-xs" style="color:#d5e2f1;">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
               </div>
             </div>
-            <svg class="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 transition-colors flex-shrink-0" style="color:#d8e5f5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
