@@ -5697,9 +5697,24 @@
       background: linear-gradient(135deg, #eef3f8 0%, #e5edf6 45%, #dfe8f3 100%);
     }
 
+    body[data-theme="light"] .app-topbar,
+    body[data-theme="light"] .family-topbar,
+    body[data-theme="light"] nav.app-tabs-nav {
+      border-bottom-color: rgba(148, 163, 184, 0.22);
+    }
+
+    body[data-theme="light"] .header-info h1,
+    body[data-theme="light"] .header-info p {
+      color: #e8f1ff;
+    }
+
     body[data-theme="dark"] {
       color: #e2e8f0;
       background: linear-gradient(135deg, #050b18 0%, #0f1b33 50%, #081022 100%);
+    }
+
+    body[data-theme="dark"]::before {
+      opacity: 0;
     }
 
     body[data-theme="dark"] .gradient-bg {
@@ -5709,8 +5724,9 @@
     body[data-theme="dark"] .app-topbar,
     body[data-theme="dark"] .family-topbar,
     body[data-theme="dark"] nav.app-tabs-nav {
-      background: linear-gradient(180deg, rgba(7, 13, 26, 0.95), rgba(7, 13, 26, 0.88));
-      border-color: rgba(148, 163, 184, 0.12);
+      background: linear-gradient(180deg, rgba(7, 13, 26, 0.98), rgba(7, 13, 26, 0.92));
+      border-bottom-color: transparent !important;
+      box-shadow: none !important;
     }
 
     body[data-theme="dark"] #main-screen main,
@@ -5762,7 +5778,60 @@
     body[data-theme="dark"] .stitch-page .muted,
     body[data-theme="dark"] .stitch-page .text-slate-400,
     body[data-theme="dark"] .stitch-page .text-slate-500 {
-      color: #94a3b8 !important;
+      color: #b8c9dc !important;
+    }
+
+    body[data-theme="dark"] .header-info h1 {
+      color: #f8fafc !important;
+    }
+
+    body[data-theme="dark"] .header-info p,
+    body[data-theme="dark"] #plan-badge,
+    body[data-theme="dark"] .mobile-nav-trigger-label {
+      color: #b5c8de !important;
+    }
+
+    body[data-theme="dark"] .mobile-nav-trigger-current,
+    body[data-theme="dark"] .tab-btn {
+      color: #dce9f7 !important;
+    }
+
+    body[data-theme="dark"] .tab-btn:not(.active):hover {
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.14) !important;
+    }
+
+    body[data-theme="dark"] .stitch-table thead th {
+      color: #b9ccdf !important;
+      border-bottom-color: rgba(148, 163, 184, 0.26) !important;
+    }
+
+    body[data-theme="dark"] .stitch-table tbody td {
+      color: #e6eef8 !important;
+      border-bottom-color: rgba(148, 163, 184, 0.22) !important;
+    }
+
+    body[data-theme="dark"] .stitch-table td.muted,
+    body[data-theme="dark"] .stitch-date-cell {
+      color: #c8d8ea !important;
+    }
+
+    body[data-theme="dark"] .stitch-table tbody tr:hover td {
+      background: rgba(30, 47, 78, 0.58) !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .list-item-title,
+    body[data-theme="dark"] .stitch-page .loan-card .font-bold,
+    body[data-theme="dark"] .stitch-page .loan-card strong,
+    body[data-theme="dark"] .stitch-page .account-card-name {
+      color: #f2f7ff !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .list-item-subtitle,
+    body[data-theme="dark"] .stitch-page .account-card-meta,
+    body[data-theme="dark"] .stitch-page .loan-card .text-sm,
+    body[data-theme="dark"] .stitch-page .loan-card .text-xs {
+      color: #bdcde0 !important;
     }
 
     body[data-theme="dark"] .stitch-page .input-field,
