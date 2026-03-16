@@ -1,4 +1,4 @@
-﻿<!doctype html>
+﻿﻿<!doctype html>
 <html lang="pt-BR" class="h-full scroll-smooth">
 
 <head>
@@ -654,6 +654,33 @@
     .modal-close:hover {
       background: #6366f1;
       color: white;
+    }
+
+    .bank-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--bank-brand-size, 28px);
+      height: var(--bank-brand-size, 28px);
+      border-radius: var(--bank-brand-radius, 12px);
+      background: var(--bank-brand-bg, rgba(255, 255, 255, 0.9));
+      color: var(--bank-brand-color, #475569);
+      font-weight: 800;
+      line-height: 1;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .bank-brand-mark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .bank-brand-mark.is-logo {
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
     }
 
     /* Login Screen */
@@ -5533,6 +5560,166 @@
         max-width: 104px;
       }
     }
+
+    .theme-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .theme-choice-btn {
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 14px;
+      padding: 14px 12px;
+      background: rgba(15, 23, 42, 0.5);
+      color: #e2e8f0;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .theme-choice-btn:hover {
+      border-color: rgba(16, 185, 129, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .theme-choice-btn small {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .theme-setting-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(15, 23, 42, 0.35);
+    }
+
+    .theme-setting-option.active {
+      border-color: rgba(16, 185, 129, 0.55);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .theme-setting-option p {
+      margin: 0;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .theme-setting-option strong {
+      color: #f8fafc;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    body[data-theme="light"] {
+      color: #0f172a;
+      background: linear-gradient(135deg, #eef3f8 0%, #e5edf6 45%, #dfe8f3 100%);
+    }
+
+    body[data-theme="dark"] {
+      color: #e2e8f0;
+      background: linear-gradient(135deg, #050b18 0%, #0f1b33 50%, #081022 100%);
+    }
+
+    body[data-theme="dark"] .gradient-bg {
+      background: linear-gradient(135deg, #050b18 0%, #0f1b33 50%, #081022 100%);
+    }
+
+    body[data-theme="dark"] .app-topbar,
+    body[data-theme="dark"] .family-topbar,
+    body[data-theme="dark"] nav.app-tabs-nav {
+      background: linear-gradient(180deg, rgba(7, 13, 26, 0.95), rgba(7, 13, 26, 0.88));
+      border-color: rgba(148, 163, 184, 0.12);
+    }
+
+    body[data-theme="dark"] #main-screen main,
+    body[data-theme="dark"] #family-screen main {
+      background: linear-gradient(180deg, #060d1a 0%, #0a1325 100%);
+    }
+
+    body[data-theme="dark"] .tab-content.stitch-page {
+      background: linear-gradient(180deg, #0b162c 0%, #0d1a31 100%);
+      border-color: rgba(148, 163, 184, 0.16);
+      box-shadow: 0 24px 68px rgba(2, 8, 23, 0.42);
+    }
+
+    body[data-theme="dark"] .stitch-page .section,
+    body[data-theme="dark"] .stitch-page .card,
+    body[data-theme="dark"] .stitch-page .loan-card,
+    body[data-theme="dark"] .stitch-page .list-item,
+    body[data-theme="dark"] .stitch-page .analysis-rich-card,
+    body[data-theme="dark"] .stitch-page .analysis-highlight-card,
+    body[data-theme="dark"] .stitch-page .stitch-table-card,
+    body[data-theme="dark"] .stitch-page .subscriptions-summary-card,
+    body[data-theme="dark"] .stitch-page .stitch-dashboard-card,
+    body[data-theme="dark"] .stitch-page .stitch-goal-card,
+    body[data-theme="dark"] .stitch-page .unified-goal-card,
+    body[data-theme="dark"] .stitch-page .stitch-account-panel,
+    body[data-theme="dark"] .stitch-page .stitch-loan-card,
+    body[data-theme="dark"] .stitch-page .stitch-commitments-card,
+    body[data-theme="dark"] .stitch-page .stitch-commitment-kpi {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.94));
+      border-color: rgba(148, 163, 184, 0.2);
+      box-shadow: 0 20px 44px rgba(2, 8, 23, 0.32);
+      color: #e2e8f0;
+    }
+
+    body[data-theme="dark"] .stitch-page .section-title,
+    body[data-theme="dark"] .stitch-page .dash-section-title,
+    body[data-theme="dark"] .stitch-page .stitch-table-card-title,
+    body[data-theme="dark"] .stitch-page .stitch-panel-title,
+    body[data-theme="dark"] .stitch-page .unified-goal-name,
+    body[data-theme="dark"] .stitch-page .goal-ring-inner,
+    body[data-theme="dark"] .stitch-page .stitch-commitment-kpi-head,
+    body[data-theme="dark"] .stitch-page .stitch-commitment-kpi-value {
+      color: #f8fafc !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .section-description,
+    body[data-theme="dark"] .stitch-page .stitch-panel-subtitle,
+    body[data-theme="dark"] .stitch-page .stitch-table-card-subtitle,
+    body[data-theme="dark"] .stitch-page .muted,
+    body[data-theme="dark"] .stitch-page .text-slate-400,
+    body[data-theme="dark"] .stitch-page .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .input-field,
+    body[data-theme="dark"] .stitch-page .input-dark,
+    body[data-theme="dark"] .modal-content .input-field,
+    body[data-theme="dark"] .modal-content .input-dark {
+      background: rgba(15, 23, 42, 0.86);
+      border-color: rgba(148, 163, 184, 0.22);
+      color: #f8fafc;
+    }
+
+    body[data-theme="dark"] .modal-content {
+      background: linear-gradient(180deg, #101c35, #0f1a30);
+      border-color: rgba(148, 163, 184, 0.24);
+      box-shadow: 0 30px 80px rgba(2, 8, 23, 0.45);
+    }
+
+    body[data-theme="dark"] .modal-title,
+    body[data-theme="dark"] .modal-content label,
+    body[data-theme="dark"] .modal-content .text-white,
+    body[data-theme="dark"] .modal-content .font-bold {
+      color: #f8fafc !important;
+    }
+
+    body[data-theme="dark"] .modal-content .text-slate-400,
+    body[data-theme="dark"] .modal-content .text-slate-300,
+    body[data-theme="dark"] .modal-content .text-slate-500 {
+      color: #9fb0c3 !important;
+    }
   </style>
 </head>
 
@@ -5904,19 +6091,6 @@
                   <option value="week">Esta Semana</option>
                   <option value="year">Este Ano</option>
                 </select>
-              </div>
-
-              <!-- Saldo Inicial -->
-              <div id="initial-balance-setup" class="initial-balance-card hidden">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="font-semibold text-white text-sm">💡 Configure seu saldo inicial</p>
-                    <p class="text-xs text-slate-400 mt-1">Informe quanto você já tem para começar a usar o Cash Control
-                    </p>
-                  </div>
-                  <button onclick="openInitialBalanceModal()" class="btn btn-primary"
-                    style="padding:8px 14px;font-size:12px;">Configurar</button>
-                </div>
               </div>
 
               <div class="scanner-feature-card">
@@ -6651,6 +6825,29 @@
       </div>
     </div>
 
+    <div id="initial-balance-onboarding-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Saldo Inicial</h2>
+          <button onclick="closeInitialBalanceOnboarding()" class="modal-close">✕</button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm text-slate-300">Informe o saldo que você já tem para começar a usar o Cash Control.</p>
+            <p class="text-xs text-slate-400 mt-2">Você pode fechar agora e configurar depois na aba de bancos. Enquanto não salvar, o app vai lembrar disso nas próximas aberturas.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Saldo inicial global (R$)</label>
+            <input type="number" id="initial-balance-onboarding-input" class="input-dark w-full px-4 py-3 rounded-xl text-white" placeholder="0,00" step="0.01">
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button onclick="closeInitialBalanceOnboarding()" class="flex-1 py-3 rounded-xl font-semibold text-slate-300 border border-slate-600">Depois</button>
+            <button onclick="saveInitialBalanceFromOnboarding()" class="flex-1 py-3 rounded-xl font-semibold text-white btn-primary">Salvar saldo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Delete Modal -->
     <div id="delete-modal" class="modal-overlay">
       <div class="modal-content max-w-sm">
@@ -6696,6 +6893,29 @@
         </div>
 
         <p id="ai-progress-text" class="text-emerald-400 font-bold text-lg">0%</p>
+      </div>
+    </div>
+
+    <div id="theme-onboarding-modal" class="modal-overlay" style="z-index: 400;">
+      <div class="modal-content max-w-lg">
+        <div class="mb-4">
+          <h3 class="modal-title">Escolha seu tema</h3>
+          <p class="text-slate-400 text-sm mt-2">Essa pergunta aparece apenas na primeira entrada. Depois voce pode alterar em Configuracoes.</p>
+        </div>
+        <div class="theme-choice-grid">
+          <button type="button" class="theme-choice-btn" onclick="selectInitialTheme('light')">
+            Claro
+            <small>Leve e limpo</small>
+          </button>
+          <button type="button" class="theme-choice-btn" onclick="selectInitialTheme('dark')">
+            Escuro
+            <small>Contraste alto</small>
+          </button>
+          <button type="button" class="theme-choice-btn" onclick="selectInitialTheme('system')">
+            Sistema
+            <small>Segue o dispositivo</small>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -6890,7 +7110,8 @@
       const allModals = [
         'generic-modal',
         'delete-modal',
-        'photo-modal'
+        'photo-modal',
+        'initial-balance-onboarding-modal'
       ];
 
       allModals.forEach(modalId => {
@@ -8913,9 +9134,9 @@
     }
 
     const BANK_VISUALS = {
-      nubank: { value: 'Nubank', label: 'Nubank', emoji: '🟣', accent: '#7c3aed', soft: 'rgba(124, 58, 237, 0.12)', text: '#6d28d9' },
+      nubank: { value: 'Nubank', label: 'Nubank', emoji: '🟣', accent: '#7c3aed', soft: 'rgba(124, 58, 237, 0.12)', text: '#6d28d9', logo: 'nubank' },
       inter: { value: 'Inter', label: 'Inter', emoji: '🟠', accent: '#f97316', soft: 'rgba(249, 115, 22, 0.14)', text: '#c2410c' },
-      itau: { value: 'Itau', label: 'Itaú', emoji: '🟦🟨', accent: '#2563eb', soft: 'rgba(37, 99, 235, 0.12)', text: '#1d4ed8' },
+      itau: { value: 'Itau', label: 'Itaú', emoji: '🟦🟨', accent: '#2563eb', soft: 'rgba(37, 99, 235, 0.12)', text: '#1d4ed8', logo: 'itau' },
       santander: { value: 'Santander', label: 'Santander', emoji: '🔴', accent: '#dc2626', soft: 'rgba(220, 38, 38, 0.12)', text: '#b91c1c' },
       bradesco: { value: 'Bradesco', label: 'Bradesco', emoji: '🔺', accent: '#e11d48', soft: 'rgba(225, 29, 72, 0.12)', text: '#be123c' },
       caixa: { value: 'Caixa', label: 'Caixa', emoji: '🟦', accent: '#0ea5e9', soft: 'rgba(14, 165, 233, 0.12)', text: '#0369a1' },
@@ -8967,6 +9188,36 @@
       return `--bank-accent:${meta.accent};--bank-soft:${meta.soft};--bank-text:${meta.text};`;
     }
 
+    function renderBankBrandMark(bank, fallbackEmoji = '🏦', size = 28, radius = 12) {
+      const meta = getBankThemeMeta(bank);
+      const style = `--bank-brand-size:${size}px;--bank-brand-radius:${radius}px;--bank-brand-bg:${meta.soft};--bank-brand-color:${meta.text};`;
+
+      if (meta.logo === 'nubank') {
+        return `
+          <span class="bank-brand-mark is-logo" style="${style}" aria-label="Nubank">
+            <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
+              <rect width="64" height="64" rx="${radius}" fill="#8A05BE"></rect>
+              <path fill="#FFFFFF" d="M18 19.5c0-2.5 2-4.5 4.5-4.5 1.2 0 2.3.5 3.2 1.3l12.4 12V19.5c0-2.5 2-4.5 4.5-4.5S47 17 47 19.5v25c0 2.5-2 4.5-4.5 4.5-1.2 0-2.3-.5-3.2-1.3L26.9 35.4v9.1c0 2.5-2 4.5-4.5 4.5S18 47 18 44.5v-25zm20.1 9.8-12.2-12v17.5l12.2 12.1V29.3z"></path>
+            </svg>
+          </span>
+        `;
+      }
+
+      if (meta.logo === 'itau') {
+        return `
+          <span class="bank-brand-mark is-logo" style="${style}" aria-label="Itaú">
+            <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
+              <rect width="64" height="64" rx="${radius}" fill="#EC7000"></rect>
+              <circle cx="32" cy="32" r="18" fill="#0B4DBB"></circle>
+              <path fill="#FFFFFF" d="M25 24.8c0-1.2.9-2.1 2.1-2.1h9.8c1.2 0 2.1.9 2.1 2.1S38.1 27 36.9 27h-2.6v10.2c0 1.2-.9 2.1-2.1 2.1s-2.1-.9-2.1-2.1V27h-3c-1.2 0-2.1-.9-2.1-2.2zm4.4 16.7c0-1 .8-1.8 1.8-1.8h2c1 0 1.8.8 1.8 1.8s-.8 1.8-1.8 1.8h-2c-1 0-1.8-.8-1.8-1.8z"></path>
+            </svg>
+          </span>
+        `;
+      }
+
+      return `<span class="bank-brand-mark" style="${style}" aria-hidden="true">${escapeHTML(fallbackEmoji || meta.emoji || '🏦')}</span>`;
+    }
+
     function normalizeBankAccountRecord(record) {
       const bank = normalizeBankNameLocal(record.bank);
       return {
@@ -9016,6 +9267,36 @@
     function getBankAccountLabel(account) {
       if (!account) return 'Banco nao definido';
       return `${account.emoji || '🏦'} ${getBankDisplayName(account.bank)}${account.name ? ` • ${account.name}` : ''}`;
+    }
+
+    let initialBalancePromptShownThisSession = false;
+    let shouldPromptInitialBalance = false;
+
+    function closeInitialBalanceOnboarding() {
+      document.getElementById('initial-balance-onboarding-modal')?.classList.remove('active');
+      initialBalancePromptShownThisSession = true;
+    }
+
+    function openInitialBalanceOnboarding() {
+      if (initialBalancePromptShownThisSession || !shouldPromptInitialBalance) return;
+      const modal = document.getElementById('initial-balance-onboarding-modal');
+      const inlineInput = document.getElementById('global-initial-balance-input');
+      const popupInput = document.getElementById('initial-balance-onboarding-input');
+      if (popupInput && inlineInput) popupInput.value = inlineInput.value || '';
+      if (modal) {
+        modal.classList.add('active');
+        initialBalancePromptShownThisSession = true;
+        setTimeout(() => popupInput?.focus(), 80);
+      }
+    }
+
+    async function saveInitialBalanceFromOnboarding() {
+      const popupInput = document.getElementById('initial-balance-onboarding-input');
+      const inlineInput = document.getElementById('global-initial-balance-input');
+      if (popupInput && inlineInput) inlineInput.value = popupInput.value || '0';
+      await saveInitialBalance();
+      shouldPromptInitialBalance = false;
+      document.getElementById('initial-balance-onboarding-modal')?.classList.remove('active');
     }
 
     function syncAccountEmojiWithSelectedBank(force = false) {
@@ -9361,7 +9642,7 @@
           <div class="flex items-center justify-between gap-3 mb-4">
             <div>
               <div class="meta">${escapeHTML(getBankDisplayName(bankItem.bank))}</div>
-              <div class="stitch-balance-card-name mt-2">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(bankItem.name || 'Sem conta')}</div>
+              <div class="stitch-balance-card-name mt-2 flex items-center gap-2">${renderBankBrandMark(bankItem.bank, bankItem.emoji || '🏦', 24, 8)} <span>${escapeHTML(bankItem.name || 'Sem conta')}</span></div>
             </div>
             <div class="text-right">
               <div class="meta">Saldo</div>
@@ -9436,7 +9717,7 @@
           <div class="stitch-table-card">
             <div class="flex items-center justify-between gap-3 mb-4">
               <div>
-                <h4 class="font-bold text-lg" style="color:#12263f;">${escapeHTML(bankItem.emoji || '🏦')} ${escapeHTML(getBankDisplayName(bankItem.bank))}</h4>
+                <h4 class="font-bold text-lg flex items-center gap-2" style="color:#12263f;">${renderBankBrandMark(bankItem.bank, bankItem.emoji || '🏦', 24, 8)} <span>${escapeHTML(getBankDisplayName(bankItem.bank))}</span></h4>
                 <p class="text-slate-400 text-sm">${escapeHTML(bankItem.name || 'Sem conta')}</p>
               </div>
               <div class="stitch-badge stitch-badge-soft">${rows.length} transação(ões)</div>
@@ -10454,6 +10735,8 @@
 
     async function selectFamily(familyId) {
       currentFamily = familyId;
+      initialBalancePromptShownThisSession = false;
+      shouldPromptInitialBalance = false;
       if (typeof renderDashboardScanFeedback === 'function') renderDashboardScanFeedback();
 
       try {
@@ -10855,6 +11138,7 @@
 
         await updateDashboard();
         await updateCommitmentValues();
+        openInitialBalanceOnboarding();
       } catch (error) {
         console.error('Error loading family data:', error);
       }
@@ -12108,7 +12392,7 @@
             <div class="stitch-account-panel" style="${getBankThemeStyle(acc.bank)}">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-4">
-                  <div class="flex items-center justify-center rounded-2xl" style="width:58px;height:58px;background:var(--bank-soft);font-size:28px;">${acc.emoji}</div>
+                  <div class="flex items-center justify-center rounded-2xl" style="width:58px;height:58px;background:var(--bank-soft);font-size:28px;">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
                   <div>
                     <div class="meta">${escapeHTML(bankLabel)}</div>
                     <p class="font-bold text-white" style="color:#12263f !important;font-size:20px;margin-top:8px;">${escapeHTML(acc.name)}</p>
@@ -12190,7 +12474,7 @@
         const bankLabel = getBankDisplayName(acc.bank);
         return `
           <div class="account-card" style="${getBankThemeStyle(acc.bank)}">
-            <div class="account-card-emoji">${acc.emoji}</div>
+            <div class="account-card-emoji">${renderBankBrandMark(acc.bank, acc.emoji, 32, 10)}</div>
             <div class="account-card-name">${escapeHTML(acc.name)}</div>
             <div class="account-card-bank">${bankLabel}</div>
             <div class="account-card-balance ${total < 0 ? 'negative' : ''}">${formatCurrency(total)}</div>
@@ -12233,8 +12517,9 @@
         showToast('✅', 'Saldo inicial salvo!');
         const info = document.getElementById('initial-balance-info');
         if (info) info.textContent = `Saldo inicial atual: ${formatCurrency(balance)}`;
-        const setupCard = document.getElementById('initial-balance-setup');
-        if (setupCard) setupCard.classList.add('hidden');
+        const popupInput = document.getElementById('initial-balance-onboarding-input');
+        if (popupInput) popupInput.value = balance;
+        shouldPromptInitialBalance = false;
         updateDashboard();
       } catch (error) {
         console.error('Error saving initial balance:', error);
@@ -12253,16 +12538,16 @@
           if (info) info.textContent = `Saldo inicial atual: ${formatCurrency(data.balance || 0)}`;
           const inputEl = document.getElementById('global-initial-balance-input');
           if (inputEl) inputEl.value = data.balance || 0;
-          // Ocultar card de configuração - já configurado
-          const setupCard = document.getElementById('initial-balance-setup');
-          if (setupCard) setupCard.classList.add('hidden');
+          const popupInput = document.getElementById('initial-balance-onboarding-input');
+          if (popupInput) popupInput.value = data.balance || 0;
+          shouldPromptInitialBalance = false;
           return data.balance || 0;
         } else {
-          // Mostrar card de configuração
-          const setupCard = document.getElementById('initial-balance-setup');
-          if (setupCard) setupCard.classList.remove('hidden');
           const info = document.getElementById('initial-balance-info');
           if (info) info.textContent = 'Nenhum saldo inicial configurado';
+          const inputEl = document.getElementById('global-initial-balance-input');
+          if (inputEl) inputEl.value = '';
+          shouldPromptInitialBalance = true;
           return 0;
         }
       } catch (e) { return 0; }
@@ -13186,8 +13471,12 @@
           body: JSON.stringify(payload)
         });
         if (!res.ok) {
-          const text = await res.text().catch(() => '');
-          throw new Error(`Servidor retornou ${res.status}: ${text}`);
+          const contentType = res.headers.get('content-type') || '';
+          const body = contentType.includes('application/json')
+            ? await res.json().catch(() => ({}))
+            : await res.text().catch(() => '');
+          const message = typeof body === 'string' ? body : body?.error || `Servidor retornou ${res.status}`;
+          throw new Error(message);
         }
         const data = await res.json();
         if (!data.success) throw new Error(data.error || 'Falha na importação');
@@ -13739,3 +14028,4 @@
 </body>
 
 </html>
+

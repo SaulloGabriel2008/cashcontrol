@@ -126,6 +126,148 @@ function detectInstallment(description) {
   };
 }
 
+function inferSignedAmountFromDescription(rawAmount, description) {
+  const original = String(rawAmount || "").trim();
+  if (!original) return 0;
+  if (/[+-]/.test(original)) return parseAmount(original);
+
+  const amount = Math.abs(parseAmount(original));
+  const normalizedDescription = normalizeUpper(description);
+
+  const incomeHints = ["RECEBIDA", "RECEBIDO", "PIX RECEBIDO", "RESGATE", "ESTORNO", "DEPOSITO", "DEPOSITO"];
+  const expenseHints = [
+    "ENVIADA",
+    "ENVIADO",
+    "COMPRA",
+    "PAGAMENTO",
+    "APLICACAO",
+    "DINHEIRO GUARDADO",
+    "TRANSFERENCIA ENVIADA",
+    "TRANSFERENCIA VIA PIX",
+  ];
+
+  if (incomeHints.some((hint) => normalizedDescription.includes(hint))) return amount;
+  if (expenseHints.some((hint) => normalizedDescription.includes(hint))) return -amount;
+  return amount;
+}
+
+function sanitizePdfDescription(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .replace(/^[•\-–—\s]+/, "")
+    .trim();
+}
+
+function isIgnorablePdfLine(value) {
+  const normalized = normalizeUpper(value);
+  if (!normalized) return true;
+
+  const ignored = [
+    "RESUMO",
+    "MOVIMENTACOES",
+    "MOVIMENTACOES DA CONTA",
+    "SALDO DISPONIVEL",
+    "SALDO DO DIA",
+    "TOTAL DE ENTRADAS",
+    "TOTAL DE SAIDAS",
+    "PAGINA",
+    "NU PAGAMENTOS S.A.",
+    "BANCO CENTRAL",
+    "COMPROVANTE",
+  ];
+
+  return ignored.some((entry) => normalized === entry || normalized.startsWith(`${entry} `));
+}
+
+function parseNubankPdfTransactions(text) {
+  const lines = String(text || "")
+    .split(/\r?\n/)
+    .map((line) => sanitizePdfDescription(line))
+    .filter(Boolean);
+
+  const transactions = [];
+  const datePattern = /^(\d{2}\/\d{2}(?:\/\d{2,4})?|\d{4}-\d{2}-\d{2})(?:\s+(.*))?$/;
+  const amountOnlyPattern = /^[+-]?\s*(?:R\$)?\s*[\d.]+(?:,\d{2})?$/;
+  const trailingAmountPattern = /^(.*?)([+-]?\s*(?:R\$)?\s*[\d.]+(?:,\d{2})?)$/;
+
+  let current = null;
+
+  const flushCurrent = () => {
+    if (!current || !current.date || !current.amount || !current.descriptionParts.length) {
+      current = null;
+      return;
+    }
+
+    transactions.push({
+      date: current.date,
+      description: sanitizePdfDescription(current.descriptionParts.join(" ")),
+      amount: current.amount,
+    });
+    current = null;
+  };
+
+  for (const rawLine of lines) {
+    if (isIgnorablePdfLine(rawLine)) continue;
+
+    const fullLineMatch = rawLine.match(
+      /(\d{2}\/\d{2}(?:\/\d{2,4})?|\d{4}-\d{2}-\d{2})\s+(.+?)\s+([+-]?\s*(?:R\$)?\s*[\d.]+(?:,\d{2})?)$/
+    );
+    if (fullLineMatch) {
+      flushCurrent();
+      const date = normalizeDate(fullLineMatch[1]);
+      const description = sanitizePdfDescription(fullLineMatch[2]);
+      const amount = inferSignedAmountFromDescription(fullLineMatch[3], description);
+      if (date && description && amount) {
+        transactions.push({ date, description, amount });
+      }
+      continue;
+    }
+
+    const dateMatch = rawLine.match(datePattern);
+    if (dateMatch) {
+      flushCurrent();
+      const date = normalizeDate(dateMatch[1]);
+      if (!date) continue;
+      current = {
+        date,
+        descriptionParts: [],
+        amount: null,
+      };
+      if (dateMatch[2]) {
+        const remainder = sanitizePdfDescription(dateMatch[2]);
+        if (remainder) current.descriptionParts.push(remainder);
+      }
+      continue;
+    }
+
+    if (!current) continue;
+
+    if (!current.amount && amountOnlyPattern.test(rawLine)) {
+      const description = current.descriptionParts.join(" ");
+      current.amount = inferSignedAmountFromDescription(rawLine, description);
+      flushCurrent();
+      continue;
+    }
+
+    if (!current.amount) {
+      const trailingAmount = rawLine.match(trailingAmountPattern);
+      if (trailingAmount && !/AGENCIA|CONTA/i.test(trailingAmount[1] || "")) {
+        const descPart = sanitizePdfDescription(trailingAmount[1]);
+        if (descPart) current.descriptionParts.push(descPart);
+        current.amount = inferSignedAmountFromDescription(trailingAmount[2], current.descriptionParts.join(" "));
+        flushCurrent();
+        continue;
+      }
+    }
+
+    current.descriptionParts.push(rawLine);
+  }
+
+  flushCurrent();
+
+  return transactions.filter((transaction) => transaction.date && transaction.description && transaction.amount);
+}
+
 function parseTransactionLines(text) {
   const lines = normalizeText(text).split("\n");
   const transactions = [];
@@ -354,7 +496,15 @@ async function importStatementData({
     }
 
     rawText = await extractTextFromPdfBuffer(Buffer.from(pdfBase64, "base64"));
-    parsedTransactions = parseTransactionLines(rawText);
+    const inferredBank = canonicalBankName(providedBank || inferBankByPatterns(`${rawText || ""} ${fileName || ""}`));
+    parsedTransactions =
+      inferredBank === "Nubank"
+        ? parseNubankPdfTransactions(rawText)
+        : [];
+
+    if (!parsedTransactions.length) {
+      parsedTransactions = parseTransactionLines(rawText);
+    }
   } else if (fileType === "csv") {
     if (!csvBase64) {
       throw new Error("Arquivo CSV nao informado");
@@ -367,7 +517,7 @@ async function importStatementData({
   }
 
   if (!parsedTransactions.length) {
-    throw new Error("Nenhuma transacao encontrada no arquivo");
+    throw new Error("Nao foi possivel reconhecer as transacoes deste arquivo. Tente o CSV oficial do banco ou um PDF mais nitido.");
   }
 
   const bank = canonicalBankName(

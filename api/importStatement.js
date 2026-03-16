@@ -27,10 +27,18 @@ export default async function handler(req, res) {
       ...result,
     });
   } catch (error) {
-    const status =
-      error && (error.message === "Unauthorized" || error.message === "Invalid token") ? 401 : 500;
+    const message = error && error.message ? error.message : "Erro ao importar extrato";
+    const isAuthError = message === "Unauthorized" || message === "Invalid token";
+    const isBusinessError =
+      message.includes("Nenhuma transacao") ||
+      message.includes("Nao foi possivel reconhecer") ||
+      message.includes("Limite de 1 extrato por dia") ||
+      message.includes("Arquivo PDF nao informado") ||
+      message.includes("Arquivo CSV nao informado") ||
+      message.includes("Tipo de arquivo nao suportado");
+    const status = isAuthError ? 401 : isBusinessError ? 422 : 500;
     return res.status(status).json({
-      error: error && error.message ? error.message : "Erro ao importar extrato",
+      error: message,
     });
   }
 }
