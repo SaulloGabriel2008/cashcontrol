@@ -5725,13 +5725,36 @@
     .theme-setting-option p {
       margin: 0;
       font-size: 13px;
-      color: #94a3b8;
+      color: #5f738d;
     }
 
     .theme-setting-option strong {
-      color: #f8fafc;
+      color: #162b45;
       display: block;
       margin-bottom: 2px;
+    }
+
+    .modal-content .btn-secondary,
+    .modal-content .btn-outline {
+      background: #eef4fb;
+      color: #1f3552;
+      border-color: #c9d8e7;
+      box-shadow: none;
+    }
+
+    .modal-content .btn-secondary:hover,
+    .modal-content .btn-outline:hover {
+      background: #e6eef8;
+      color: #10233e;
+      border-color: #b8cadf;
+    }
+
+    .stitch-account-title {
+      margin-top: 8px;
+      color: #12263f;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
 
     body[data-theme="light"] {
@@ -5876,6 +5899,20 @@
       color: #bdcde0 !important;
     }
 
+    body[data-theme="dark"] .stitch-page #finance-accounts .section-title {
+      color: #f8fafc !important;
+    }
+
+    body[data-theme="dark"] .stitch-page #finance-accounts label,
+    body[data-theme="dark"] .stitch-page #finance-accounts .text-slate-300,
+    body[data-theme="dark"] .stitch-page #finance-accounts .text-slate-400 {
+      color: #c8d8ea !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-account-title {
+      color: #f2f7ff !important;
+    }
+
     body[data-theme="dark"] .stitch-page .input-field,
     body[data-theme="dark"] .stitch-page .input-dark,
     body[data-theme="dark"] .modal-content .input-field,
@@ -5902,6 +5939,33 @@
     body[data-theme="dark"] .modal-content .text-slate-300,
     body[data-theme="dark"] .modal-content .text-slate-500 {
       color: #9fb0c3 !important;
+    }
+
+    body[data-theme="dark"] .modal-content .btn-secondary,
+    body[data-theme="dark"] .modal-content .btn-outline {
+      background: rgba(15, 23, 42, 0.64);
+      color: #d9e7f7;
+      border-color: rgba(148, 163, 184, 0.32);
+    }
+
+    body[data-theme="dark"] .modal-content .btn-secondary:hover,
+    body[data-theme="dark"] .modal-content .btn-outline:hover {
+      background: rgba(30, 47, 78, 0.68);
+      color: #ffffff;
+      border-color: rgba(148, 163, 184, 0.46);
+    }
+
+    body[data-theme="dark"] .theme-setting-option {
+      background: rgba(15, 23, 42, 0.66);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    body[data-theme="dark"] .theme-setting-option p {
+      color: #b7cadf;
+    }
+
+    body[data-theme="dark"] .theme-setting-option strong {
+      color: #f2f7ff;
     }
   </style>
 </head>
@@ -12739,7 +12803,7 @@
                   <div class="flex items-center justify-center rounded-2xl" style="width:58px;height:58px;background:var(--bank-soft);font-size:28px;">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
                   <div>
                     <div class="meta">${escapeHTML(bankLabel)}</div>
-                    <p class="font-bold text-white" style="color:#12263f !important;font-size:20px;margin-top:8px;">${escapeHTML(acc.name)}</p>
+                    <p class="stitch-account-title">${escapeHTML(acc.name)}</p>
                     <p class="text-xs text-slate-400">Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
                   </div>
                 </div>
