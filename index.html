@@ -15,7 +15,7 @@
   <meta property="og:image" content="Navy Blue Finance App Logo (512 x 512 px).png">
   <link rel="icon" href="Navy Blue Finance App Logo (192 x 192 px).png" type="image/png">
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#10b981">
+  <meta name="theme-color" content="#08111f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Cash Control">
@@ -75,7 +75,7 @@
 
     loadApiConfig();
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -6161,6 +6161,755 @@
     body[data-theme="dark"] .theme-setting-option strong {
       color: #f2f7ff;
     }
+
+    /* === VISUAL SYSTEM REFRESH 2026 === */
+    :root {
+      --font-sans: 'Manrope', sans-serif;
+      --font-size-display: clamp(3rem, 4vw, 5rem);
+      --font-size-hero: clamp(2.25rem, 3vw, 3.5rem);
+      --font-size-page-title: clamp(1.85rem, 2.4vw, 2.7rem);
+      --font-size-section-title: clamp(1.3rem, 1.7vw, 1.8rem);
+      --font-size-card-title: clamp(1rem, 1.08vw, 1.18rem);
+      --font-size-body: 15px;
+      --font-size-body-sm: 14px;
+      --font-size-label: 13px;
+      --font-size-caption: 12px;
+      --font-size-helper: 11px;
+      --radius-sm: 14px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --page-bg: #07111f;
+      --page-bg-alt: #0c1b31;
+      --page-bg-soft: #10233f;
+      --shell-bg: rgba(5, 11, 22, 0.88);
+      --shell-border: rgba(120, 146, 184, 0.18);
+      --surface-1: #101b31;
+      --surface-2: #14233d;
+      --surface-3: #1b2d4c;
+      --surface-soft: rgba(18, 31, 54, 0.9);
+      --surface-soft-2: rgba(27, 44, 72, 0.84);
+      --border-subtle: rgba(136, 163, 200, 0.18);
+      --border-strong: rgba(170, 196, 232, 0.28);
+      --text-primary: #f7fbff;
+      --text-secondary: #cad7e8;
+      --text-muted: #90a5c3;
+      --text-inverse: #08111f;
+      --accent: #2dd4bf;
+      --accent-strong: #3b82f6;
+      --accent-soft: rgba(45, 212, 191, 0.16);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.16);
+      --danger: #fb7185;
+      --danger-soft: rgba(251, 113, 133, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.16);
+      --focus: rgba(45, 212, 191, 0.34);
+      --shadow-soft: 0 28px 90px rgba(2, 8, 23, 0.32);
+      --shadow-card: 0 18px 46px rgba(2, 8, 23, 0.24);
+      --shadow-elevated: 0 24px 64px rgba(2, 8, 23, 0.32);
+      --shell-gradient:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(45, 212, 191, 0.18), transparent 24%),
+        linear-gradient(180deg, #07111f 0%, #0c1730 48%, #0f1d3a 100%);
+      --surface-gradient: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-2) 100%);
+      --surface-gradient-soft: linear-gradient(180deg, rgba(22, 36, 61, 0.94) 0%, rgba(16, 27, 49, 0.92) 100%);
+      --surface-gradient-hero:
+        radial-gradient(circle at top left, rgba(45, 212, 191, 0.18), transparent 24%),
+        linear-gradient(145deg, rgba(11, 20, 37, 0.96), rgba(18, 31, 56, 0.92));
+      --color-primary: var(--accent);
+      --color-primary-dark: var(--accent-strong);
+      --color-secondary: #79a8ff;
+      --color-danger: var(--danger);
+      --color-warning: var(--warning);
+      --color-success: var(--success);
+      --color-shell: var(--shell-bg);
+      --color-shell-border: var(--shell-border);
+      --color-page-surface: var(--page-bg);
+      --color-surface: var(--surface-1);
+      --color-surface-soft: var(--surface-2);
+      --color-surface-alt: var(--surface-3);
+      --color-border-soft: var(--border-subtle);
+      --color-text: var(--text-primary);
+      --color-text-secondary: var(--text-secondary);
+      --color-ink: var(--text-primary);
+      --color-ink-soft: var(--text-secondary);
+    }
+
+    body[data-theme="light"] {
+      --page-bg: #eef3f8;
+      --page-bg-alt: #e3ebf4;
+      --page-bg-soft: #dbe5ef;
+      --shell-bg: rgba(248, 251, 255, 0.84);
+      --shell-border: rgba(145, 163, 188, 0.22);
+      --surface-1: #ffffff;
+      --surface-2: #f4f8fc;
+      --surface-3: #eaf0f7;
+      --surface-soft: rgba(246, 249, 253, 0.96);
+      --surface-soft-2: rgba(237, 243, 249, 0.98);
+      --border-subtle: rgba(148, 163, 184, 0.22);
+      --border-strong: rgba(130, 153, 182, 0.28);
+      --text-primary: #122033;
+      --text-secondary: #5b708c;
+      --text-muted: #7d92ab;
+      --text-inverse: #ffffff;
+      --accent: #0fbc91;
+      --accent-strong: #2563eb;
+      --accent-soft: rgba(15, 188, 145, 0.14);
+      --success: #10b981;
+      --success-soft: rgba(16, 185, 129, 0.14);
+      --danger: #dc4c64;
+      --danger-soft: rgba(220, 76, 100, 0.12);
+      --warning: #d97706;
+      --warning-soft: rgba(217, 119, 6, 0.14);
+      --focus: rgba(15, 188, 145, 0.2);
+      --shadow-soft: 0 28px 88px rgba(15, 23, 42, 0.12);
+      --shadow-card: 0 16px 42px rgba(15, 23, 42, 0.08);
+      --shadow-elevated: 0 22px 56px rgba(15, 23, 42, 0.12);
+      --shell-gradient:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(15, 188, 145, 0.12), transparent 24%),
+        linear-gradient(180deg, #edf3f8 0%, #e7eef6 48%, #dfe7f1 100%);
+      --surface-gradient: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-2) 100%);
+      --surface-gradient-soft: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(244, 248, 252, 0.96) 100%);
+      --surface-gradient-hero:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.1), transparent 24%),
+        linear-gradient(145deg, rgba(16, 27, 49, 0.94), rgba(18, 36, 63, 0.9));
+    }
+
+    html,
+    body,
+    button,
+    input,
+    textarea,
+    select {
+      font-family: var(--font-sans) !important;
+    }
+
+    body {
+      background: var(--shell-gradient) !important;
+      color: var(--text-primary) !important;
+      font-size: var(--font-size-body);
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+
+    body::before {
+      opacity: 0.42;
+    }
+
+    #main-screen,
+    #family-screen,
+    #login-screen,
+    #main-screen main,
+    #family-screen main,
+    .gradient-bg {
+      background: transparent !important;
+    }
+
+    header.app-topbar,
+    header.family-topbar,
+    nav.app-tabs-nav {
+      background: var(--shell-bg) !important;
+      border-bottom: 1px solid var(--shell-border) !important;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+      backdrop-filter: blur(24px);
+    }
+
+    .login-container {
+      background: var(--shell-gradient) !important;
+    }
+
+    .tab-content.stitch-page,
+    .card,
+    .card-glass,
+    .loan-card,
+    .list-item,
+    .analysis-rich-card,
+    .analysis-highlight-card,
+    .stitch-panel,
+    .stitch-mobile-card,
+    .stitch-subscription-card,
+    .stitch-account-panel,
+    .stitch-loan-card,
+    .stitch-goal-card,
+    .unified-goal-card,
+    .stitch-dashboard-card,
+    .subscriptions-summary-card,
+    .stitch-summary-card,
+    .stitch-smart-insights,
+    .stitch-analysis-details,
+    .stitch-ai-note,
+    .family-card,
+    .modal-content,
+    .surface-empty-state,
+    .theme-setting-option,
+    .theme-choice-btn,
+    .stitch-mobile-data-point,
+    #recent-transactions,
+    #future-commitments-table,
+    #report-content,
+    .initial-balance-card,
+    .loan-preview-box {
+      background: var(--surface-gradient) !important;
+      border: 1px solid var(--border-subtle) !important;
+      color: var(--text-primary) !important;
+      box-shadow: var(--shadow-card) !important;
+    }
+
+    .tab-content.stitch-page {
+      border-radius: var(--radius-xl) !important;
+      padding: 32px !important;
+      box-shadow: var(--shadow-soft) !important;
+    }
+
+    .auth-form-panel,
+    .mobile-nav-sheet {
+      background: var(--surface-gradient-soft) !important;
+      border: 1px solid var(--border-subtle) !important;
+      box-shadow: var(--shadow-soft) !important;
+    }
+
+    .auth-visual-panel,
+    .family-hero-card,
+    .tab-intro-card,
+    .scanner-feature-card {
+      background: var(--surface-gradient-hero) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: var(--shadow-soft) !important;
+    }
+
+    .btn,
+    .tab-btn,
+    .stitch-ai-history-chip,
+    .theme-setting-option,
+    .theme-choice-btn,
+    .mobile-nav-trigger,
+    .mobile-nav-link {
+      border-radius: var(--radius-md) !important;
+      font-size: var(--font-size-label) !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.02em;
+    }
+
+    .btn,
+    .stitch-ai-refresh-btn,
+    .stitch-analysis-toggle-btn {
+      min-height: 48px;
+    }
+
+    .btn-primary,
+    .stitch-ai-refresh-btn,
+    .stitch-analysis-toggle-btn,
+    .tab-btn.active,
+    .mobile-nav-link.active {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 18px 36px rgba(37, 99, 235, 0.24) !important;
+    }
+
+    .btn-secondary,
+    .btn-outline,
+    .stitch-ai-history-chip,
+    .theme-setting-option,
+    .theme-choice-btn,
+    .mobile-nav-trigger,
+    .mobile-nav-link {
+      background: var(--surface-soft) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-subtle) !important;
+      box-shadow: none !important;
+    }
+
+    .btn-secondary:hover,
+    .btn-outline:hover,
+    .stitch-ai-history-chip:hover,
+    .theme-setting-option:hover,
+    .theme-choice-btn:hover,
+    .mobile-nav-link:hover,
+    .tab-btn:hover {
+      border-color: var(--border-strong) !important;
+      background: var(--surface-soft-2) !important;
+      color: var(--text-primary) !important;
+      transform: translateY(-1px);
+    }
+
+    .btn-danger,
+    .destructive-outline {
+      background: var(--danger-soft) !important;
+      color: var(--danger) !important;
+      border: 1px solid rgba(251, 113, 133, 0.3) !important;
+    }
+
+    .btn-danger:hover,
+    .destructive-outline:hover {
+      background: rgba(251, 113, 133, 0.18) !important;
+      color: #ffffff !important;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.04) !important;
+      color: var(--text-secondary) !important;
+      border: 1px solid transparent !important;
+    }
+
+    .tab-btn:not(.active):hover {
+      background: var(--surface-soft) !important;
+    }
+
+    .header-info h1 {
+      font-size: 1.15rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.03em;
+      color: var(--text-primary) !important;
+    }
+
+    .header-info p,
+    .mobile-nav-trigger-label {
+      color: var(--text-secondary) !important;
+      font-size: var(--font-size-caption) !important;
+      font-weight: 700;
+    }
+
+    .mobile-nav-trigger-current {
+      color: var(--text-primary) !important;
+    }
+
+    .auth-visual-title {
+      font-size: var(--font-size-display) !important;
+      font-weight: 800 !important;
+      line-height: 0.98 !important;
+      letter-spacing: -0.055em;
+      color: #ffffff !important;
+    }
+
+    .tab-intro-title {
+      font-size: var(--font-size-hero) !important;
+      font-weight: 800 !important;
+      line-height: 1 !important;
+      letter-spacing: -0.05em;
+      color: #ffffff !important;
+    }
+
+    .section-title,
+    .dash-section-title,
+    .stitch-panel-title,
+    .modal-title {
+      font-size: var(--font-size-section-title) !important;
+      font-weight: 800 !important;
+      line-height: 1.08 !important;
+      letter-spacing: -0.04em;
+      color: var(--text-primary) !important;
+    }
+
+    .stitch-form-title,
+    .list-item-title,
+    .stitch-account-title,
+    .stitch-table-card-title,
+    .stitch-mobile-card-title,
+    .family-card-title,
+    .stitch-smart-insights-title,
+    .stitch-analysis-details-title,
+    .loan-card-title,
+    .table-item-title {
+      font-size: var(--font-size-card-title) !important;
+      font-weight: 800 !important;
+      line-height: 1.25 !important;
+      letter-spacing: -0.03em;
+      color: var(--text-primary) !important;
+    }
+
+    .section-description,
+    .dash-section-link,
+    .stitch-panel-subtitle,
+    .list-item-subtitle,
+    .stitch-table-card-subtitle,
+    .stitch-mobile-card-subtitle,
+    .auth-visual-description,
+    .tab-intro-description,
+    .family-card-subtitle,
+    .stitch-analysis-details-body,
+    .stitch-ai-note,
+    .surface-empty-state,
+    label,
+    .muted,
+    .text-slate-200,
+    .text-slate-300,
+    .text-slate-400,
+    .text-slate-500,
+    .text-slate-600,
+    .text-slate-700 {
+      color: var(--text-secondary) !important;
+    }
+
+    .stitch-panel-subtitle,
+    .auth-visual-description,
+    .tab-intro-description {
+      font-size: var(--font-size-body-sm) !important;
+      line-height: 1.7 !important;
+    }
+
+    .auth-kicker,
+    .tab-kicker,
+    .stitch-panel-kicker,
+    .meta,
+    .stitch-mobile-card-date,
+    .stitch-table thead th,
+    .stitch-mobile-data-point span {
+      color: var(--text-muted) !important;
+      font-size: var(--font-size-caption) !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+
+    .auth-kicker,
+    .tab-kicker,
+    .stitch-panel-kicker {
+      background: var(--accent-soft) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .input-field,
+    .input-dark,
+    textarea.input-field,
+    select.input-field,
+    select.input-dark,
+    .ai-chat-input {
+      background: var(--surface-soft) !important;
+      border: 1px solid var(--border-subtle) !important;
+      color: var(--text-primary) !important;
+      border-radius: var(--radius-md) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      font-size: var(--font-size-body) !important;
+    }
+
+    .input-field::placeholder,
+    .input-dark::placeholder,
+    .ai-chat-input::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted) !important;
+      opacity: 1;
+    }
+
+    .input-field:focus,
+    .input-dark:focus,
+    .ai-chat-input:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 4px var(--focus) !important;
+    }
+
+    select.input-field,
+    select.input-dark {
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23a9bdd8" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') !important;
+    }
+
+    body[data-theme="light"] select.input-field,
+    body[data-theme="light"] select.input-dark {
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%235b708c" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') !important;
+    }
+
+    .stitch-table thead th {
+      border-bottom-color: var(--border-subtle) !important;
+    }
+
+    .stitch-table tbody td {
+      color: var(--text-primary) !important;
+      border-bottom-color: rgba(148, 163, 184, 0.14) !important;
+    }
+
+    .stitch-table tbody tr:hover td {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    .stitch-mobile-data-point,
+    .stitch-mobile-card,
+    .stitch-summary-card,
+    .stitch-smart-insights,
+    .stitch-analysis-details,
+    .stitch-ai-note {
+      border-radius: var(--radius-lg) !important;
+    }
+
+    .analysis-highlight-card {
+      background: linear-gradient(180deg, var(--surface-soft), var(--surface-2)) !important;
+    }
+
+    .analysis-highlight-success {
+      background: linear-gradient(180deg, var(--success-soft), var(--surface-1)) !important;
+      border-color: rgba(52, 211, 153, 0.24) !important;
+    }
+
+    .analysis-highlight-danger {
+      background: linear-gradient(180deg, var(--danger-soft), var(--surface-1)) !important;
+      border-color: rgba(251, 113, 133, 0.26) !important;
+      color: var(--danger) !important;
+    }
+
+    .analysis-highlight-soft {
+      background: linear-gradient(180deg, var(--accent-soft), var(--surface-1)) !important;
+      border-color: rgba(45, 212, 191, 0.22) !important;
+    }
+
+    .analysis-highlight-card .text-slate-900,
+    .analysis-highlight-card .text-slate-700,
+    .analysis-highlight-card .text-slate-500 {
+      color: inherit !important;
+    }
+
+    .analysis-highlight-card.analysis-highlight-success,
+    .analysis-highlight-card.analysis-highlight-soft {
+      color: var(--text-primary) !important;
+    }
+
+    .inline-theme-title,
+    .table-item-title,
+    .loan-card-title {
+      color: var(--text-primary) !important;
+    }
+
+    .inline-theme-muted {
+      color: var(--text-secondary) !important;
+    }
+
+    .inline-theme-accent,
+    .tone-accent,
+    .tone-invest {
+      color: var(--accent-strong) !important;
+    }
+
+    .tone-success {
+      color: var(--success) !important;
+    }
+
+    .tone-danger {
+      color: var(--danger) !important;
+    }
+
+    .tone-warning,
+    .tone-emergency {
+      color: var(--warning) !important;
+    }
+
+    .tone-tithe {
+      color: #a78bfa !important;
+    }
+
+    .mini-caption,
+    .compact-note,
+    .helper-copy {
+      color: var(--text-secondary) !important;
+      font-size: var(--font-size-caption) !important;
+    }
+
+    .helper-copy {
+      font-size: var(--font-size-helper) !important;
+    }
+
+    .dashboard-period-select {
+      width: auto !important;
+      padding: 8px 12px !important;
+      font-size: var(--font-size-label) !important;
+      min-height: 40px !important;
+    }
+
+    .dash-hero-meta {
+      font-size: var(--font-size-caption) !important;
+      opacity: 0.76;
+      margin-bottom: 8px;
+    }
+
+    .dash-hero-summary {
+      font-size: var(--font-size-body-sm) !important;
+      opacity: 0.86;
+    }
+
+    .dash-hero-period {
+      font-size: var(--font-size-helper) !important;
+      opacity: 0.68;
+    }
+
+    .bank-account-mark {
+      width: 58px;
+      height: 58px;
+      font-size: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 18px;
+      background: var(--bank-soft);
+    }
+
+    .subscription-mark {
+      width: 52px;
+      height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 18px;
+      background: rgba(99, 102, 241, 0.12);
+    }
+
+    .plan-card-premium {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(217, 119, 6, 0.08)) !important;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+
+    .plan-card-executive {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.14), rgba(59, 130, 246, 0.1)) !important;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+
+    .evidence-card {
+      padding: 14px 16px !important;
+    }
+
+    .video-frame-shell {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--page-bg);
+    }
+
+    .import-preview-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 8, 23, 0.72);
+      backdrop-filter: blur(10px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .import-preview-dialog {
+      width: min(560px, 100%);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--radius-lg);
+      background: var(--surface-gradient) !important;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .import-preview-head,
+    .import-preview-foot {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .import-preview-foot {
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: none;
+      display: flex;
+      gap: 12px;
+    }
+
+    .import-preview-head-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .import-preview-title {
+      margin: 0;
+      font-size: var(--font-size-card-title);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+    }
+
+    .import-preview-close {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+    }
+
+    .import-preview-count {
+      color: var(--accent-strong);
+      font-size: var(--font-size-label);
+      font-weight: 700;
+    }
+
+    .import-preview-summary {
+      color: var(--text-secondary);
+      font-size: var(--font-size-body-sm);
+      margin-top: 4px;
+    }
+
+    .import-preview-list {
+      overflow-y: auto;
+      padding: 10px 24px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .import-preview-foot .btn {
+      flex: 1;
+    }
+
+    .import-preview-foot .btn-primary {
+      flex: 2;
+    }
+
+    .family-card:hover,
+    .card:hover,
+    .loan-card:hover,
+    .list-item:hover,
+    .stitch-subscription-card:hover {
+      border-color: var(--border-strong) !important;
+      box-shadow: var(--shadow-elevated) !important;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+
+      .tab-content.stitch-page {
+        padding: 22px !important;
+        border-radius: 26px !important;
+      }
+
+      .section-title,
+      .dash-section-title,
+      .stitch-panel-title,
+      .modal-title {
+        font-size: 1.34rem !important;
+      }
+
+      .stitch-form-title,
+      .list-item-title,
+      .stitch-account-title,
+      .stitch-table-card-title,
+      .stitch-mobile-card-title,
+      .family-card-title,
+      .stitch-smart-insights-title,
+      .stitch-analysis-details-title,
+      .loan-card-title,
+      .table-item-title {
+        font-size: 1rem !important;
+      }
+    }
   </style>
 </head>
 
@@ -6492,25 +7241,25 @@
                 <div class="dash-hero-content">
                   <div style="position:relative;z-index:1;">
                     <p class="dash-hero-greeting">Olá, <span id="dash-hero-name">Usuário</span>! 👋</p>
-                    <p style="font-size:12px;opacity:0.7;margin-bottom:8px;" id="dash-hero-date"></p>
-                    <p style="font-size:13px;opacity:0.8;">Saldo total disponível</p>
+                        <p class="dash-hero-meta" id="dash-hero-date"></p>
+                        <p class="dash-hero-summary">Saldo total disponível</p>
                     <p class="dash-hero-balance" id="dash-balance">R$ 0,00</p>
                     <p class="balance-prev-badge" id="dash-balance-prev-badge" style="margin-bottom:4px;"></p>
                     <div class="dash-hero-stats">
                       <div class="dash-hero-stat">
                         <p class="dash-hero-stat-label">Entradas</p>
                         <p class="dash-hero-stat-value success" id="dash-total-income">R$ 0,00</p>
-                        <p style="font-size:10px;opacity:0.6;" id="dash-income-period">Este mês</p>
+                        <p class="dash-hero-period" id="dash-income-period">Este mês</p>
                       </div>
                       <div class="dash-hero-stat">
                         <p class="dash-hero-stat-label">Despesas</p>
                         <p class="dash-hero-stat-value danger" id="dash-total-expenses">R$ 0,00</p>
-                        <p style="font-size:10px;opacity:0.6;" id="dash-expenses-period">Este mês</p>
+                        <p class="dash-hero-period" id="dash-expenses-period">Este mês</p>
                       </div>
                       <div class="dash-hero-stat">
                         <p class="dash-hero-stat-label">Pendências</p>
                         <p class="dash-hero-stat-value danger" id="dash-commitments-total">R$ 0,00</p>
-                        <p style="font-size:10px;opacity:0.6;" id="dash-balance-period">Próx. mês</p>
+                        <p class="dash-hero-period" id="dash-balance-period">Próx. mês</p>
                       </div>
                     </div>
                   </div>
@@ -6530,8 +7279,7 @@
               <!-- Filtro de Período -->
               <div class="dashboard-control-row">
                 <label class="text-sm text-slate-400">Período:</label>
-                <select id="dashboard-period" onchange="updateDashboardByPeriod()" class="input-field"
-                  style="width:auto;padding:6px 12px;font-size:13px;">
+                <select id="dashboard-period" onchange="updateDashboardByPeriod()" class="input-field dashboard-period-select">
                   <option value="month">Este Mês</option>
                   <option value="week">Esta Semana</option>
                   <option value="year">Este Ano</option>
@@ -6878,11 +7626,11 @@
                     <label class="block text-sm font-semibold text-slate-300 mb-2">Tipo do valor informado:</label>
                     <div class="value-type-toggle">
                       <button class="value-type-btn active" id="loan-type-liquid" onclick="setLoanValueType('liquid')">
-                        💵 Valor Recebido<br><span style="font-size:10px;font-weight:400;opacity:0.7;">(líquido, sem
+            💵 Valor Recebido<br><span class="helper-copy">(líquido, sem
                           taxas)</span>
                       </button>
                       <button class="value-type-btn" id="loan-type-total" onclick="setLoanValueType('total')">
-                        💳 Total a Pagar<br><span style="font-size:10px;font-weight:400;opacity:0.7;">(já com
+            💳 Total a Pagar<br><span class="helper-copy">(já com
                           juros)</span>
                       </button>
                     </div>
@@ -7201,7 +7949,7 @@
                     <div class="stitch-panel-head" style="padding:20px 20px 0;">
                       <div>
                         <span class="stitch-panel-kicker">Financial Chat</span>
-                        <h3 class="stitch-panel-title" style="font-size:26px;margin-top:10px;">Chat Financeiro</h3>
+                    <h3 class="stitch-panel-title">Chat Financeiro</h3>
                         <p class="stitch-panel-subtitle">Pergunte sobre gastos, transferências, categorias, bancos e comparações com base nas transações importadas.</p>
                       </div>
                     </div>
@@ -7222,7 +7970,7 @@
                     <div class="stitch-panel-head subscriptions-head">
                       <div>
                         <span class="stitch-panel-kicker">Assinaturas</span>
-                        <h3 class="stitch-panel-title" style="font-size:26px;margin-top:10px;">Minhas Assinaturas</h3>
+                    <h3 class="stitch-panel-title">Minhas Assinaturas</h3>
                         <p class="stitch-panel-subtitle">Serviços recorrentes e impacto mensal reunidos na mesma leitura da IA.</p>
                       </div>
                       <button onclick="openModal('subscription')" class="btn btn-primary px-4 py-2 text-sm">➕ Nova</button>
@@ -7491,7 +8239,7 @@
       title.textContent = 'Entre para continuar';
       content.innerHTML = `
         <div class="space-y-4">
-          <div class="analysis-highlight-card" style="background:linear-gradient(180deg,rgba(16,185,129,0.12),rgba(255,255,255,0.98));border-color:rgba(16,185,129,0.18);">
+          <div class="analysis-highlight-card analysis-highlight-success">
             <div class="font-semibold text-slate-900 mb-2">Modo visitante ativo</div>
             <div class="text-slate-700">Voce pode explorar o app livremente, mas precisa entrar para ${escapeHTML(actionLabel)}.</div>
           </div>
@@ -7569,7 +8317,7 @@
 
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#0f172a' : '#10b981');
+        metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#08111f' : '#edf3f8');
       }
     }
 
@@ -8275,7 +9023,7 @@
                 <button class="w-full mt-4 py-2.5 rounded-xl font-semibold text-slate-400 border border-slate-600 cursor-default">Plano Atual</button>
               </div>
               <!-- Plano Premium -->
-              <div class="relative rounded-2xl p-5 border ${requiredPlan === 'premium' ? 'border-yellow-400 border-2' : 'border-yellow-500/40'} ${requiredPlan && requiredPlan !== 'premium' ? 'opacity-60' : ''}" style="background:linear-gradient(135deg, rgba(250,204,21,0.08), rgba(245,158,11,0.05)); backdrop-filter:blur(12px); transition: all 0.3s; transform: ${requiredPlan === 'premium' ? 'scale(1.02)' : 'scale(1)'};">
+              <div class="relative rounded-2xl p-5 border plan-card-premium ${requiredPlan === 'premium' ? 'border-yellow-400 border-2' : 'border-yellow-500/40'} ${requiredPlan && requiredPlan !== 'premium' ? 'opacity-60' : ''}" style="transform: ${requiredPlan === 'premium' ? 'scale(1.02)' : 'scale(1)'};">
                 ${requiredPlan === 'premium' ? '<div class="absolute -top-3 left-4 bg-yellow-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-lg z-10">REQUISITO</div>' : ''}
                 <h4 class="text-lg font-bold text-white mb-1">⭐ Premium</h4>
                 <p class="text-2xl font-extrabold text-yellow-400 mb-3">R$ 9,90<span class="text-sm font-normal text-slate-400">/mês</span></p>
@@ -8289,7 +9037,7 @@
                 <button onclick="selectPlan('premium')" class="w-full mt-4 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-yellow-400 to-amber-600 hover:from-yellow-300 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20">Assinar Premium</button>
               </div>
               <!-- Plano Executivo -->
-              <div class="relative rounded-2xl p-5 border ${requiredPlan === 'executive' ? 'border-purple-400 border-2' : 'border-purple-500/40'} ${requiredPlan && requiredPlan !== 'executive' ? 'opacity-60' : ''}" style="background:linear-gradient(135deg, rgba(139,92,246,0.12), rgba(99,102,241,0.08)); backdrop-filter:blur(12px); transition: all 0.3s; transform: ${requiredPlan === 'executive' ? 'scale(1.02)' : 'scale(1)'};">
+              <div class="relative rounded-2xl p-5 border plan-card-executive ${requiredPlan === 'executive' ? 'border-purple-400 border-2' : 'border-purple-500/40'} ${requiredPlan && requiredPlan !== 'executive' ? 'opacity-60' : ''}" style="transform: ${requiredPlan === 'executive' ? 'scale(1.02)' : 'scale(1)'};">
                 ${requiredPlan === 'executive' ? '<div class="absolute -top-3 left-4 bg-purple-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg z-10">REQUISITO PARA ESSA FUNÇÃO</div>' : '<div class="absolute -top-3 right-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">🔥 Mais Vendido</div>'}
                 <h4 class="text-lg font-bold text-white mb-1">👑 Executivo</h4>
                 <p class="text-2xl font-extrabold text-purple-400 mb-3">R$ 19,90<span class="text-sm font-normal text-slate-400">/mês</span></p>
@@ -8312,7 +9060,7 @@
           title: '📖 Tutorial e Ajuda',
           html: `
             <p class="text-slate-300 text-sm mb-4">Assista ao vídeo abaixo para aprender a usar o Cash Control:</p>
-            <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; background:#0f172a;">
+              <div class="video-frame-shell">
               <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0; border-radius:12px;"
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                 title="Tutorial Cash Control"
@@ -9501,7 +10249,7 @@
           return `
             <tr>
               <td class="muted stitch-date-cell">${formatDisplayDate(inc.date)}</td>
-              <td><strong style="font-size:14px;">${escapeHTML(inc.description)}</strong></td>
+              <td><strong class="table-item-title">${escapeHTML(inc.description)}</strong></td>
               <td class="muted">${escapeHTML(bankLabel)}</td>
               <td class="align-right stitch-value-positive">+${formatCurrency(inc.amount)}</td>
               <td class="align-right">
@@ -9605,7 +10353,7 @@
               <td class="muted stitch-date-cell">${formatDisplayDate(inc.date)}</td>
               <td>
                 <div style="display:grid;gap:4px;">
-                  <strong style="font-size:14px;">${escapeHTML(inc.description || 'Sem descrição')}</strong>
+                  <strong class="table-item-title">${escapeHTML(inc.description || 'Sem descrição')}</strong>
                   <span class="muted">${escapeHTML(catLabel)}</span>
                 </div>
               </td>
@@ -9671,7 +10419,7 @@
           return `
             <tr>
               <td class="muted stitch-date-cell">${formatDisplayDate(exp.date)}</td>
-              <td><strong style="font-size:14px;">${escapeHTML(exp.description)}</strong></td>
+              <td><strong class="table-item-title">${escapeHTML(exp.description)}</strong></td>
               <td class="muted">${escapeHTML(bankLabel)}</td>
               <td class="muted">${escapeHTML(getPaymentMethodDisplay(exp.paymentMethod || 'dinheiro', exp.installments || 1))}</td>
               <td class="align-right stitch-value-negative">-${formatCurrency(exp.amount)}</td>
@@ -9759,7 +10507,7 @@
               <td class="muted stitch-date-cell">${formatDisplayDate(exp.date)}</td>
               <td>
                 <div style="display:grid;gap:4px;">
-                  <strong style="font-size:14px;">${escapeHTML(exp.description || 'Sem descrição')}</strong>
+                  <strong class="table-item-title">${escapeHTML(exp.description || 'Sem descrição')}</strong>
                   <span class="muted">${escapeHTML(getCategoryLabelForReport(exp.category))}</span>
                 </div>
               </td>
@@ -9878,7 +10626,7 @@
               <div class="unified-goal-actions">
                 <button onclick="${getGuestActionOnclick('editar metas')}" class="btn btn-outline !w-auto !px-4 !py-2 text-sm">✏️ Editar</button>
                 <button onclick="${getGuestActionOnclick('concluir metas')}" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">✅ Concluir</button>
-                <button onclick="${getGuestActionOnclick('excluir metas')}" class="btn btn-outline !w-auto !px-4 !py-2 text-sm" style="color:#b91c1c;border-color:rgba(220,38,38,0.18);">🗑️ Excluir</button>
+<button onclick="${getGuestActionOnclick('excluir metas')}" class="btn btn-danger !w-auto !px-4 !py-2 text-sm">🗑️ Excluir</button>
               </div>
             </div>
           `;
@@ -9951,7 +10699,7 @@
                   <div class="unified-goal-actions">
                     <button onclick="editGoal('${id}')" class="btn btn-outline !w-auto !px-4 !py-2 text-sm">✏️ Editar</button>
                     <button onclick="completeGoal('${id}')" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">✅ Concluir</button>
-                    <button onclick="deleteGoal('${id}')" class="btn btn-outline !w-auto !px-4 !py-2 text-sm" style="color:#b91c1c;border-color:rgba(220,38,38,0.18);">🗑️ Excluir</button>
+<button onclick="deleteGoal('${id}')" class="btn btn-danger !w-auto !px-4 !py-2 text-sm">🗑️ Excluir</button>
                   </div>
                 </div>
               `);
@@ -10219,7 +10967,7 @@
       if (!container) return;
 
       if (errorMessage) {
-        container.innerHTML = `<div class="analysis-highlight-card" style="border-color:rgba(239,68,68,0.2);background:linear-gradient(180deg,rgba(239,68,68,0.12),rgba(255,255,255,0.98));color:#b91c1c;">${escapeHTML(errorMessage)}</div>`;
+        container.innerHTML = `<div class="analysis-highlight-card analysis-highlight-danger">${escapeHTML(errorMessage)}</div>`;
         return;
       }
 
@@ -10234,7 +10982,7 @@
       const createdLabel = data.accountCreated ? 'Conta criada automaticamente' : 'Conta existente reutilizada';
 
       container.innerHTML = `
-        <div class="analysis-highlight-card" style="border-color:rgba(20,184,106,0.24);background:linear-gradient(180deg,rgba(20,184,106,0.12),rgba(255,255,255,0.98));">
+        <div class="analysis-highlight-card analysis-highlight-success">
           <div class="font-semibold text-slate-900 mb-2">✅ Extrato importado</div>
           <div class="text-slate-700"><span class="text-slate-500">Banco:</span> ${escapeHTML(bankLabel)}</div>
           <div class="text-slate-700"><span class="text-slate-500">Conta destino:</span> ${escapeHTML(accountName)}</div>
@@ -10311,7 +11059,7 @@
       container.innerHTML = `
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <strong style="color:#12263f;">Compromissos futuros</strong>
+<strong class="inline-theme-title">Compromissos futuros</strong>
             <span class="stitch-badge stitch-badge-soft">Demo</span>
           </div>
           <div class="grid gap-3">
@@ -10502,7 +11250,7 @@
                   <input type="checkbox" class="transaction-checkbox" value="${transaction.id}" onchange="updateReportSelection()">
                   <div class="flex-1 min-w-0">
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px;">
-                      <span style="font-weight:700;color:#12263f;">${escapeHTML(transaction.description)}</span>
+<span class="table-item-title">${escapeHTML(transaction.description)}</span>
                       <span class="stitch-badge stitch-badge-soft">${escapeHTML(getCategoryLabelForReport(transaction.category))}</span>
                       <span class="stitch-badge stitch-badge-info">${escapeHTML(paymentLabel)}</span>
                     </div>
@@ -12106,7 +12854,7 @@
                     <td class="muted stitch-date-cell">${formatDisplayDate(tx.date)}</td>
                     <td>
                       <div style="display:grid;gap:4px;">
-                        <strong style="font-size:14px;">${escapeHTML(tx.description || tx.type)}</strong>
+<strong class="table-item-title">${escapeHTML(tx.description || tx.type)}</strong>
                         <span class="muted">${escapeHTML(getCategoryLabelForReport(tx.category))}</span>
                       </div>
                     </td>
@@ -12305,8 +13053,8 @@
               <div class="value stitch-value-positive">${formatCurrency(monthly)}</div>
               <div class="stitch-mini-metrics mt-4">
                 <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.expenses || 'Despesas')}</div><div class="stitch-mini-metric-value stitch-value-negative">${formatCurrency(monthly * 0.6)}</div></div>
-                <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.invest || 'Investimentos')}</div><div class="stitch-mini-metric-value" style="color:#1d4ed8;">${formatCurrency(monthly * 0.2)}</div></div>
-                <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.tithe || 'Dizimo')}</div><div class="stitch-mini-metric-value" style="color:#7c3aed;">${formatCurrency(monthly * 0.1)}</div></div>
+                  <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.invest || 'Investimentos')}</div><div class="stitch-mini-metric-value tone-invest">${formatCurrency(monthly * 0.2)}</div></div>
+                  <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.tithe || 'Dizimo')}</div><div class="stitch-mini-metric-value tone-tithe">${formatCurrency(monthly * 0.1)}</div></div>
               </div>
             </div>
           `;
@@ -12381,13 +13129,13 @@
                 ${tithePercent > 0 ? `
                   <div class="stitch-mini-metric">
                     <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.tithe || 'Dízimo')}</div>
-                    <div class="stitch-mini-metric-value" style="color:#7c3aed;">${formatCurr(titheAmount)}</div>
+<div class="stitch-mini-metric-value tone-tithe">${formatCurr(titheAmount)}</div>
                   </div>
                 ` : ''}
                 ${emergencyPercent > 0 ? `
                   <div class="stitch-mini-metric">
                     <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.emergency || 'Reserva')}</div>
-                    <div class="stitch-mini-metric-value" style="color:#d97706;">${formatCurr(emergencyAmount)}</div>
+<div class="stitch-mini-metric-value tone-emergency">${formatCurr(emergencyAmount)}</div>
                   </div>
                 ` : ''}
               </div>
@@ -12716,7 +13464,7 @@
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <div class="meta">Objetivo concluído</div>
-                  <p class="list-item-title" style="margin-top:10px;color:#12263f;">${escapeHTML(d.name)}</p>
+                  <p class="list-item-title inline-theme-title" style="margin-top:10px;">${escapeHTML(d.name)}</p>
                   <p class="list-item-subtitle">Início: ${escapeHTML(startText)} · Conclusão: ${escapeHTML(endText)}</p>
                 </div>
                 <div class="stitch-row-actions">
@@ -13121,7 +13869,7 @@
             <div class="flex items-start justify-between mb-3">
               <div class="flex-1 min-w-0">
                 <div class="meta">Contrato ativo</div>
-<p class="font-bold text-white inline-theme-title" style="font-size:20px;margin-top:10px;">${escapeHTML(loan.description)}</p>
+<p class="loan-card-title inline-theme-title" style="margin-top:10px;">${escapeHTML(loan.description)}</p>
                 <p class="text-xs text-slate-400 mt-1">Inicio: ${escapeHTML(formatDisplayDate(loan.startDate))} · ${loan.installments}x · ${loan.interestRate.toFixed(2)}% a.m.</p>
               </div>
               <div class="stitch-row-actions">${renderActionIconButton('🗑️', getGuestActionOnclick('gerenciar emprestimos'), true)}</div>
@@ -13172,7 +13920,7 @@
               <div class="flex items-start justify-between mb-3">
                 <div class="flex-1 min-w-0">
                   <div class="meta">Contrato ativo</div>
-                  <p class="font-bold text-white inline-theme-title" style="font-size:20px;margin-top:10px;">${escapeHTML(loan.description)}</p>
+                  <p class="loan-card-title inline-theme-title" style="margin-top:10px;">${escapeHTML(loan.description)}</p>
                   <p class="text-xs text-slate-400 mt-1">Início: ${escapeHTML(formatDisplayDate(loan.startDate))} · ${loan.installments}x${rateInfo ? ' · ' + rateInfo : ''}${cetInfo}</p>
                 </div>
                 <div class="stitch-row-actions">
@@ -13188,7 +13936,7 @@
               <div class="stitch-mini-metrics mt-4">
                 <div class="stitch-mini-metric">
                   <p class="text-xs text-slate-400">Parcela (PMT)</p>
-                  <p class="text-sm font-bold" style="color:#d97706;">${formatCurrency(pmt)}/mês</p>
+                  <p class="text-sm font-bold tone-warning">${formatCurrency(pmt)}/mês</p>
                 </div>
                 <div class="stitch-mini-metric">
                   <p class="text-xs text-slate-400">Restam</p>
@@ -13507,7 +14255,7 @@
             <div class="stitch-account-panel" style="${getBankThemeStyle(acc.bank)}">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-4">
-                  <div class="flex items-center justify-center rounded-2xl" style="width:58px;height:58px;background:var(--bank-soft);font-size:28px;">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
+                  <div class="bank-account-mark">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
                   <div>
                     <div class="meta">${escapeHTML(getBankDisplayName(acc.bank))}</div>
                     <p class="stitch-account-title">${escapeHTML(acc.name)}</p>
@@ -13584,7 +14332,7 @@
             <div class="stitch-account-panel" style="${getBankThemeStyle(acc.bank)}">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-4">
-                  <div class="flex items-center justify-center rounded-2xl" style="width:58px;height:58px;background:var(--bank-soft);font-size:28px;">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
+                  <div class="bank-account-mark">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
                   <div>
                     <div class="meta">${escapeHTML(bankLabel)}</div>
                     <p class="stitch-account-title">${escapeHTML(acc.name)}</p>
@@ -13971,7 +14719,7 @@
           <div class="stitch-subscription-card">
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-start gap-3 flex-1 min-w-0">
-                <span class="text-2xl flex-shrink-0 flex items-center justify-center rounded-2xl" style="width:52px;height:52px;background:rgba(99,102,241,0.1);">${sub.icon}</span>
+                <span class="text-2xl subscription-mark">${sub.icon}</span>
                 <div class="flex-1 min-w-0">
                   <div class="meta">${escapeHTML(sub.category || 'outros')}</div>
                   <p class="list-item-title inline-theme-title" style="margin-top:10px;">${escapeHTML(sub.name)}</p>
@@ -14027,7 +14775,7 @@
           <div class="stitch-subscription-card" style="animation: slideInUp 0.3s ease-out;">
             <div class="flex items-start justify-between gap-3">
               <div class="flex items-start gap-3 flex-1 min-w-0">
-                <span class="text-2xl flex-shrink-0 flex items-center justify-center rounded-2xl" style="width:52px;height:52px;background:rgba(99,102,241,0.1);">${icon}</span>
+                <span class="text-2xl subscription-mark">${icon}</span>
                 <div class="flex-1 min-w-0">
                   <div class="meta">${escapeHTML(sub.category || 'outros')}</div>
                   <p class="list-item-title inline-theme-title" style="margin-top:10px;">${escapeHTML(sub.name || 'Sem nome')}</p>
@@ -15388,7 +16136,7 @@
         const date = item.date ? item.date.split('-').reverse().join('/') : '';
         const bankLabel = getBankDisplayName(item.bank || '');
         return `
-          <div class="analysis-highlight-card" style="padding:14px 16px;">
+          <div class="analysis-highlight-card evidence-card">
             <div class="text-slate-800 text-sm font-medium">${escapeHTML(item.description || 'Sem descrição')}</div>
             <div class="text-slate-500 text-xs mt-1">${escapeHTML(date)} • ${escapeHTML(bankLabel)} • ${escapeHTML(item.category || 'outros')}</div>
             <div class="${amountClass} text-sm font-semibold mt-2">${sign}${formatCurrencyBRL(item.amount)}</div>
@@ -15575,29 +16323,20 @@
   </script>
 
   <!-- Modal de Pré-visualização de Importação IA -->
-  <div id="ai-import-preview-modal"
-    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:200; align-items:center; justify-content:center; padding:16px;">
-    <div
-      style="background:#1e293b; border:1px solid rgba(99,102,241,0.3); border-radius:20px; width:100%; max-width:520px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
-      <!-- Header -->
-      <div style="padding:20px 24px 16px; border-bottom:1px solid rgba(71,85,105,0.3); flex-shrink:0;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-          <h3 style="font-size:17px; font-weight:700; color:#e2e8f0;">✨ Revisar transações encontradas</h3>
-          <button onclick="closeImportPreview()"
-            style="background:rgba(71,85,105,0.3); border:none; color:#94a3b8; width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center;">✕</button>
+  <div id="ai-import-preview-modal" class="import-preview-modal">
+    <div class="import-preview-dialog">
+      <div class="import-preview-head">
+        <div class="import-preview-head-row">
+          <h3 class="import-preview-title">✨ Revisar transações encontradas</h3>
+          <button onclick="closeImportPreview()" class="import-preview-close">✕</button>
         </div>
-        <p id="ai-import-count" style="font-size:13px; color:#6366f1; font-weight:600;"></p>
-        <p id="ai-import-summary" style="font-size:13px; color:#94a3b8; margin-top:4px;"></p>
+        <p id="ai-import-count" class="import-preview-count"></p>
+        <p id="ai-import-summary" class="import-preview-summary"></p>
       </div>
-      <!-- Lista de transações -->
-      <div id="ai-import-list" style="overflow-y:auto; padding:8px 24px; flex:1; min-height:0;"></div>
-      <!-- Rodapé -->
-      <div style="padding:16px 24px; border-top:1px solid rgba(71,85,105,0.3); display:flex; gap:12px; flex-shrink:0;">
-        <button onclick="closeImportPreview()"
-          style="flex:1; padding:12px; border-radius:12px; font-weight:600; color:#94a3b8; background:transparent; border:1.5px solid rgba(71,85,105,0.4); cursor:pointer;">Cancelar</button>
-        <button id="ai-import-confirm-btn" onclick="confirmImportTransactions()"
-          style="flex:2; padding:12px; border-radius:12px; font-weight:700; color:white; background:linear-gradient(135deg,#10b981,#059669); border:none; cursor:pointer; font-size:15px;">✅
-          Importar Transações</button>
+      <div id="ai-import-list" class="import-preview-list"></div>
+      <div class="import-preview-foot">
+        <button onclick="closeImportPreview()" class="btn btn-outline">Cancelar</button>
+        <button id="ai-import-confirm-btn" onclick="confirmImportTransactions()" class="btn btn-primary">✅ Importar Transações</button>
       </div>
     </div>
   </div>
