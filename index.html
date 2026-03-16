@@ -1669,6 +1669,7 @@
     body {
       background: var(--shell-gradient);
       color: var(--color-text);
+      margin: 0;
     }
 
     body::before {
@@ -1836,8 +1837,9 @@
     header.family-topbar,
     nav.app-tabs-nav {
       background: rgba(7, 12, 24, 0.8);
-      border-bottom: 1px solid var(--color-shell-border);
+      border-bottom: none;
       backdrop-filter: blur(26px);
+      box-shadow: none;
     }
 
     header.app-topbar .container,
@@ -1845,12 +1847,8 @@
       padding: 18px 24px;
     }
 
-    header.family-topbar {
-      border-bottom: none;
-    }
-
     #family-screen main {
-      padding-top: 10px;
+      padding-top: 0;
     }
 
     .family-topbar .header-brand h1 {
@@ -2728,6 +2726,53 @@
         linear-gradient(180deg, #ffffff, #f7fbff);
       border: 1px solid var(--color-border-soft);
       box-shadow: var(--shadow-card);
+    }
+
+    .family-card {
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: var(--transition);
+      background: linear-gradient(180deg, rgba(242, 247, 252, 0.98), rgba(232, 239, 247, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #10233d;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    }
+
+    .family-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(37, 99, 235, 0.3);
+      box-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+    }
+
+    .family-card-title {
+      color: #10233d;
+      font-weight: 700;
+    }
+
+    .family-card-subtitle,
+    .family-card-arrow {
+      color: #546a86;
+    }
+
+    .family-list-empty {
+      color: #6a7f98;
+    }
+
+    .inline-theme-title {
+      color: #12263f;
+    }
+
+    .inline-theme-accent {
+      color: #4f46e5;
+    }
+
+    .inline-theme-muted {
+      color: #6b7f98;
     }
 
     .surface-empty-state {
@@ -5781,7 +5826,8 @@
     body[data-theme="light"] .app-topbar,
     body[data-theme="light"] .family-topbar,
     body[data-theme="light"] nav.app-tabs-nav {
-      border-bottom-color: rgba(148, 163, 184, 0.22);
+      border-bottom-color: transparent;
+      box-shadow: none;
     }
 
     body[data-theme="light"] .header-info h1,
@@ -5815,6 +5861,12 @@
       background: linear-gradient(180deg, #060d1a 0%, #0a1325 100%);
     }
 
+    body[data-theme="dark"] #main-screen,
+    body[data-theme="dark"] #family-screen,
+    body[data-theme="dark"] #login-screen {
+      background: linear-gradient(180deg, #060d1a 0%, #0a1325 100%);
+    }
+
     body[data-theme="dark"] .tab-content.stitch-page {
       background: linear-gradient(180deg, #0b162c 0%, #0d1a31 100%);
       border-color: rgba(148, 163, 184, 0.16);
@@ -5835,11 +5887,23 @@
     body[data-theme="dark"] .stitch-page .stitch-account-panel,
     body[data-theme="dark"] .stitch-page .stitch-loan-card,
     body[data-theme="dark"] .stitch-page .stitch-commitments-card,
-    body[data-theme="dark"] .stitch-page .stitch-commitment-kpi {
+    body[data-theme="dark"] .stitch-page .stitch-commitment-kpi,
+    body[data-theme="dark"] .stitch-page .stitch-smart-summary-panel,
+    body[data-theme="dark"] .stitch-page .stitch-summary-card,
+    body[data-theme="dark"] .stitch-page .stitch-smart-insights,
+    body[data-theme="dark"] .stitch-page .stitch-analysis-details,
+    body[data-theme="dark"] .stitch-page .stitch-ai-note,
+    body[data-theme="dark"] .stitch-page .stitch-subscription-card {
       background: linear-gradient(180deg, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.94));
       border-color: rgba(148, 163, 184, 0.2);
       box-shadow: 0 20px 44px rgba(2, 8, 23, 0.32);
       color: #e2e8f0;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-smart-summary-panel {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
     }
 
     body[data-theme="dark"] .stitch-page .section-title,
@@ -5864,6 +5928,116 @@
     body[data-theme="dark"] .stitch-page .text-slate-400,
     body[data-theme="dark"] .stitch-page .text-slate-500 {
       color: #b8c9dc !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .text-slate-300,
+    body[data-theme="dark"] .stitch-page label,
+    body[data-theme="dark"] .stitch-page .family-card-subtitle,
+    body[data-theme="dark"] .stitch-page .inline-theme-muted {
+      color: #c7d8eb !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-summary-card-label,
+    body[data-theme="dark"] .stitch-page .stitch-analysis-details-body,
+    body[data-theme="dark"] .stitch-page .stitch-ai-note,
+    body[data-theme="dark"] .stitch-page .ai-chat-empty-state,
+    body[data-theme="dark"] .stitch-page .analysis-rich-card,
+    body[data-theme="dark"] .stitch-page .analysis-highlight-card {
+      color: #c7d8eb !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-summary-card-value,
+    body[data-theme="dark"] .stitch-page .stitch-smart-insights-title,
+    body[data-theme="dark"] .stitch-page .stitch-analysis-details-title,
+    body[data-theme="dark"] .stitch-page .inline-theme-title,
+    body[data-theme="dark"] .stitch-page .stitch-smart-insight-item strong {
+      color: #f8fbff !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-smart-insight-item {
+      color: #d3e0ef !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-ai-history-chip {
+      border-color: rgba(148, 163, 184, 0.24);
+      background: rgba(15, 23, 42, 0.9);
+      color: #dbe8f8;
+      box-shadow: none;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-ai-history-chip:hover {
+      border-color: rgba(96, 165, 250, 0.5);
+      color: #ffffff;
+      background: rgba(30, 41, 59, 0.98);
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-ai-history-chip.active {
+      background: linear-gradient(135deg, #0f766e 0%, #2563eb 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-ai-refresh-btn,
+    body[data-theme="dark"] .stitch-page .stitch-analysis-toggle-btn {
+      border-color: rgba(96, 165, 250, 0.24);
+      background: linear-gradient(135deg, #0f766e 0%, #2563eb 100%);
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.24);
+      color: #ffffff;
+    }
+
+    body[data-theme="dark"] .stitch-page .stitch-ai-stale-alert {
+      border-color: rgba(251, 191, 36, 0.3);
+      background: linear-gradient(180deg, rgba(120, 53, 15, 0.36), rgba(69, 26, 3, 0.42));
+      color: #fde68a;
+    }
+
+    body[data-theme="dark"] .stitch-page .ai-chat-container {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.98));
+      border-color: rgba(148, 163, 184, 0.22);
+      box-shadow: 0 20px 44px rgba(2, 8, 23, 0.32);
+    }
+
+    body[data-theme="dark"] .stitch-page .ai-chat-box,
+    body[data-theme="dark"] .stitch-page .ai-chat-input-area {
+      background: transparent;
+      border-color: rgba(148, 163, 184, 0.18);
+    }
+
+    body[data-theme="dark"] .stitch-page .ai-chat-input {
+      background: rgba(15, 23, 42, 0.92);
+      border-color: rgba(148, 163, 184, 0.2);
+      color: #f8fafc;
+    }
+
+    body[data-theme="dark"] .stitch-page .ai-chat-input::placeholder {
+      color: #9fb3c8;
+    }
+
+    body[data-theme="dark"] .family-topbar .header-brand h1,
+    body[data-theme="dark"] .family-topbar .header-brand p,
+    body[data-theme="dark"] .family-card-title {
+      color: #f8fbff !important;
+    }
+
+    body[data-theme="dark"] .family-card {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(51, 65, 85, 0.88));
+      border-color: rgba(148, 163, 184, 0.24);
+      box-shadow: 0 18px 38px rgba(2, 8, 23, 0.26);
+      color: #f8fbff;
+    }
+
+    body[data-theme="dark"] .family-card-subtitle,
+    body[data-theme="dark"] .family-card-arrow,
+    body[data-theme="dark"] .family-list-empty {
+      color: #c5d7eb !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .inline-theme-accent {
+      color: #818cf8 !important;
+    }
+
+    body[data-theme="dark"] .stitch-page .inline-theme-title {
+      color: #f8fbff !important;
     }
 
     body[data-theme="dark"] .header-info h1 {
@@ -6067,6 +6241,10 @@
 
             <button type="button" onclick="showForgotPassword()" class="btn btn-outline w-full mb-3">
               <span>🔑</span> Esqueceu a Senha?
+            </button>
+
+            <button type="button" onclick="enterGuestMode()" class="btn btn-secondary w-full mb-3">
+              <span>👀</span> Entrar como visitante
             </button>
 
             <button onclick="showRegister()" class="btn btn-outline w-full">
@@ -7207,6 +7385,8 @@
     let currentUser = null;
     let currentFamily = null;
     let currentFamilyData = null;
+    let isGuestMode = false;
+    let guestDemoState = null;
     let userPlan = 'basic'; // 'basic' | 'premium' | 'executive'
     let visualEffectsEnabled = localStorage.getItem('visualEffectsEnabled') !== 'false';
     let dashboardView = 'individual';
@@ -7227,6 +7407,143 @@
       activeAnalysisId: null,
       stale: false
     };
+
+    function createGuestDemoState() {
+      return {
+        family: {
+          id: 'guest-demo',
+          name: 'Familia Demo'
+        },
+        commitments: {
+          expenses: 60,
+          invest: 20,
+          tithe: 10,
+          emergency: 10
+        },
+        bankAccounts: [
+          { id: 'guest-nubank', familyId: 'guest-demo', name: 'Conta Principal', bank: 'Nubank', emoji: '🟣', initialBalance: 1800 },
+          { id: 'guest-itau', familyId: 'guest-demo', name: 'Reserva', bank: 'Itau', emoji: '🟦🟨', initialBalance: 4200 },
+          { id: 'guest-inter', familyId: 'guest-demo', name: 'Investimentos', bank: 'Inter', emoji: '🟠', initialBalance: 9500 }
+        ],
+        transactions: [
+          { id: 'guest-salary-1', type: 'salary', description: 'Salario Principal', amount: 5200, frequency: 'monthly', startDate: '2026-03-05', date: '2026-03-05', userId: 'guest', familyId: 'guest-demo' },
+          { id: 'guest-income-1', type: 'income', description: 'Freelance de design', category: 'outros', amount: 850, date: '2026-03-12', bankAccountId: 'guest-nubank', accountId: 'guest-nubank', bank: 'Nubank', userId: 'guest', familyId: 'guest-demo' },
+          { id: 'guest-income-2', type: 'income', description: 'Venda de equipamento', category: 'outros', amount: 430, date: '2026-03-09', bankAccountId: 'guest-itau', accountId: 'guest-itau', bank: 'Itau', userId: 'guest', familyId: 'guest-demo' },
+          { id: 'guest-expense-1', type: 'expense', description: 'Supermercado Central', category: 'alimentacao', amount: 420, paymentMethod: 'cartao', installments: 1, date: '2026-03-13', bankAccountId: 'guest-nubank', accountId: 'guest-nubank', bank: 'Nubank', userId: 'guest', familyId: 'guest-demo' },
+          { id: 'guest-expense-2', type: 'expense', description: 'Academia Premium', category: 'saude', amount: 129, paymentMethod: 'pix', installments: 1, date: '2026-03-11', bankAccountId: 'guest-itau', accountId: 'guest-itau', bank: 'Itau', userId: 'guest', familyId: 'guest-demo' },
+          { id: 'guest-expense-3', type: 'expense', description: 'Parcela notebook', category: 'servicos', amount: 310, paymentMethod: 'cartao', installments: 10, date: '2026-03-07', bankAccountId: 'guest-inter', accountId: 'guest-inter', bank: 'Inter', userId: 'guest', familyId: 'guest-demo' },
+          { id: 'guest-expense-4', type: 'expense', description: 'Combustivel', category: 'transporte', amount: 180, paymentMethod: 'dinheiro', installments: 1, date: '2026-03-04', bankAccountId: 'guest-nubank', accountId: 'guest-nubank', bank: 'Nubank', userId: 'guest', familyId: 'guest-demo' }
+        ],
+        goals: [
+          { id: 'guest-goal-1', name: 'Viagem em familia', progress: 4600, targetAmount: 12000, deadline: '2026-12-20' },
+          { id: 'guest-goal-2', name: 'Reserva de emergencia', progress: 8200, targetAmount: 15000, deadline: '2026-10-15' }
+        ],
+        loans: [
+          { id: 'guest-loan-1', description: 'Financiamento do carro', totalAmount: 28000, installments: 36, installmentValue: 1090, paidInstallments: 11, remainingInstallments: 25, interestRate: 1.89, cet: 24.5, startDate: '2025-04-10', active: true }
+        ],
+        subscriptions: [
+          { id: 'guest-sub-1', icon: '🎬', name: 'Netflix', amount: 55.9, renewDay: 8, category: 'streaming' },
+          { id: 'guest-sub-2', icon: '☁️', name: 'iCloud+', amount: 14.9, renewDay: 12, category: 'cloud' },
+          { id: 'guest-sub-3', icon: '🎵', name: 'Spotify', amount: 21.9, renewDay: 22, category: 'musica' }
+        ],
+        aiAnalysis: {
+          summary: {
+            income: 6480,
+            expense: 1039,
+            balance: 5441
+          },
+          topCategories: [
+            { name: 'Alimentacao', amount: 420 },
+            { name: 'Servicos', amount: 310 },
+            { name: 'Saude', amount: 129 }
+          ],
+          riskAlerts: [
+            'O gasto parcelado no cartao merece acompanhamento para nao comprimir a reserva nos proximos meses.'
+          ],
+          savingTips: [
+            'Se mantiver o aporte atual, a reserva de emergencia cruza 15 mil ainda este ano.'
+          ],
+          investmentTips: [
+            'Concentrar o excedente mensal da conta principal em uma conta de reserva melhora visibilidade do caixa.'
+          ],
+          narrative: 'Esta versao demonstrativa mostra como o Cash Control organiza contas, historicos, metas e insights em um fluxo unico.'
+        }
+      };
+    }
+
+    function getGuestDemoTransactionsByType(type) {
+      const transactions = guestDemoState?.transactions || [];
+      if (!type) return transactions;
+      return transactions.filter(item => item.type === type);
+    }
+
+    function isProtectedSession() {
+      return Boolean(currentUser) && !isGuestMode;
+    }
+
+    function openGuestAuthModal(actionLabel = 'usar este recurso') {
+      closeAllModals();
+      const modal = document.getElementById('generic-modal');
+      const title = document.getElementById('modal-title');
+      const content = document.getElementById('modal-content');
+      if (!modal || !title || !content) return;
+
+      title.textContent = 'Entre para continuar';
+      content.innerHTML = `
+        <div class="space-y-4">
+          <div class="analysis-highlight-card" style="background:linear-gradient(180deg,rgba(16,185,129,0.12),rgba(255,255,255,0.98));border-color:rgba(16,185,129,0.18);">
+            <div class="font-semibold text-slate-900 mb-2">Modo visitante ativo</div>
+            <div class="text-slate-700">Voce pode explorar o app livremente, mas precisa entrar para ${escapeHTML(actionLabel)}.</div>
+          </div>
+          <div class="grid gap-3">
+            <button onclick="exitGuestModeToLogin()" class="btn btn-primary w-full">🚀 Entrar</button>
+            <button onclick="exitGuestModeToRegister()" class="btn btn-secondary w-full">✨ Criar conta</button>
+            <button onclick="closeModal()" class="btn btn-outline w-full">👀 Continuar explorando</button>
+          </div>
+        </div>
+      `;
+      modal.classList.add('active');
+    }
+
+    function requireAuthForAction(actionLabel = 'usar este recurso') {
+      if (isProtectedSession()) return true;
+      openGuestAuthModal(actionLabel);
+      return false;
+    }
+
+    function enterGuestMode() {
+      isGuestMode = true;
+      guestDemoState = createGuestDemoState();
+      currentUser = null;
+      currentFamily = guestDemoState.family.id;
+      currentFamilyData = { id: guestDemoState.family.id, name: guestDemoState.family.name, ownerId: null };
+      bankAccountsCache = mergeBankAccounts(guestDemoState.bankAccounts);
+      aiAnalysisCacheState = {
+        familyId: currentFamily,
+        analyses: [{ id: 'guest-analysis', payload: guestDemoState.aiAnalysis }],
+        activeAnalysisId: 'guest-analysis',
+        stale: false
+      };
+      renderDashboardScanFeedback();
+      showMainApp();
+      showToast('👀', 'Voce entrou como visitante. Explore o app livremente.');
+    }
+
+    function exitGuestModeToLogin() {
+      isGuestMode = false;
+      guestDemoState = null;
+      currentFamily = null;
+      currentFamilyData = null;
+      bankAccountsCache = [];
+      aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
+      closeModal();
+      showLogin();
+    }
+
+    function exitGuestModeToRegister() {
+      exitGuestModeToLogin();
+      showRegister();
+    }
 
     const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'subscriptions', 'ai_analysis'];
 
@@ -7627,6 +7944,11 @@
     }
 
     function openModal(type, requiredPlan = null) {
+      const authRequiredModalTypes = new Set(['salary', 'goal', 'edit-goal', 'labels', 'settings', 'newcategory', 'edit-income', 'edit-expense', 'edit-salary', 'subscription']);
+      if (authRequiredModalTypes.has(type) && !requireAuthForAction('salvar dados e configurar sua conta')) {
+        return;
+      }
+
       closeAllModals();
       const modal = document.getElementById('generic-modal');
       const title = document.getElementById('modal-title');
@@ -8058,6 +8380,7 @@
     }
 
     async function saveSalaryModal() {
+      if (!requireAuthForAction('adicionar salarios e salvar no seu espaco')) return;
       if (!currentFamily || !currentUser) {
         showToast('⚠️', 'Selecione uma família');
         return;
@@ -8101,6 +8424,7 @@
     }
 
     async function saveGoalModal() {
+      if (!requireAuthForAction('criar objetivos financeiros')) return;
       if (!currentFamily || !currentUser) {
         showToast('⚠️', 'Selecione uma família');
         return;
@@ -8676,6 +9000,8 @@
 
     auth.onAuthStateChanged((user) => {
       if (user) {
+        isGuestMode = false;
+        guestDemoState = null;
         currentUser = user;
         // Carregar plano do usuário do Firestore
         db.collection('users').doc(user.uid).get().then(doc => {
@@ -8724,7 +9050,16 @@
         applyTheme(userUiPreferences.theme);
         closeThemeOnboardingModal();
         applyTabIntroVisibility();
-        showLogin();
+        if (isGuestMode && guestDemoState) {
+          currentFamily = guestDemoState.family.id;
+          currentFamilyData = { id: guestDemoState.family.id, name: guestDemoState.family.name, ownerId: null };
+          bankAccountsCache = mergeBankAccounts(guestDemoState.bankAccounts);
+          showMainApp();
+        } else {
+          currentFamily = null;
+          currentFamilyData = null;
+          showLogin();
+        }
       }
     });
 
@@ -8735,6 +9070,10 @@
       document.getElementById('main-screen').classList.add('hidden');
       document.getElementById('login-form').classList.remove('hidden');
       document.getElementById('register-form').classList.add('hidden');
+      if (!currentUser) {
+        isGuestMode = false;
+        guestDemoState = null;
+      }
       hideBackToTop();
     }
 
@@ -8753,6 +9092,10 @@
     }
 
     function showFamilySelection() {
+      if (isGuestMode) {
+        showMainApp();
+        return;
+      }
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('family-screen').classList.remove('hidden');
       document.getElementById('main-screen').classList.add('hidden');
@@ -8765,6 +9108,10 @@
       document.getElementById('family-screen').classList.add('hidden');
       document.getElementById('main-screen').classList.remove('hidden');
       applyTabIntroVisibility();
+      if (isGuestMode && guestDemoState) {
+        document.getElementById('current-family-name').textContent = guestDemoState.family.name;
+        document.getElementById('current-user-name').textContent = 'Visitante';
+      }
       loadFamilyData();
       initBackToTop();
       initTabsScrollIndicator();
@@ -9143,6 +9490,51 @@
       }
     }
     async function loadIncomeHistory() {
+      if (isGuestMode && guestDemoState) {
+        closeIncomeDivisionPopover();
+        const container = document.getElementById('income-history');
+        if (!container) return;
+        const items = getGuestDemoTransactionsByType('income');
+        const rows = items.map((inc) => {
+          const account = findBankAccountInCache(getTransactionAccountId(inc));
+          const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(inc.bank || 'Banco nao definido');
+          return `
+            <tr>
+              <td class="muted stitch-date-cell">${formatDisplayDate(inc.date)}</td>
+              <td><strong style="font-size:14px;">${escapeHTML(inc.description)}</strong></td>
+              <td class="muted">${escapeHTML(bankLabel)}</td>
+              <td class="align-right stitch-value-positive">+${formatCurrency(inc.amount)}</td>
+              <td class="align-right">
+                <div class="stitch-row-actions">
+                  <button class="stitch-action-btn" onclick="${getGuestActionOnclick('editar ou excluir entradas')}">Ver divisao</button>
+                  ${renderActionIconButton('✏️', getGuestActionOnclick('editar entradas'))}
+                  ${renderActionIconButton('🗑️', getGuestActionOnclick('excluir entradas'), true)}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="stitch-table-card">
+            <div class="stitch-table-card-header">
+              <div>
+                <div class="stitch-table-card-title">Historico de entradas extras</div>
+                <div class="stitch-table-card-subtitle">Modo visitante com dados demonstrativos.</div>
+              </div>
+              <span class="stitch-badge stitch-badge-soft">${items.length} itens</span>
+            </div>
+            <div class="stitch-table-wrap">
+              <table class="stitch-table">
+                <thead><tr><th>Data</th><th>Descricao</th><th>Banco</th><th class="align-right">Valor</th><th class="align-right">Acoes</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
       if (!currentFamily || !currentUser) return;
       try {
         closeIncomeDivisionPopover();
@@ -9269,6 +9661,50 @@
     }
 
     async function loadExpenseHistory() {
+      if (isGuestMode && guestDemoState) {
+        const container = document.getElementById('expense-history');
+        if (!container) return;
+        const items = getGuestDemoTransactionsByType('expense');
+        const rows = items.map((exp) => {
+          const account = findBankAccountInCache(getTransactionAccountId(exp));
+          const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(exp.bank || 'Banco nao definido');
+          return `
+            <tr>
+              <td class="muted stitch-date-cell">${formatDisplayDate(exp.date)}</td>
+              <td><strong style="font-size:14px;">${escapeHTML(exp.description)}</strong></td>
+              <td class="muted">${escapeHTML(bankLabel)}</td>
+              <td class="muted">${escapeHTML(getPaymentMethodDisplay(exp.paymentMethod || 'dinheiro', exp.installments || 1))}</td>
+              <td class="align-right stitch-value-negative">-${formatCurrency(exp.amount)}</td>
+              <td class="align-right">
+                <div class="stitch-row-actions">
+                  ${renderActionIconButton('✏️', getGuestActionOnclick('editar despesas'))}
+                  ${renderActionIconButton('🗑️', getGuestActionOnclick('excluir despesas'), true)}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="stitch-table-card">
+            <div class="stitch-table-card-header">
+              <div>
+                <div class="stitch-table-card-title">Historico de despesas</div>
+                <div class="stitch-table-card-subtitle">Veja como as saidas aparecem por categoria e forma de pagamento.</div>
+              </div>
+              <span class="stitch-badge stitch-badge-soft">${items.length} itens</span>
+            </div>
+            <div class="stitch-table-wrap">
+              <table class="stitch-table">
+                <thead><tr><th>Data</th><th>Descricao</th><th>Banco</th><th>Pagamento</th><th class="align-right">Valor</th><th class="align-right">Acoes</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
       if (!currentFamily || !currentUser) return;
       try {
         const query = db.collection('transactions')
@@ -9415,6 +9851,42 @@
     // loadCommitmentNames removed - function no longer needed
 
     async function loadGoalsList() {
+      if (isGuestMode && guestDemoState) {
+        const goalsContainer = document.getElementById('goals-list');
+        if (!goalsContainer) return;
+        window._goalsCache = window._goalsCache || {};
+        const html = guestDemoState.goals.map((g) => {
+          window._goalsCache[g.id] = { progress: Number(g.progress || 0), target: Number(g.targetAmount || 0) };
+          const progress = Math.max(0, Math.min(((g.progress || 0) / (g.targetAmount || 1)) * 100, 100));
+          return `
+            <div class="unified-goal-card" id="goal-${g.id}">
+              <div class="unified-goal-top">
+                <div class="goal-ring" style="--progress:${progress};"><div class="goal-ring-inner">${progress.toFixed(0)}%</div></div>
+                <div>
+                  <div class="unified-goal-name">${escapeHTML(g.name)}</div>
+                  <div class="unified-goal-meta">${formatCurrency(g.progress)} de ${formatCurrency(g.targetAmount)}<br>Data objetivo: ${escapeHTML(formatDisplayDate(g.deadline))}</div>
+                </div>
+              </div>
+              <div class="unified-goal-bar"><span style="width:${progress}%;"></span></div>
+              <div class="goal-management-panel">
+                <div class="goal-management-grid">
+                  <input type="number" class="input-field text-sm goal-monthly" value="350" readonly>
+                  <button onclick="${getGuestActionOnclick('salvar metas')}" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">Calcular</button>
+                  <button onclick="${getGuestActionOnclick('usar aportes reais')}" class="btn btn-outline !w-auto !px-4 !py-2 text-sm">Usar investimento</button>
+                </div>
+              </div>
+              <div class="unified-goal-actions">
+                <button onclick="${getGuestActionOnclick('editar metas')}" class="btn btn-outline !w-auto !px-4 !py-2 text-sm">✏️ Editar</button>
+                <button onclick="${getGuestActionOnclick('concluir metas')}" class="btn btn-primary !w-auto !px-4 !py-2 text-sm">✅ Concluir</button>
+                <button onclick="${getGuestActionOnclick('excluir metas')}" class="btn btn-outline !w-auto !px-4 !py-2 text-sm" style="color:#b91c1c;border-color:rgba(220,38,38,0.18);">🗑️ Excluir</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+        goalsContainer.innerHTML = `<div class="unified-goals-grid">${html}</div>`;
+        return;
+      }
+
       if (!currentFamily || !currentUser) return;
       try {
         const query = db.collection('goals')
@@ -9523,6 +9995,9 @@
     // Satisfaction functionality removed
 
     async function getAuthTokenOrThrow() {
+      if (!requireAuthForAction('usar recursos online e sincronizar seus dados')) {
+        throw new Error('Usuário não autenticado');
+      }
       if (!auth?.currentUser) {
         throw new Error('Usuário não autenticado');
       }
@@ -9775,6 +10250,102 @@
       return found ? found.label : (category || 'Outros');
     }
 
+    function getGuestActionOnclick(actionLabel) {
+      return `openGuestAuthModal('${String(actionLabel || 'continuar').replace(/'/g, "\\'")}')`;
+    }
+
+    function applyGuestCommitmentsToUI() {
+      const commitments = guestDemoState?.commitments || {};
+      const mapping = [
+        ['commit-expenses', commitments.expenses ?? 60],
+        ['commit-invest', commitments.invest ?? 20],
+        ['commit-tithe', commitments.tithe ?? 10],
+        ['commit-emergency', commitments.emergency ?? 10]
+      ];
+
+      mapping.forEach(([id, value]) => {
+        const input = document.getElementById(id);
+        const range = document.getElementById(`${id}-range`);
+        if (input) input.value = value;
+        if (range) range.value = value;
+      });
+      if (typeof updateCommitmentTotal === 'function') updateCommitmentTotal();
+    }
+
+    function renderGuestDashboardAccounts() {
+      const container = document.getElementById('dash-accounts-scroll');
+      if (!container) return;
+
+      const accounts = bankAccountsCache;
+      const transactions = guestDemoState?.transactions || [];
+      const balanceByAccount = {};
+      transactions.forEach((tx) => {
+        const accountId = getTransactionAccountId(tx);
+        if (!accountId) return;
+        if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
+        const amt = Number(tx.amount) || 0;
+        if (tx.type === 'income' || tx.type === 'salary') balanceByAccount[accountId] += amt;
+        if (tx.type === 'expense') balanceByAccount[accountId] -= amt;
+      });
+
+      const cards = accounts.map(acc => {
+        const txBalance = balanceByAccount[acc.id] || 0;
+        const total = (acc.initialBalance || 0) + txBalance;
+        return `
+          <div class="account-card" style="${getBankThemeStyle(acc.bank)}">
+            <div class="account-card-emoji">${renderBankBrandMark(acc.bank, acc.emoji, 32, 10)}</div>
+            <div class="account-card-name">${escapeHTML(acc.name)}</div>
+            <div class="account-card-bank">${escapeHTML(getBankDisplayName(acc.bank))}</div>
+            <div class="account-card-balance ${total < 0 ? 'negative' : ''}">${formatCurrency(total)}</div>
+            <div class="account-card-meta">Demo navegavel</div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = cards + `<div class="account-card add-card" onclick="${getGuestActionOnclick('criar uma conta bancaria')}" title="Adicionar conta">+</div>`;
+    }
+
+    function renderGuestFutureCommitmentsTable() {
+      const container = document.getElementById('future-commitments-table');
+      if (!container) return;
+      container.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <strong style="color:#12263f;">Compromissos futuros</strong>
+            <span class="stitch-badge stitch-badge-soft">Demo</span>
+          </div>
+          <div class="grid gap-3">
+            <div class="stitch-dashboard-card">
+              <div class="meta">Abr 2026</div>
+              <div class="value stitch-value-negative">${formatCurrency(1400)}</div>
+              <div class="stitch-balance-card-sub">Parcelas + emprestimo ativo</div>
+            </div>
+            <div class="stitch-dashboard-card">
+              <div class="meta">Mai 2026</div>
+              <div class="value stitch-value-negative">${formatCurrency(1290)}</div>
+              <div class="stitch-balance-card-sub">Queda prevista com fim de uma assinatura anual</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGuestAIAnalysis() {
+      const outputDiv = document.getElementById('ai-insights-output');
+      if (!outputDiv) return;
+      renderAIAnalysis(guestDemoState?.aiAnalysis || {}, {
+        analyses: [{ id: 'guest-analysis', payload: guestDemoState?.aiAnalysis || {} }],
+        activeAnalysisId: 'guest-analysis',
+        stale: false
+      });
+    }
+
+    function renderGuestReportPlaceholder() {
+      const reportContent = document.getElementById('report-content');
+      if (!reportContent) return;
+      reportContent.innerHTML = renderSurfaceEmptyState('Relatorio demonstrativo pronto para explorar', 'Escolha um periodo e faca login quando quiser gerar relatorios reais da sua familia.');
+    }
+
     async function createManualTransaction(payload) {
       return fetchJsonWithAuth(`${getApiBaseUrl()}/transactions/create`, {
         method: 'POST',
@@ -9786,6 +10357,7 @@
     }
 
     async function addExtraIncome() {
+      if (!requireAuthForAction('adicionar entradas')) return;
       if (!currentFamily || !currentUser) {
         if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
         return;
@@ -9832,6 +10404,7 @@
 
     // Expense Functions
     async function addExpense() {
+      if (!requireAuthForAction('adicionar despesas')) return;
       if (!currentFamily || !currentUser) {
         if (typeof showToast === 'function') showToast('⚠️', 'Selecione uma família');
         return;
@@ -9916,7 +10489,7 @@
         return `
           <div class="mb-6">
             <div class="flex items-center gap-2 mb-4 pb-3" style="border-bottom:1px solid #e6edf4;">
-              <h3 class="font-bold text-lg flex-1" style="color:#12263f;">${title}</h3>
+<h3 class="font-bold text-lg flex-1 inline-theme-title">${title}</h3>
               <span class="stitch-badge ${typeMeta.badge}">${formatCurrency(total)}</span>
             </div>
             <div class="space-y-3">
@@ -9957,7 +10530,7 @@
             <button onclick="filterReportByPayment('todas')" class="btn btn-outline !w-auto !min-h-0 !px-4 !py-2 text-sm">✓ Todas</button>
           </div>
           <div class="flex items-center justify-between mb-4">
-            <label class="flex items-center gap-2 cursor-pointer font-semibold" style="color:#12263f;">
+<label class="flex items-center gap-2 cursor-pointer font-semibold inline-theme-title">
               <input type="checkbox" id="select-all-transactions" onchange="toggleSelectAllTransactions()" style="width:18px;height:18px;">
               Selecionar Todos
             </label>
@@ -9969,7 +10542,7 @@
           <div class="report-stats">
             <div>
               <p class="text-sm text-slate-400">Selecionados</p>
-              <p class="text-lg font-bold" style="color:#12263f;" id="report-selected-count">0</p>
+<p class="text-lg font-bold inline-theme-title" id="report-selected-count">0</p>
             </div>
             <div>
               <p class="text-sm text-slate-400">Total Selecionado</p>
@@ -10145,7 +10718,7 @@
           <div class="stitch-table-card">
             <div class="flex items-center justify-between gap-3 mb-4">
               <div>
-                <h4 class="font-bold text-lg flex items-center gap-2" style="color:#12263f;">${renderBankBrandMark(bankItem.bank, bankItem.emoji || '🏦', 24, 8)} <span>${escapeHTML(getBankDisplayName(bankItem.bank))}</span></h4>
+<h4 class="font-bold text-lg flex items-center gap-2 inline-theme-title">${renderBankBrandMark(bankItem.bank, bankItem.emoji || '🏦', 24, 8)} <span>${escapeHTML(getBankDisplayName(bankItem.bank))}</span></h4>
                 <p class="text-slate-400 text-sm">${escapeHTML(bankItem.name || 'Sem conta')}</p>
               </div>
               <div class="stitch-badge stitch-badge-soft">${rows.length} transação(ões)</div>
@@ -10162,11 +10735,11 @@
       return `
         <div class="space-y-6">
           <div>
-            <h3 class="font-bold text-lg mb-3" style="color:#12263f;">🏦 Resumo por banco</h3>
+<h3 class="font-bold text-lg mb-3 inline-theme-title">🏦 Resumo por banco</h3>
             <div class="stitch-account-cards-grid">${cardsHtml}</div>
           </div>
           <div>
-            <h3 class="font-bold text-lg mb-3" style="color:#12263f;">📋 Detalhamento por banco</h3>
+<h3 class="font-bold text-lg mb-3 inline-theme-title">📋 Detalhamento por banco</h3>
             <div class="space-y-4">${tablesHtml}</div>
           </div>
         </div>
@@ -10220,6 +10793,31 @@
 
       if (!startDate || !endDate) {
         showToast('⚠️', 'Selecione as datas');
+        return;
+      }
+
+      if (isGuestMode && guestDemoState) {
+        const reportEl = document.getElementById('report-content');
+        if (reportEl) {
+          const transactions = (guestDemoState.transactions || []).filter((item) => {
+            if (!item.date || item.type === 'salary') return false;
+            if (item.date < startDate || item.date > endDate) return false;
+            if (item.type === 'expense' && paymentFilter !== 'todas') {
+              return (item.paymentMethod || 'dinheiro').toLowerCase() === paymentFilter;
+            }
+            return true;
+          });
+          const total = transactions.reduce((sum, item) => sum + (item.type === 'income' ? item.amount : -item.amount), 0);
+          reportEl.innerHTML = `
+            <div class="stitch-dashboard-card">
+              <div class="meta">Relatorio demo</div>
+              <p class="stitch-balance-card-name mt-2">Explore a estrutura dos seus relatorios por periodo</p>
+              <p class="stitch-balance-card-sub">${transactions.length} transacoes de exemplo encontradas no intervalo selecionado.</p>
+              <div class="value ${total >= 0 ? 'stitch-value-positive' : 'stitch-value-negative'}">${formatCurrency(total)}</div>
+            </div>
+          `;
+        }
+        document.getElementById('report-export-section').classList.add('hidden');
         return;
       }
 
@@ -11074,20 +11672,20 @@
         const families = validatedFamilies;
 
         if (families.length === 0) {
-          familyList.innerHTML = '<p class="text-slate-500 text-center py-4">Você ainda não tem famílias. Crie uma abaixo!</p>';
+        familyList.innerHTML = '<p class="family-list-empty text-center py-4">Você ainda não tem famílias. Crie uma abaixo!</p>';
           return;
         }
 
         familyList.innerHTML = families.map(family => `
-          <button onclick="selectFamily('${family.id}')" class="w-full p-4 rounded-xl flex items-center justify-between transition-all group" style="background:#8791a0;border:1px solid #93a0b2;">
+          <button onclick="selectFamily('${family.id}')" class="family-card group">
             <div class="flex items-center gap-3">
               <span class="text-2xl">${family.isOwner ? '👑' : '👨‍👩‍👧‍👦'}</span>
               <div class="text-left min-w-0">
-                <p class="font-medium transition-colors truncate" style="color:#f7fbff;">${family.name}</p>
-                <p class="text-xs" style="color:#d5e2f1;">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
+                <p class="family-card-title transition-colors truncate">${family.name}</p>
+                <p class="family-card-subtitle text-xs">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
               </div>
             </div>
-            <svg class="w-5 h-5 transition-colors flex-shrink-0" style="color:#d8e5f5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="family-card-arrow w-5 h-5 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
@@ -11326,6 +11924,44 @@
     }
 
     async function updateDashboard() {
+      if (isGuestMode && guestDemoState) {
+        const transactions = guestDemoState.transactions || [];
+        const totalIncome = transactions.filter(item => item.type === 'income' || item.type === 'salary').reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+        const totalExpenses = transactions.filter(item => item.type === 'expense').reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+        const accountsBalance = (guestDemoState.bankAccounts || []).reduce((sum, acc) => sum + (Number(acc.initialBalance) || 0), 0);
+        const balance = accountsBalance + totalIncome - totalExpenses;
+        const txList = transactions.filter(item => item.type !== 'salary').sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 6);
+
+        const heroName = document.getElementById('dash-hero-name');
+        const heroDate = document.getElementById('dash-hero-date');
+        if (heroName) heroName.textContent = 'Visitante';
+        if (heroDate) heroDate.textContent = 'Demo interativa do Cash Control';
+        if (document.getElementById('dash-total-income')) document.getElementById('dash-total-income').textContent = formatCurrency(totalIncome);
+        if (document.getElementById('dash-total-expenses')) document.getElementById('dash-total-expenses').textContent = formatCurrency(totalExpenses);
+        if (document.getElementById('dash-balance')) document.getElementById('dash-balance').textContent = formatCurrency(balance);
+        if (document.getElementById('dash-balance-prev-badge')) document.getElementById('dash-balance-prev-badge').textContent = 'Explore livremente antes de criar sua conta';
+        const txContainer = document.getElementById('recent-transactions');
+        if (txContainer) {
+          txContainer.innerHTML = txList.map((tx) => {
+            const bankAccount = findBankAccountInCache(getTransactionAccountId(tx));
+            const bankLabel = bankAccount ? getBankAccountLabel(bankAccount) : getBankDisplayName(tx.bank || 'Banco nao definido');
+            const positive = tx.type === 'income';
+            return `
+              <div class="list-item">
+                <div>
+                  <div class="list-item-title">${escapeHTML(tx.description)}</div>
+                  <div class="list-item-subtitle">${escapeHTML(formatDisplayDate(tx.date))} • ${escapeHTML(bankLabel)}</div>
+                </div>
+                <div class="value ${positive ? 'stitch-value-positive' : 'stitch-value-negative'}">${positive ? '+' : '-'}${formatCurrency(tx.amount)}</div>
+              </div>
+            `;
+          }).join('');
+        }
+        renderGuestDashboardAccounts();
+        renderGuestFutureCommitmentsTable();
+        return;
+      }
+
       if (!currentFamily || !currentUser) return;
       try {
         const isFamily = (window.dashboardView === 'family');
@@ -11528,6 +12164,23 @@
     }
 
     async function loadFamilyData() {
+      if (isGuestMode && guestDemoState) {
+        applyGuestCommitmentsToUI();
+        bankAccountsCache = mergeBankAccounts(guestDemoState.bankAccounts);
+        await updateAccountSelects();
+        await updateDashboard();
+        await loadSalariesList();
+        await loadIncomeHistory();
+        await loadExpenseHistory();
+        await loadBankAccounts();
+        await loadLoans();
+        await loadGoalsList();
+        renderGuestReportPlaceholder();
+        await renderSubscriptions();
+        await renderAIAnalysisFromCache();
+        return;
+      }
+
       if (!currentFamily || !currentFamilyData) return;
 
       try {
@@ -11632,6 +12285,35 @@
     async function loadSalariesList() {
       const el = document.getElementById('salaries-list');
       if (!el) return;
+      if (isGuestMode && guestDemoState) {
+        const salaries = getGuestDemoTransactionsByType('salary');
+        el.innerHTML = salaries.map((s) => {
+          const monthly = calculateMonthlySalary(s.amount, s.frequency);
+          return `
+            <div class="stitch-dashboard-card">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <div class="meta">Salario recorrente</div>
+                  <p class="stitch-balance-card-name mt-2 truncate">${escapeHTML(s.description)}</p>
+                  <p class="stitch-balance-card-sub">${escapeHTML(formatDisplayDate(s.startDate))} · ${escapeHTML(s.frequency || 'monthly')}</p>
+                </div>
+                <div class="stitch-row-actions">
+                  ${renderActionIconButton('✏️', getGuestActionOnclick('editar salarios'))}
+                  ${renderActionIconButton('🗑️', getGuestActionOnclick('excluir salarios'), true)}
+                </div>
+              </div>
+              <div class="value stitch-value-positive">${formatCurrency(monthly)}</div>
+              <div class="stitch-mini-metrics mt-4">
+                <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.expenses || 'Despesas')}</div><div class="stitch-mini-metric-value stitch-value-negative">${formatCurrency(monthly * 0.6)}</div></div>
+                <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.invest || 'Investimentos')}</div><div class="stitch-mini-metric-value" style="color:#1d4ed8;">${formatCurrency(monthly * 0.2)}</div></div>
+                <div class="stitch-mini-metric"><div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.tithe || 'Dizimo')}</div><div class="stitch-mini-metric-value" style="color:#7c3aed;">${formatCurrency(monthly * 0.1)}</div></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        return;
+      }
+
       if (!currentFamily) {
         el.innerHTML = renderSurfaceEmptyState('Selecione uma família', 'Os salários desta área são carregados conforme a família ativa.');
         return;
@@ -11694,7 +12376,7 @@
                 </div>
                 <div class="stitch-mini-metric">
                   <div class="stitch-mini-metric-label">${escapeHTML(commitmentLabels.invest || 'Investimentos')}</div>
-                  <div class="stitch-mini-metric-value" style="color:#1d4ed8;">${formatCurr(investAmount)}</div>
+<div class="stitch-mini-metric-value inline-theme-accent">${formatCurr(investAmount)}</div>
                 </div>
                 ${tithePercent > 0 ? `
                   <div class="stitch-mini-metric">
@@ -12093,6 +12775,22 @@
     }
 
     async function updateCommitmentValues() {
+      if (isGuestMode && guestDemoState) {
+        applyGuestCommitmentsToUI();
+        const salaries = getGuestDemoTransactionsByType('salary').reduce((sum, item) => sum + calculateMonthlySalary(item.amount, item.frequency), 0);
+        const incomes = getGuestDemoTransactionsByType('income').reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+        const totalIncome = salaries + incomes;
+        const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
+        const invest = parseFloat(document.getElementById('commit-invest').value) || 0;
+        const tithe = parseFloat(document.getElementById('commit-tithe').value) || 0;
+        const emergency = parseFloat(document.getElementById('commit-emergency').value) || 0;
+        document.getElementById('val-expenses').textContent = formatCurrency(totalIncome * expenses / 100);
+        document.getElementById('val-invest').textContent = formatCurrency(totalIncome * invest / 100);
+        document.getElementById('val-tithe').textContent = formatCurrency(totalIncome * tithe / 100);
+        document.getElementById('val-emergency').textContent = formatCurrency(totalIncome * emergency / 100);
+        return;
+      }
+
       if (!currentFamily || !currentFamilyData) return;
 
       try {
@@ -12190,6 +12888,7 @@
     }
 
     async function saveCommitments() {
+      if (!requireAuthForAction('salvar a configuracao de divisoes')) return;
       if (!currentFamily || !currentFamilyData) return;
 
       const expenses = parseFloat(document.getElementById('commit-expenses').value) || 0;
@@ -12414,6 +13113,29 @@
     }
 
     async function loadLoans() {
+      if (isGuestMode && guestDemoState) {
+        const container = document.getElementById('loans-list');
+        if (!container) return;
+        container.innerHTML = guestDemoState.loans.map((loan) => `
+          <div class="stitch-loan-card">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1 min-w-0">
+                <div class="meta">Contrato ativo</div>
+<p class="font-bold text-white inline-theme-title" style="font-size:20px;margin-top:10px;">${escapeHTML(loan.description)}</p>
+                <p class="text-xs text-slate-400 mt-1">Inicio: ${escapeHTML(formatDisplayDate(loan.startDate))} · ${loan.installments}x · ${loan.interestRate.toFixed(2)}% a.m.</p>
+              </div>
+              <div class="stitch-row-actions">${renderActionIconButton('🗑️', getGuestActionOnclick('gerenciar emprestimos'), true)}</div>
+            </div>
+            <div class="loan-progress-bar"><div class="loan-progress-fill" style="width:${((loan.paidInstallments / loan.installments) * 100).toFixed(1)}%"></div></div>
+            <div class="mt-4 flex gap-2 flex-wrap">
+              <button onclick="${getGuestActionOnclick('amortizar parcelas')}" class="btn btn-primary flex-1" style="min-width:0;">💸 Amortizar Parcelas</button>
+              <button onclick="${getGuestActionOnclick('pagar parcelas')}" class="btn btn-outline flex-1" style="min-width:0;">✅ Pagar Parcela</button>
+            </div>
+          </div>
+        `).join('');
+        return;
+      }
+
       if (!currentFamily || !currentUser) return;
       const container = document.getElementById('loans-list');
       if (!container) return;
@@ -12450,7 +13172,7 @@
               <div class="flex items-start justify-between mb-3">
                 <div class="flex-1 min-w-0">
                   <div class="meta">Contrato ativo</div>
-                  <p class="font-bold text-white" style="color:#12263f !important;font-size:20px;margin-top:10px;">${escapeHTML(loan.description)}</p>
+                  <p class="font-bold text-white inline-theme-title" style="font-size:20px;margin-top:10px;">${escapeHTML(loan.description)}</p>
                   <p class="text-xs text-slate-400 mt-1">Início: ${escapeHTML(formatDisplayDate(loan.startDate))} · ${loan.installments}x${rateInfo ? ' · ' + rateInfo : ''}${cetInfo}</p>
                 </div>
                 <div class="stitch-row-actions">
@@ -12470,7 +13192,7 @@
                 </div>
                 <div class="stitch-mini-metric">
                   <p class="text-xs text-slate-400">Restam</p>
-                  <p class="text-sm font-bold" style="color:#12263f;">${remaining} parcela${remaining !== 1 ? 's' : ''}</p>
+<p class="text-sm font-bold inline-theme-title">${remaining} parcela${remaining !== 1 ? 's' : ''}</p>
                 </div>
                 <div class="stitch-mini-metric">
                   <p class="text-xs text-slate-400">Total restante</p>
@@ -12657,6 +13379,7 @@
     let editingBankAccountId = null;
 
     async function addBankAccount() {
+      if (!requireAuthForAction('cadastrar contas bancarias')) return;
       if (!currentFamily || !currentUser) { showToast('⚠️', 'Selecione uma família'); return; }
       const name = document.getElementById('account-name')?.value.trim();
       const bank = normalizeBankNameLocal(document.getElementById('account-bank')?.value.trim() || '');
@@ -12763,6 +13486,47 @@
     }
 
     async function loadBankAccounts() {
+      if (isGuestMode && guestDemoState) {
+        const container = document.getElementById('accounts-list');
+        bankAccountsCache = mergeBankAccounts(guestDemoState.bankAccounts);
+        await updateAccountSelects();
+        if (!container) return;
+        const transactions = guestDemoState.transactions || [];
+        const balanceByAccount = {};
+        transactions.forEach((tx) => {
+          const accountId = getTransactionAccountId(tx);
+          if (!accountId) return;
+          if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
+          const amt = Number(tx.amount) || 0;
+          if (tx.type === 'income' || tx.type === 'salary') balanceByAccount[accountId] += amt;
+          if (tx.type === 'expense') balanceByAccount[accountId] -= amt;
+        });
+        const html = bankAccountsCache.map(acc => {
+          const total = (acc.initialBalance || 0) + (balanceByAccount[acc.id] || 0);
+          return `
+            <div class="stitch-account-panel" style="${getBankThemeStyle(acc.bank)}">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-4">
+                  <div class="flex items-center justify-center rounded-2xl" style="width:58px;height:58px;background:var(--bank-soft);font-size:28px;">${renderBankBrandMark(acc.bank, acc.emoji, 40, 14)}</div>
+                  <div>
+                    <div class="meta">${escapeHTML(getBankDisplayName(acc.bank))}</div>
+                    <p class="stitch-account-title">${escapeHTML(acc.name)}</p>
+                    <p class="text-xs text-slate-400">Saldo inicial: ${formatCurrency(acc.initialBalance || 0)}</p>
+                  </div>
+                </div>
+                <div class="stitch-row-actions">
+                  ${renderActionIconButton('✏️', getGuestActionOnclick('editar contas bancarias'))}
+                  ${renderActionIconButton('🗑️', getGuestActionOnclick('excluir contas bancarias'), true)}
+                </div>
+              </div>
+              <div class="value ${total < 0 ? 'stitch-value-negative' : 'stitch-value-positive'}">${formatCurrency(total)}</div>
+            </div>
+          `;
+        }).join('');
+        container.innerHTML = `<div class="stitch-account-cards-grid">${html}</div>`;
+        return;
+      }
+
       if (!currentFamily || !currentUser) return;
       const container = document.getElementById('accounts-list');
 
@@ -12932,6 +13696,7 @@
     // ========== SALDO INICIAL GLOBAL ==========
 
     async function saveInitialBalance() {
+      if (!requireAuthForAction('salvar o saldo inicial')) return;
       if (!currentFamily || !currentUser) return;
       const balance = Number(document.getElementById('global-initial-balance-input')?.value) || 0;
       const key = `${currentFamily}_${currentUser.uid}`;
@@ -12982,6 +13747,7 @@
     }
 
     function openInitialBalanceModal() {
+      if (!requireAuthForAction('configurar o saldo inicial')) return;
       // Ir para a aba de contas onde está o formulário de saldo inicial
       switchTab('finances');
       setFinanceView('accounts');
@@ -13190,6 +13956,36 @@
     }
 
     async function renderSubscriptions() {
+      if (isGuestMode && guestDemoState) {
+        const listEl = document.getElementById('subscriptions-list');
+        const totalEl = document.getElementById('subscriptions-total');
+        const alertEl = document.getElementById('subscriptions-alert');
+        const alertTextEl = document.getElementById('subscriptions-alert-text');
+        if (!listEl) return;
+        const subscriptions = guestDemoState.subscriptions || [];
+        const total = subscriptions.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+        if (totalEl) totalEl.textContent = formatCurrency(total);
+        if (alertEl) alertEl.classList.remove('hidden');
+        if (alertTextEl) alertTextEl.textContent = 'Na conta real, o app avisa quando suas assinaturas pesam demais na renda mensal.';
+        listEl.innerHTML = `<div class="stitch-subscription-grid">${subscriptions.map(sub => `
+          <div class="stitch-subscription-card">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3 flex-1 min-w-0">
+                <span class="text-2xl flex-shrink-0 flex items-center justify-center rounded-2xl" style="width:52px;height:52px;background:rgba(99,102,241,0.1);">${sub.icon}</span>
+                <div class="flex-1 min-w-0">
+                  <div class="meta">${escapeHTML(sub.category || 'outros')}</div>
+                  <p class="list-item-title inline-theme-title" style="margin-top:10px;">${escapeHTML(sub.name)}</p>
+                  <p class="list-item-subtitle">Renova dia ${escapeHTML(String(sub.renewDay || '—'))}</p>
+                </div>
+              </div>
+              <div class="stitch-row-actions">${renderActionIconButton('🗑️', getGuestActionOnclick('remover assinaturas'), true)}</div>
+            </div>
+            <div class="value inline-theme-accent">${formatCurrency(Number(sub.amount) || 0)}</div>
+          </div>
+        `).join('')}</div>`;
+        return;
+      }
+
       const listEl = document.getElementById('subscriptions-list');
       const totalEl = document.getElementById('subscriptions-total');
       const alertEl = document.getElementById('subscriptions-alert');
@@ -13234,7 +14030,7 @@
                 <span class="text-2xl flex-shrink-0 flex items-center justify-center rounded-2xl" style="width:52px;height:52px;background:rgba(99,102,241,0.1);">${icon}</span>
                 <div class="flex-1 min-w-0">
                   <div class="meta">${escapeHTML(sub.category || 'outros')}</div>
-                  <p class="list-item-title" style="margin-top:10px;color:#12263f;">${escapeHTML(sub.name || 'Sem nome')}</p>
+                  <p class="list-item-title inline-theme-title" style="margin-top:10px;">${escapeHTML(sub.name || 'Sem nome')}</p>
                   <p class="list-item-subtitle">${renewDay ? 'Renova ' + renewDay : 'Recorrência mensal'}</p>
                 </div>
               </div>
@@ -13242,7 +14038,7 @@
                 ${renderActionIconButton('🗑️', `deleteSubscription('${sub.id}')`, true)}
               </div>
             </div>
-            <div class="value" style="color:#4f46e5;">${formatCurrency(Number(sub.amount) || 0)}</div>
+            <div class="value inline-theme-accent">${formatCurrency(Number(sub.amount) || 0)}</div>
           </div>`;
       }).join('');
 
@@ -13282,6 +14078,7 @@
     }
 
     async function saveSubscriptionModal() {
+      if (!requireAuthForAction('adicionar assinaturas')) return;
       if (!currentFamily || !currentUser) {
         showToast('⚠️', 'Selecione uma família primeiro');
         return;
@@ -13311,8 +14108,7 @@
 
     // ========== SELEÇÃO DE PLANO ==========
     async function selectPlan(plan) {
-      if (!currentUser) {
-        showToast('⚠️', 'Faça login primeiro');
+      if (!requireAuthForAction('assinar um plano')) {
         return;
       }
 
@@ -13481,7 +14277,7 @@
       const modal = document.getElementById('ai-import-preview-modal');
       document.getElementById('ai-import-count').textContent = `${transactions.length} transação(ões) encontrada(s)`;
       document.getElementById('ai-import-summary').innerHTML = `
-        <span style="color:#cbd5e1;">${escapeHTML(accountLabel)}</span> &nbsp;|&nbsp;
+<span class="inline-theme-muted">${escapeHTML(accountLabel)}</span> &nbsp;|&nbsp;
         <span class="text-emerald-400">+${formatCurrency(totalIncome)}</span> entrada(s) &nbsp;|&nbsp;
         <span class="text-red-400">-${formatCurrency(totalExpense)}</span> saída(s)`;
       document.getElementById('ai-import-list').innerHTML = rows;
@@ -13653,8 +14449,7 @@
     });
 
     async function scanSingleReceiptWithAI(file) {
-      if (!currentUser) {
-        showToast('⚠️', 'Faça login para usar esta função.');
+      if (!requireAuthForAction('analisar recibos com IA')) {
         return;
       }
 
@@ -13875,7 +14670,10 @@
     async function uploadExtractForAI(event) {
       const file = event.target.files[0];
       if (!file) return;
-      if (!currentUser) return showToast('⚠️', 'Faça login primeiro.');
+      if (!requireAuthForAction('importar extratos bancarios')) {
+        event.target.value = '';
+        return;
+      }
 
       const ext = file.name.split('.').pop().toLowerCase();
       if (!['pdf', 'csv'].includes(ext)) {
@@ -14274,7 +15072,7 @@
       return `
         <div class="stitch-ai-analysis-toolbar">
           <div class="stitch-ai-analysis-history">
-            ${chips || '<span class="text-slate-500 text-sm">Nenhuma análise salva ainda</span>'}
+          ${chips || '<span class="inline-theme-muted text-sm">Nenhuma análise salva ainda</span>'}
           </div>
           <button type="button" class="stitch-ai-refresh-btn" onclick="fetchAIAnalysis()">${escapeHTML(refreshLabel)}</button>
         </div>
@@ -14430,6 +15228,11 @@
     async function renderAIAnalysisFromCache() {
       const outputDiv = document.getElementById('ai-insights-output');
       if (!outputDiv) return;
+
+      if (isGuestMode && guestDemoState) {
+        renderGuestAIAnalysis();
+        return;
+      }
 
       if (!auth.currentUser) {
         outputDiv.innerHTML = '<div class="analysis-rich-card text-slate-500 text-center p-6">Faça login para ver seus insights financeiros.</div>';
@@ -14619,8 +15422,7 @@
     async function fetchAIAnalysis() {
       const outputDiv = document.getElementById('ai-insights-output');
 
-      if (!auth.currentUser) {
-        outputDiv.innerHTML = '<div class="analysis-rich-card text-slate-500 text-center p-6">Faça login para ver seus insights financeiros.</div>';
+      if (!requireAuthForAction('gerar uma nova analise com IA')) {
         return;
       }
 
@@ -14701,7 +15503,7 @@
     syncMobileNavigationState(window._activePrimaryTab);
 
     async function sendAIChatMessage() {
-      if (!auth.currentUser) return showToast('⚠️', 'Faça login para conversar com a IA.');
+      if (!requireAuthForAction('conversar com a IA')) return;
 
       const input = document.getElementById('ai-chat-input');
       const question = input.value.trim();
