@@ -18,8 +18,8 @@ export default async function handler(req, res) {
       providedBank: body.bank || null,
       fileName: body.fileName || "statement",
       fileType,
-      pdfBase64: body.pdfBase64 || body.fileBase64 || null,
-      csvBase64: body.csvBase64 || null,
+      pdfBase64: body.pdfBase64 || (fileType === "pdf" ? body.fileBase64 || null : null),
+      csvBase64: body.csvBase64 || (fileType === "csv" ? body.fileBase64 || null : null),
     });
 
     return res.status(200).json({
@@ -32,6 +32,7 @@ export default async function handler(req, res) {
     const isBusinessError =
       message.includes("Nenhuma transacao") ||
       message.includes("Nao foi possivel reconhecer") ||
+      message.includes("Nao foi possivel ler a estrutura deste PDF") ||
       message.includes("Limite de 1 extrato por dia") ||
       message.includes("Arquivo PDF nao informado") ||
       message.includes("Arquivo CSV nao informado") ||

@@ -39,6 +39,7 @@ function cleanDescription(value) {
 
 function normalizeText(text) {
   return String(text || "")
+    .replace(/^\uFEFF/, "")
     .replace(/\u00a0/g, " ")
     .replace(/\r/g, "")
     .replace(/[ \t]+/g, " ")
@@ -346,8 +347,16 @@ function parseCsvRows(csvText) {
 }
 
 async function extractTextFromPdfBuffer(buffer) {
-  const parsed = await pdf(buffer);
-  return normalizeText(parsed.text || "");
+  try {
+    const parsed = await pdf(buffer);
+    return normalizeText(parsed.text || "");
+  } catch (error) {
+    const message = error && error.message ? error.message : "";
+    if (/invalid pdf structure|invalid xref|formaterror|bad xref|unexpected server response/i.test(message)) {
+      throw new Error("Nao foi possivel ler a estrutura deste PDF. Tente o CSV oficial do banco ou gere um PDF padrao exportado pelo banco.");
+    }
+    throw error;
+  }
 }
 
 async function findExistingTransactions({ familyId, uid }) {

@@ -4248,6 +4248,78 @@
       gap: 14px;
     }
 
+    .stitch-ai-analysis-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stitch-ai-analysis-history {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stitch-ai-history-chip {
+      border: 1px solid #d4deea;
+      background: #ffffff;
+      color: #3f5572;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .stitch-ai-history-chip:hover {
+      border-color: rgba(29, 78, 216, 0.28);
+      color: #1e3a8a;
+    }
+
+    .stitch-ai-history-chip.active {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      border-color: transparent;
+      color: #ffffff;
+    }
+
+    .stitch-ai-history-chip:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    .stitch-ai-refresh-btn {
+      border: 1px solid rgba(29, 78, 216, 0.22);
+      border-radius: 14px;
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+      color: #ffffff;
+      min-height: 44px;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 10px 24px rgba(29, 78, 216, 0.2);
+    }
+
+    .stitch-ai-refresh-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(29, 78, 216, 0.24);
+    }
+
+    .stitch-ai-stale-alert {
+      border: 1px solid rgba(245, 158, 11, 0.34);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.14), rgba(255, 251, 235, 0.7));
+      color: #8a4b04;
+      border-radius: 16px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
     .stitch-summary-cards {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6949,6 +7021,12 @@
     let userUiPreferences = {
       dismissedTabIntros: {}
     };
+    let aiAnalysisCacheState = {
+      familyId: null,
+      analyses: [],
+      activeAnalysisId: null,
+      stale: false
+    };
 
     const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'ai_analysis'];
 
@@ -7197,7 +7275,7 @@
         if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
       } else if (activeTab === 'ai_analysis') {
         if (typeof renderSubscriptions === 'function') await renderSubscriptions();
-        if (typeof fetchAIAnalysis === 'function') await fetchAIAnalysis();
+        if (typeof renderAIAnalysisFromCache === 'function') await renderAIAnalysisFromCache();
       }
     }
 
@@ -7694,6 +7772,7 @@
         showToast('✅', 'Salário adicionado');
         if (typeof loadSalariesList === 'function') await loadSalariesList();
         if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error saving salary:', error);
         showToast('❌', 'Erro ao salvar salário');
@@ -8007,6 +8086,7 @@
 
         if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
         if (typeof updateDashboard === 'function') await updateDashboard();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
 
         editingTransactionId = null;
         editingTransactionType = null;
@@ -8026,6 +8106,7 @@
         if (typeof loadSalariesList === 'function') await loadSalariesList();
         if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
         if (typeof updateDashboard === 'function') await updateDashboard();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error deleting salary:', error);
         showToast('❌', 'Erro ao remover');
@@ -8298,6 +8379,7 @@
       } else {
         currentUser = null;
         userPlan = 'basic';
+        aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
         userUiPreferences = { dismissedTabIntros: {} };
         applyTabIntroVisibility();
         showLogin();
@@ -8356,6 +8438,7 @@
       currentFamily = null;
       currentFamilyData = null;
       customCategories = [];
+      aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
       showFamilySelection();
     }
 
@@ -8964,6 +9047,7 @@
         if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
         if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
         if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error deleting transaction:', error);
         if (typeof showToast === 'function') showToast('❌', 'Erro ao remover');
@@ -9397,6 +9481,7 @@
         if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
         if (typeof loadBankAccounts === 'function') await loadBankAccounts();
         if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error adding extra income:', error);
         if (typeof showToast === 'function') showToast('❌', error.message || 'Erro ao adicionar');
@@ -9455,6 +9540,7 @@
         if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
         if (typeof loadBankAccounts === 'function') await loadBankAccounts();
         if (typeof updateDashboard === 'function') updateDashboard();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error adding expense:', error);
         if (typeof showToast === 'function') showToast('❌', error.message || 'Erro ao adicionar');
@@ -11196,7 +11282,7 @@
       } else if (tabName === 'dashboard') {
         if (typeof updateDashboard === 'function') updateDashboard();
       } else if (tabName === 'ai_analysis') {
-        if (typeof fetchAIAnalysis === 'function') fetchAIAnalysis();
+        if (typeof renderAIAnalysisFromCache === 'function') renderAIAnalysisFromCache();
         if (typeof renderSubscriptions === 'function') renderSubscriptions();
       }
     }
@@ -13142,6 +13228,7 @@
         showToast('✅', `${pendingImportTransactions.length > 0 ? pendingImportTransactions.length : ''} transações importadas com sucesso!`);
         if (typeof updateDashboard === 'function') updateDashboard();
         if (typeof loadTransactions === 'function') loadTransactions();
+        if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Erro ao importar transações:', error);
         showToast('❌', 'Erro ao importar: ' + error.message);
@@ -13388,7 +13475,7 @@
       if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
       if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
       if (typeof updateDashboard === 'function') await updateDashboard();
-      if (typeof fetchAIAnalysis === 'function') await fetchAIAnalysis();
+      if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
 
       const reportStart = document.getElementById('report-start')?.value;
       const reportEnd = document.getElementById('report-end')?.value;
@@ -13460,7 +13547,12 @@
           fileName: file.name
         };
         const b64 = await fileToBase64(file);
-        payload.fileBase64 = b64.split(',')[1];
+        const encodedFile = b64.split(',')[1];
+        if (ext === 'csv') {
+          payload.csvBase64 = encodedFile;
+        } else {
+          payload.pdfBase64 = encodedFile;
+        }
 
         const res = await fetch(`${getApiBaseUrl()}/uploadPDF`, {
           method: 'POST',
@@ -13699,14 +13791,262 @@
       `;
     }
 
-    function renderAIAnalysis(data) {
+    function getAIAnalysisCacheDocRef() {
+      if (!currentFamily) return null;
+      return db.collection('ai_analysis_cache').doc(currentFamily);
+    }
+
+    function normalizeAnalysisVersions(rawVersions) {
+      const safeArray = Array.isArray(rawVersions) ? rawVersions : [];
+      return safeArray
+        .filter(item => item && typeof item === 'object' && item.id && item.payload)
+        .map(item => ({
+          id: String(item.id),
+          createdAtMs: Number(item.createdAtMs || 0),
+          createdBy: item.createdBy || '',
+          payload: item.payload
+        }))
+        .sort((a, b) => b.createdAtMs - a.createdAtMs)
+        .slice(0, 2);
+    }
+
+    function getCurrentActiveAIAnalysis() {
+      const versions = aiAnalysisCacheState.analyses || [];
+      if (!versions.length) return null;
+      const active = versions.find(item => item.id === aiAnalysisCacheState.activeAnalysisId);
+      return active || versions[0];
+    }
+
+    function formatAnalysisVersionLabel(createdAtMs, index) {
+      if (!createdAtMs) return index === 0 ? 'Atual' : 'Anterior';
+      const formatted = new Date(createdAtMs).toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      return index === 0 ? `Atual • ${formatted}` : `Anterior • ${formatted}`;
+    }
+
+    function getAIAnalysisToolbarHtml(options = {}) {
+      const analyses = Array.isArray(options.analyses) ? options.analyses : [];
+      const activeId = options.activeAnalysisId || '';
+      const stale = options.stale === true;
+      const hasAnalyses = analyses.length > 0;
+      const refreshLabel = hasAnalyses
+        ? (stale ? 'Gerar nova análise (há mudanças)' : 'Atualizar análise')
+        : 'Gerar primeira análise';
+
+      const chips = analyses.map((item, index) => `
+        <button type="button"
+          class="stitch-ai-history-chip ${item.id === activeId ? 'active' : ''}"
+          onclick="setActiveAIAnalysis('${item.id}')"
+          ${item.id === activeId ? 'disabled' : ''}>
+          ${escapeHTML(formatAnalysisVersionLabel(item.createdAtMs, index))}
+        </button>
+      `).join('');
+
+      return `
+        <div class="stitch-ai-analysis-toolbar">
+          <div class="stitch-ai-analysis-history">
+            ${chips || '<span class="text-slate-500 text-sm">Nenhuma análise salva ainda</span>'}
+          </div>
+          <button type="button" class="stitch-ai-refresh-btn" onclick="fetchAIAnalysis()">${escapeHTML(refreshLabel)}</button>
+        </div>
+        ${stale ? '<div class="stitch-ai-stale-alert">Há novos lançamentos. Clique em "Gerar nova análise" para atualizar o Smart Summary.</div>' : ''}
+      `;
+    }
+
+    function renderEmptyAIAnalysisState(stale = false) {
       const outputDiv = document.getElementById('ai-insights-output');
       if (!outputDiv) return;
+
+      outputDiv.innerHTML = `
+        <div class="stitch-smart-summary-layout">
+          ${getAIAnalysisToolbarHtml({
+            analyses: [],
+            activeAnalysisId: null,
+            stale
+          })}
+          <div class="analysis-rich-card text-slate-500 text-center p-6">
+            Nenhuma análise salva para esta família. Clique em "Gerar primeira análise" para criar o Smart Summary.
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadSavedAIAnalyses() {
+      if (!currentFamily || !currentUser) {
+        aiAnalysisCacheState = {
+          familyId: currentFamily || null,
+          analyses: [],
+          activeAnalysisId: null,
+          stale: false
+        };
+        return aiAnalysisCacheState;
+      }
+
+      const docRef = getAIAnalysisCacheDocRef();
+      if (!docRef) return aiAnalysisCacheState;
+
+      const snap = await docRef.get();
+      const data = snap.exists ? (snap.data() || {}) : {};
+      const versions = normalizeAnalysisVersions(data.analyses);
+      const activeId = versions.some(item => item.id === data.activeAnalysisId)
+        ? data.activeAnalysisId
+        : (versions[0]?.id || null);
+      const stale = data.stale === true;
+
+      aiAnalysisCacheState = {
+        familyId: currentFamily,
+        analyses: versions,
+        activeAnalysisId: activeId,
+        stale
+      };
+
+      return aiAnalysisCacheState;
+    }
+
+    async function saveAIAnalysisVersion(payload) {
+      if (!currentFamily || !currentUser || !payload) return aiAnalysisCacheState;
+
+      if (aiAnalysisCacheState.familyId !== currentFamily) {
+        await loadSavedAIAnalyses();
+      }
+
+      const now = Date.now();
+      const newVersion = {
+        id: `analysis_${now}_${Math.random().toString(36).slice(2, 8)}`,
+        createdAtMs: now,
+        createdBy: currentUser.uid,
+        payload
+      };
+
+      const nextVersions = normalizeAnalysisVersions([newVersion, ...(aiAnalysisCacheState.analyses || [])]);
+      const nextState = {
+        familyId: currentFamily,
+        analyses: nextVersions,
+        activeAnalysisId: newVersion.id,
+        stale: false
+      };
+
+      const docRef = getAIAnalysisCacheDocRef();
+      await docRef.set({
+        familyId: currentFamily,
+        analyses: nextVersions,
+        activeAnalysisId: newVersion.id,
+        stale: false,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      aiAnalysisCacheState = nextState;
+      return nextState;
+    }
+
+    async function setActiveAIAnalysis(analysisId) {
+      if (!analysisId || !currentFamily || !currentUser) return;
+
+      if (aiAnalysisCacheState.familyId !== currentFamily) {
+        await loadSavedAIAnalyses();
+      }
+
+      const selected = (aiAnalysisCacheState.analyses || []).find(item => item.id === analysisId);
+      if (!selected) return;
+
+      aiAnalysisCacheState.activeAnalysisId = analysisId;
+      const docRef = getAIAnalysisCacheDocRef();
+      if (docRef) {
+        await docRef.set({
+          familyId: currentFamily,
+          activeAnalysisId: analysisId,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+
+      renderAIAnalysis(selected.payload, {
+        analyses: aiAnalysisCacheState.analyses,
+        activeAnalysisId: aiAnalysisCacheState.activeAnalysisId,
+        stale: aiAnalysisCacheState.stale
+      });
+    }
+
+    async function markAIAnalysisStale() {
+      if (!currentFamily || !currentUser) return;
+
+      if (aiAnalysisCacheState.familyId !== currentFamily) {
+        await loadSavedAIAnalyses();
+      }
+      if (aiAnalysisCacheState.stale) return;
+
+      aiAnalysisCacheState.stale = true;
+      const docRef = getAIAnalysisCacheDocRef();
+      if (docRef) {
+        await docRef.set({
+          familyId: currentFamily,
+          stale: true,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+
+      if (window._activePrimaryTab === 'ai_analysis') {
+        const active = getCurrentActiveAIAnalysis();
+        if (active) {
+          renderAIAnalysis(active.payload, {
+            analyses: aiAnalysisCacheState.analyses,
+            activeAnalysisId: aiAnalysisCacheState.activeAnalysisId,
+            stale: true
+          });
+        } else {
+          renderEmptyAIAnalysisState(true);
+        }
+      }
+    }
+
+    async function renderAIAnalysisFromCache() {
+      const outputDiv = document.getElementById('ai-insights-output');
+      if (!outputDiv) return;
+
+      if (!auth.currentUser) {
+        outputDiv.innerHTML = '<div class="analysis-rich-card text-slate-500 text-center p-6">Faça login para ver seus insights financeiros.</div>';
+        return;
+      }
+
+      try {
+        const cache = await loadSavedAIAnalyses();
+        const active = getCurrentActiveAIAnalysis();
+        if (!active) {
+          renderEmptyAIAnalysisState(cache.stale === true);
+          return;
+        }
+
+        renderAIAnalysis(active.payload, {
+          analyses: cache.analyses,
+          activeAnalysisId: cache.activeAnalysisId,
+          stale: cache.stale
+        });
+      } catch (error) {
+        console.error('Erro renderAIAnalysisFromCache:', error);
+        outputDiv.innerHTML = '<div class="analysis-rich-card text-red-500 text-center p-6">❌ Falha ao carregar análises salvas.</div>';
+      }
+    }
+
+    function renderAIAnalysis(data, options = {}) {
+      const outputDiv = document.getElementById('ai-insights-output');
+      if (!outputDiv) return;
+
+      const analyses = Array.isArray(options.analyses) ? options.analyses : (aiAnalysisCacheState.analyses || []);
+      const activeAnalysisId = options.activeAnalysisId || aiAnalysisCacheState.activeAnalysisId;
+      const stale = options.stale === true || aiAnalysisCacheState.stale === true;
 
       const hasStructuredData = data && typeof data === 'object' && data.summary && typeof data.summary === 'object';
       if (!hasStructuredData) {
         const fallbackText = typeof data === 'string' ? data : (data && (data.analysis || data.narrative)) || 'Sem resposta da IA';
-        outputDiv.innerHTML = renderFallbackAnalysisCard(fallbackText);
+        outputDiv.innerHTML = `
+          <div class="stitch-smart-summary-layout">
+            ${getAIAnalysisToolbarHtml({ analyses, activeAnalysisId, stale })}
+            ${renderFallbackAnalysisCard(fallbackText)}
+          </div>
+        `;
         return;
       }
 
@@ -13741,6 +14081,7 @@
 
       outputDiv.innerHTML = `
         <div class="stitch-smart-summary-layout">
+          ${getAIAnalysisToolbarHtml({ analyses, activeAnalysisId, stale })}
           <div class="stitch-summary-cards">
             <div class="stitch-summary-card" data-tone="positive">
               <div class="stitch-summary-card-head">
@@ -13902,25 +14243,34 @@
         if (!data || (!data.summary && !data.analysis && !data.narrative)) {
           throw new Error(data && data.error ? data.error : 'Sem resposta da IA');
         }
-        renderAIAnalysis(data);
+
+        const nextState = await saveAIAnalysisVersion(data);
+        const active = nextState.analyses.find(item => item.id === nextState.activeAnalysisId) || nextState.analyses[0];
+        if (!active) {
+          renderEmptyAIAnalysisState(false);
+          return;
+        }
+
+        renderAIAnalysis(active.payload, {
+          analyses: nextState.analyses,
+          activeAnalysisId: nextState.activeAnalysisId,
+          stale: false
+        });
       } catch (error) {
         console.error('Erro fetchAIAnalysis:', error);
-        outputDiv.innerHTML = '<div class="analysis-rich-card text-red-500 text-center p-6">❌ ' + error.message + '</div>';
+        const active = getCurrentActiveAIAnalysis();
+        if (active) {
+          renderAIAnalysis(active.payload, {
+            analyses: aiAnalysisCacheState.analyses,
+            activeAnalysisId: aiAnalysisCacheState.activeAnalysisId,
+            stale: aiAnalysisCacheState.stale
+          });
+          showToast('❌', 'Erro ao gerar nova análise: ' + error.message);
+        } else {
+          outputDiv.innerHTML = '<div class="analysis-rich-card text-red-500 text-center p-6">❌ ' + error.message + '</div>';
+        }
       }
     }
-
-    // Dispara análise ao clicar na aba de IA
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      if (btn.textContent.includes('Análise da IA')) {
-        btn.addEventListener('click', () => {
-          const currentHtml = document.getElementById('ai-insights-output').innerHTML;
-          const isIdle = currentHtml.includes('Interaja com o chat') ||
-            currentHtml.includes('Faça login') ||
-            currentHtml.includes('Importe um extrato no Dashboard');
-          if (isIdle && auth.currentUser) fetchAIAnalysis();
-        });
-      }
-    });
 
     window._activePrimaryTab = window._activePrimaryTab || 'dashboard';
     syncMobileNavigationState(window._activePrimaryTab);
