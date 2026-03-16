@@ -5816,6 +5816,37 @@
               <span>🤖 Análise da IA</span>
               <small>Insights e chat</small>
             </button>
+<<<<<<< HEAD
+=======
+          </div>
+        </div>
+      </div>
+
+      <!-- FAB -->
+      <button onclick="openBottomSheet()" class="fab">➕</button>
+
+      <!-- Bottom Sheet Modal -->
+      <div class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
+      <div id="bottom-sheet" class="bottom-sheet">
+        <div class="bottom-sheet-header">
+          <h3 class="text-white font-bold">Nova Transação</h3>
+          <button onclick="closeBottomSheet()" class="modal-close">✕</button>
+        </div>
+        <div class="bottom-sheet-content">
+          <div class="bottom-sheet-actions">
+            <button onclick="switchTab('finances'); setFinanceView('expenses'); closeBottomSheet()"
+              class="bottom-sheet-action">📤 Nova Despesa</button>
+            <button onclick="switchTab('finances'); setFinanceView('income'); closeBottomSheet()"
+              class="bottom-sheet-action">📥 Novo Ganho</button>
+            <button onclick="switchTab('finances'); setFinanceView('income'); openModal('salary'); closeBottomSheet()"
+              class="bottom-sheet-action">💼 Novo Salário</button>
+            <button onclick="switchTab('finances'); setFinanceView('loans'); closeBottomSheet()"
+              class="bottom-sheet-action">🏦 Novo Empréstimo</button>
+            <button onclick="switchTab('commitments_goals'); openModal('goal'); closeBottomSheet()"
+              class="bottom-sheet-action">🎯 Nova Meta</button>
+            <button onclick="switchTab('ai_analysis'); closeBottomSheet()" class="bottom-sheet-action">🤖 Análise da
+              IA</button>
+>>>>>>> cf214cb (Trocar coluna divisão por popover)
           </div>
         </div>
       </div>
@@ -8272,7 +8303,9 @@
           name: name,
           email: email,
           ui: {
-            dismissedTabIntros: {}
+            dismissedTabIntros: {},
+            theme: detectSystemTheme(),
+            themePromptSeen: false
           },
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
