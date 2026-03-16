@@ -7018,8 +7018,13 @@
     let dashboardPeriod = 'month';
     let currentFinanceView = 'income';
     let deleteCallback = null;
+    const THEME_STORAGE_KEY = 'cc_theme';
+    const THEME_PROMPT_STORAGE_KEY = 'cc_theme_prompt_seen';
+    let currentTheme = 'light';
     let userUiPreferences = {
-      dismissedTabIntros: {}
+      dismissedTabIntros: {},
+      theme: null,
+      themePromptSeen: false
     };
     let aiAnalysisCacheState = {
       familyId: null,
@@ -7028,7 +7033,33 @@
       stale: false
     };
 
-    const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'ai_analysis'];
+    const TAB_INTRO_KEYS = ['finances', 'commitments_goals', 'subscriptions', 'ai_analysis'];
+
+    function getStoredTheme() {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      return stored === 'dark' || stored === 'light' ? stored : null;
+    }
+
+    function detectSystemTheme() {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function resolveThemeChoice(themeChoice) {
+      if (themeChoice === 'dark' || themeChoice === 'light') return themeChoice;
+      return detectSystemTheme();
+    }
+
+    function applyTheme(themeChoice) {
+      const resolvedTheme = resolveThemeChoice(themeChoice);
+      currentTheme = resolvedTheme;
+      document.body.setAttribute('data-theme', resolvedTheme);
+      localStorage.setItem(THEME_STORAGE_KEY, resolvedTheme);
+
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#0f172a' : '#10b981');
+      }
+    }
 
     function normalizeUserUiPreferences(data = {}) {
       const intros = data?.ui?.dismissedTabIntros || data?.dismissedTabIntros || {};
@@ -7036,9 +7067,104 @@
       TAB_INTRO_KEYS.forEach((key) => {
         normalized[key] = intros[key] === true;
       });
+      const firestoreTheme = data?.ui?.theme;
+      const theme = (firestoreTheme === 'dark' || firestoreTheme === 'light') ? firestoreTheme : getStoredTheme();
+      const promptFromLocal = localStorage.getItem(THEME_PROMPT_STORAGE_KEY) === 'true';
+      const themePromptSeen = data?.ui?.themePromptSeen === true || promptFromLocal;
       return {
-        dismissedTabIntros: normalized
+        dismissedTabIntros: normalized,
+        theme,
+        themePromptSeen
       };
+    }
+
+    function openThemeOnboardingModal() {
+      const modal = document.getElementById('theme-onboarding-modal');
+      if (!modal) return;
+      modal.classList.add('active');
+    }
+
+    function closeThemeOnboardingModal() {
+      const modal = document.getElementById('theme-onboarding-modal');
+      if (!modal) return;
+      modal.classList.remove('active');
+    }
+
+    function shouldShowThemeOnboarding() {
+      return !!currentUser && (userUiPreferences.themePromptSeen !== true || !userUiPreferences.theme);
+    }
+
+    async function persistUiPreferences(patch = {}) {
+      if (!currentUser) return;
+      const nextUi = {
+        dismissedTabIntros: { ...(userUiPreferences.dismissedTabIntros || {}) },
+        theme: userUiPreferences.theme || detectSystemTheme(),
+        themePromptSeen: userUiPreferences.themePromptSeen === true,
+        ...(patch || {})
+      };
+      userUiPreferences = {
+        ...userUiPreferences,
+        ...nextUi
+      };
+      await db.collection('users').doc(currentUser.uid).set({
+        ui: nextUi
+      }, { merge: true });
+    }
+
+    async function selectInitialTheme(themeChoice) {
+      const selectedTheme = resolveThemeChoice(themeChoice);
+      applyTheme(selectedTheme);
+      try {
+        await persistUiPreferences({
+          theme: selectedTheme,
+          themePromptSeen: true
+        });
+      } catch (error) {
+        console.error('Erro ao salvar tema inicial:', error);
+      } finally {
+        localStorage.setItem(THEME_PROMPT_STORAGE_KEY, 'true');
+        closeThemeOnboardingModal();
+      }
+    }
+
+    function getThemePreference() {
+      return userUiPreferences.theme || detectSystemTheme();
+    }
+
+    function renderThemeSettingsBlock() {
+      const activeTheme = getThemePreference();
+      const renderOption = (value, title, subtitle) => `
+        <button type="button" class="theme-setting-option ${activeTheme === value ? 'active' : ''}" onclick="changeThemeFromSettings('${value}')">
+          <div>
+            <strong>${title}</strong>
+            <p>${subtitle}</p>
+          </div>
+          <span>${activeTheme === value ? '✅' : '○'}</span>
+        </button>
+      `;
+      return `
+        <div class="space-y-2 pt-2">
+          <p class="text-sm font-semibold text-white">Tema da Interface</p>
+          ${renderOption('light', 'Claro', 'Fundo claro com leitura direta')}
+          ${renderOption('dark', 'Escuro', 'Contraste elevado para ambiente noturno')}
+        </div>
+      `;
+    }
+
+    async function changeThemeFromSettings(themeChoice) {
+      const selectedTheme = resolveThemeChoice(themeChoice);
+      applyTheme(selectedTheme);
+      try {
+        await persistUiPreferences({
+          theme: selectedTheme,
+          themePromptSeen: true
+        });
+        localStorage.setItem(THEME_PROMPT_STORAGE_KEY, 'true');
+        openModal('settings');
+      } catch (error) {
+        console.error('Erro ao atualizar tema:', error);
+        showToast('❌', 'Erro ao salvar tema');
+      }
     }
 
     function applyTabIntroVisibility() {
@@ -7064,13 +7190,11 @@
       if (!currentUser) return;
 
       try {
-        await db.collection('users').doc(currentUser.uid).set({
-          ui: {
-            dismissedTabIntros: {
-              ...(userUiPreferences.dismissedTabIntros || {})
-            }
+        await persistUiPreferences({
+          dismissedTabIntros: {
+            ...(userUiPreferences.dismissedTabIntros || {})
           }
-        }, { merge: true });
+        });
       } catch (error) {
         console.error('Erro ao persistir fechamento do banner da aba:', error);
       }
@@ -7189,7 +7313,8 @@
         'generic-modal',
         'delete-modal',
         'photo-modal',
-        'initial-balance-onboarding-modal'
+        'initial-balance-onboarding-modal',
+        'theme-onboarding-modal'
       ];
 
       allModals.forEach(modalId => {
@@ -7446,6 +7571,7 @@
                   <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                 </label>
               </div>
+              ${renderThemeSettingsBlock()}
             </div>
             <hr class="border-slate-700 my-4">
             <h3 class="text-lg font-semibold text-white mb-3">Adicionar Membro</h3>
@@ -8351,6 +8477,7 @@
 
     // Inicializar UI de privacidade
     updatePrivacyUI();
+    applyTheme(getStoredTheme() || detectSystemTheme());
 
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -8360,27 +8487,47 @@
           const userData = doc.exists ? (doc.data() || {}) : {};
           userPlan = userData.plan ? userData.plan : 'basic';
           userUiPreferences = normalizeUserUiPreferences(userData);
+          applyTheme(userUiPreferences.theme || detectSystemTheme());
           // Desenvolvedor sempre tem plano executivo
           if (user.email === 'saullinho2008@gmail.com') {
             userPlan = 'executive';
           }
           updatePlanBadge();
           applyTabIntroVisibility();
+          if (shouldShowThemeOnboarding()) {
+            openThemeOnboardingModal();
+          } else {
+            closeThemeOnboardingModal();
+          }
         }).catch(() => {
           userPlan = 'basic';
-          userUiPreferences = { dismissedTabIntros: {} };
+          userUiPreferences = {
+            dismissedTabIntros: {},
+            theme: getStoredTheme() || detectSystemTheme(),
+            themePromptSeen: localStorage.getItem(THEME_PROMPT_STORAGE_KEY) === 'true'
+          };
+          applyTheme(userUiPreferences.theme);
           if (user.email === 'saullinho2008@gmail.com') {
             userPlan = 'executive';
           }
           updatePlanBadge();
           applyTabIntroVisibility();
+          if (shouldShowThemeOnboarding()) {
+            openThemeOnboardingModal();
+          }
         });
         showFamilySelection();
       } else {
         currentUser = null;
         userPlan = 'basic';
         aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
-        userUiPreferences = { dismissedTabIntros: {} };
+        userUiPreferences = {
+          dismissedTabIntros: {},
+          theme: getStoredTheme() || detectSystemTheme(),
+          themePromptSeen: localStorage.getItem(THEME_PROMPT_STORAGE_KEY) === 'true'
+        };
+        applyTheme(userUiPreferences.theme);
+        closeThemeOnboardingModal();
         applyTabIntroVisibility();
         showLogin();
       }
