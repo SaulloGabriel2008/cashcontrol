@@ -9067,6 +9067,9 @@
               <input type="password" id="login-password" class="input-field w-full" placeholder="••••••••">
             </div>
 
+            <div id="login-message"
+              class="hidden mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 text-sm"></div>
+
             <div id="login-error"
               class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
 
@@ -9104,6 +9107,11 @@
           </div>
 
           <div id="reset-form" class="hidden">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-[var(--cc-text)]">Recuperar acesso</h3>
+              <p class="text-sm text-[var(--cc-text-2)] mt-1">Informe seu email para receber um link seguro de redefinição.</p>
+            </div>
+
             <div class="form-group">
               <label>Email</label>
               <input type="email" id="reset-email" class="input-field w-full" placeholder="seu@email.com">
@@ -9115,9 +9123,38 @@
             <div id="reset-error"
               class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
 
-            <button onclick="handlePasswordReset()" class="btn btn-primary w-full mb-3">Enviar link de redefinição</button>
+            <button id="reset-submit-btn" onclick="handlePasswordReset(this)" class="btn btn-primary w-full mb-3">📩 Enviar link de redefinição</button>
 
             <button onclick="showLogin()" class="btn btn-outline w-full">Voltar</button>
+          </div>
+
+          <div id="reset-password-confirm-form" class="hidden">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-[var(--cc-text)]">Definir nova senha</h3>
+              <p id="reset-confirm-description" class="text-sm text-[var(--cc-text-2)] mt-1">Validando seu link de recuperação...</p>
+            </div>
+
+            <div id="reset-confirm-message"
+              class="hidden mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400 text-sm"></div>
+
+            <div id="reset-confirm-error"
+              class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+
+            <div id="reset-confirm-fields" class="hidden">
+              <div class="form-group">
+                <label>Nova senha</label>
+                <input type="password" id="reset-new-password" class="input-field w-full" placeholder="Mínimo 6 caracteres">
+              </div>
+
+              <div class="form-group">
+                <label>Confirmar nova senha</label>
+                <input type="password" id="reset-confirm-password" class="input-field w-full" placeholder="Repita sua nova senha">
+              </div>
+
+              <button id="reset-confirm-submit-btn" onclick="handlePasswordResetConfirm(this)" class="btn btn-primary w-full mb-3">🔐 Salvar nova senha</button>
+            </div>
+
+            <button onclick="showForgotPassword()" class="btn btn-outline w-full">Solicitar novo link</button>
           </div>
         </div>
       </div>
@@ -10193,6 +10230,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    auth.languageCode = 'pt-BR';
 
     // App State
     let currentUser = null;
@@ -10202,6 +10240,14 @@
     let guestDemoState = null;
     let userPlan = 'basic'; // 'basic' | 'premium' | 'executive'
     let visualEffectsEnabled = localStorage.getItem('visualEffectsEnabled') !== 'false';
+    let passwordResetContext = {
+      mode: null,
+      oobCode: null,
+      email: null,
+      emailMasked: null,
+      verified: false
+    };
+    let passwordResetCooldownUntil = 0;
     let dashboardView = 'individual';
     let dashboardPeriod = 'month';
     let currentFinanceView = 'income';
@@ -10383,6 +10429,112 @@
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#08111f' : '#edf3f8');
+      }
+    }
+
+    function getPasswordResetActionUrl() {
+      if (location.protocol === 'file:') return 'http://localhost:3000/';
+      return `${location.origin}/`;
+    }
+
+    function getPasswordResetParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        mode: params.get('mode'),
+        oobCode: params.get('oobCode'),
+        apiKey: params.get('apiKey'),
+        continueUrl: params.get('continueUrl'),
+        lang: params.get('lang')
+      };
+    }
+
+    function isPasswordResetModeActive() {
+      const params = getPasswordResetParams();
+      return params.mode === 'resetPassword' && !!params.oobCode;
+    }
+
+    function cleanupPasswordResetUrl() {
+      const url = new URL(window.location.href);
+      ['mode', 'oobCode', 'apiKey', 'lang', 'continueUrl'].forEach((key) => url.searchParams.delete(key));
+      const next = `${url.pathname}${url.search}${url.hash}`;
+      window.history.replaceState({}, document.title, next || '/');
+    }
+
+    function maskEmail(email) {
+      const value = (email || '').trim();
+      const [localPart, domain] = value.split('@');
+      if (!localPart || !domain) return '';
+      if (localPart.length <= 2) return `${localPart[0] || '*'}*@${domain}`;
+      return `${localPart.slice(0, 2)}***@${domain}`;
+    }
+
+    function resetPasswordResetContext() {
+      passwordResetContext = {
+        mode: null,
+        oobCode: null,
+        email: null,
+        emailMasked: null,
+        verified: false
+      };
+    }
+
+    function hideAuthFeedback() {
+      ['login-message', 'login-error', 'reset-message', 'reset-error', 'reset-confirm-message', 'reset-confirm-error'].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.innerHTML = '';
+          element.classList.add('hidden');
+        }
+      });
+    }
+
+    function updateResetConfirmDescription(text) {
+      const description = document.getElementById('reset-confirm-description');
+      if (description) description.textContent = text;
+    }
+
+    function setResetConfirmFieldsVisible(visible) {
+      const fields = document.getElementById('reset-confirm-fields');
+      if (fields) fields.classList.toggle('hidden', !visible);
+    }
+
+    function showLoginSuccessMessage(message) {
+      const messageEl = document.getElementById('login-message');
+      const errorEl = document.getElementById('login-error');
+      if (errorEl) errorEl.classList.add('hidden');
+      if (messageEl) {
+        messageEl.innerHTML = message;
+        messageEl.classList.remove('hidden');
+      }
+    }
+
+    async function openPasswordResetConfirmation(oobCode) {
+      const errorEl = document.getElementById('reset-confirm-error');
+      const messageEl = document.getElementById('reset-confirm-message');
+      hideAuthFeedback();
+      setResetConfirmFieldsVisible(false);
+      updateResetConfirmDescription('Validando seu link de recuperação...');
+
+      try {
+        const email = await auth.verifyPasswordResetCode(oobCode);
+        passwordResetContext = {
+          mode: 'resetPassword',
+          oobCode,
+          email,
+          emailMasked: maskEmail(email),
+          verified: true
+        };
+        updateResetConfirmDescription(`Crie uma nova senha para ${passwordResetContext.emailMasked || 'sua conta'}.`);
+        setResetConfirmFieldsVisible(true);
+        if (messageEl) messageEl.classList.add('hidden');
+        if (errorEl) errorEl.classList.add('hidden');
+      } catch (error) {
+        resetPasswordResetContext();
+        updateResetConfirmDescription('Seu link de recuperação está inválido ou expirou.');
+        if (errorEl) {
+          errorEl.textContent = getErrorMessage(error.code);
+          errorEl.classList.remove('hidden');
+        }
       }
     }
 
@@ -11636,8 +11788,7 @@
         });
         closeModal();
         showToast('✅', 'Salário adicionado');
-        if (typeof loadSalariesList === 'function') await loadSalariesList();
-        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
+        await refreshAfterTransactionMutation({ type: 'salary' });
         if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error saving salary:', error);
@@ -11674,6 +11825,7 @@
         });
         closeModal();
         showToast('✅', 'Meta adicionada');
+        invalidateStoreSlices(['goals']);
         if (typeof loadGoalsList === 'function') await loadGoalsList();
       } catch (error) {
         console.error('Error saving goal:', error);
@@ -11727,6 +11879,8 @@
 
         closeModal();
         showToast('✅', 'Nomes atualizados e salvos');
+        setStoreSlice('commitmentLabels', { ...commitmentLabels });
+        invalidateStoreSliceByPrefix('dashboard::');
 
         // Reload all views to update labels everywhere
         if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
@@ -11911,6 +12065,8 @@
       }
 
       try {
+        const originalSnap = await db.collection('transactions').doc(editingTransactionId).get();
+        const originalData = originalSnap.exists ? { id: editingTransactionId, ...originalSnap.data() } : null;
         const updateData = {};
 
         if (editingTransactionType === 'income') {
@@ -11935,24 +12091,26 @@
           updateData.amount = Number(document.getElementById('edit-sal-amount').value) || 0;
           updateData.frequency = document.getElementById('edit-sal-frequency').value;
           updateData.startDate = document.getElementById('edit-sal-start').value;
+          updateData.date = updateData.startDate;
         }
 
         await db.collection('transactions').doc(editingTransactionId).update(updateData);
 
-        closeModal();
-        showToast('✅', 'Atualizado com sucesso');
-
-        // Reload appropriate list
-        if (editingTransactionType === 'income' && typeof loadIncomeHistory === 'function') {
-          await loadIncomeHistory();
-        } else if (editingTransactionType === 'expense' && typeof loadExpenseHistory === 'function') {
-          await loadExpenseHistory();
-        } else if (editingTransactionType === 'salary' && typeof loadSalariesList === 'function') {
-          await loadSalariesList();
+        if (originalData && editingTransactionType !== 'salary') {
+          const accountId = getTransactionAccountId(originalData);
+          const updatedData = { ...originalData, ...updateData };
+          const delta = normalizeTransactionAmountByType(updatedData) - normalizeTransactionAmountByType(originalData);
+          if (accountId) {
+            await applyBankAccountBalanceDelta(accountId, delta);
+          }
         }
 
-        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
-        if (typeof updateDashboard === 'function') await updateDashboard();
+        closeModal();
+        showToast('✅', 'Atualizado com sucesso');
+        await refreshAfterTransactionMutation({
+          type: editingTransactionType,
+          reloadBankAccounts: editingTransactionType !== 'salary'
+        });
         if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
 
         editingTransactionId = null;
@@ -11969,10 +12127,7 @@
       try {
         await db.collection('transactions').doc(docId).delete();
         showToast('✅', 'Salário removido');
-
-        if (typeof loadSalariesList === 'function') await loadSalariesList();
-        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
-        if (typeof updateDashboard === 'function') await updateDashboard();
+        await refreshAfterTransactionMutation({ type: 'salary' });
         if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error deleting salary:', error);
@@ -12221,6 +12376,15 @@
     applyTheme(getStoredTheme() || detectSystemTheme());
 
     auth.onAuthStateChanged((user) => {
+      if (isPasswordResetModeActive()) {
+        if (user) auth.signOut().catch(() => {});
+        currentUser = null;
+        currentFamily = null;
+        currentFamilyData = null;
+        initializePasswordResetFlowIfNeeded();
+        return;
+      }
+
       if (user) {
         isGuestMode = false;
         guestDemoState = null;
@@ -12287,11 +12451,15 @@
 
     // UI Navigation Functions
     function showLogin() {
+      if (isPasswordResetModeActive()) cleanupPasswordResetUrl();
       document.getElementById('login-screen').classList.remove('hidden');
       document.getElementById('family-screen').classList.add('hidden');
       document.getElementById('main-screen').classList.add('hidden');
       document.getElementById('login-form').classList.remove('hidden');
       document.getElementById('register-form').classList.add('hidden');
+      document.getElementById('reset-form').classList.add('hidden');
+      document.getElementById('reset-password-confirm-form').classList.add('hidden');
+      if (!isPasswordResetModeActive()) resetPasswordResetContext();
       if (!currentUser) {
         isGuestMode = false;
         guestDemoState = null;
@@ -12303,14 +12471,54 @@
       document.getElementById('login-form').classList.add('hidden');
       document.getElementById('register-form').classList.remove('hidden');
       document.getElementById('reset-form').classList.add('hidden');
+      document.getElementById('reset-password-confirm-form').classList.add('hidden');
+      hideAuthFeedback();
       hideBackToTop();
     }
 
     function showForgotPassword() {
+      if (isPasswordResetModeActive()) cleanupPasswordResetUrl();
+      resetPasswordResetContext();
       document.getElementById('login-form').classList.add('hidden');
       document.getElementById('register-form').classList.add('hidden');
       document.getElementById('reset-form').classList.remove('hidden');
+      document.getElementById('reset-password-confirm-form').classList.add('hidden');
+      hideAuthFeedback();
+      const input = document.getElementById('reset-email');
+      if (input) input.focus();
       hideBackToTop();
+    }
+
+    async function showResetPasswordConfirm(oobCode = null) {
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('family-screen').classList.add('hidden');
+      document.getElementById('main-screen').classList.add('hidden');
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('register-form').classList.add('hidden');
+      document.getElementById('reset-form').classList.add('hidden');
+      document.getElementById('reset-password-confirm-form').classList.remove('hidden');
+      hideAuthFeedback();
+      hideBackToTop();
+      const code = oobCode || passwordResetContext.oobCode || getPasswordResetParams().oobCode;
+      if (code) await openPasswordResetConfirmation(code);
+      else {
+        updateResetConfirmDescription('Seu link de recuperação está inválido ou incompleto.');
+        const errorEl = document.getElementById('reset-confirm-error');
+        if (errorEl) {
+          errorEl.textContent = 'Link de recuperação inválido.';
+          errorEl.classList.remove('hidden');
+        }
+      }
+    }
+
+    async function initializePasswordResetFlowIfNeeded() {
+      if (!isPasswordResetModeActive()) return false;
+      const params = getPasswordResetParams();
+      passwordResetContext.oobCode = params.oobCode;
+      passwordResetContext.mode = params.mode;
+      await showResetPasswordConfirm(params.oobCode);
+      hideBackToTop();
+      return true;
     }
 
     function showFamilySelection() {
@@ -12501,11 +12709,12 @@
       }
     }
 
-    async function handlePasswordReset() {
-      const email = document.getElementById('reset-email').value.trim();
+    async function handlePasswordReset(buttonEl = null) {
+      const email = document.getElementById('reset-email').value.trim().toLowerCase();
       const errorEl = document.getElementById('reset-error');
       const messageEl = document.getElementById('reset-message');
-      const button = event.target;
+      const button = buttonEl || document.getElementById('reset-submit-btn');
+      const remainingCooldownMs = passwordResetCooldownUntil - Date.now();
 
       if (!email) {
         errorEl.textContent = 'Digite seu email';
@@ -12514,31 +12723,108 @@
         return;
       }
 
+      if (remainingCooldownMs > 0) {
+        errorEl.textContent = `Aguarde ${Math.ceil(remainingCooldownMs / 1000)}s para reenviar o link.`;
+        errorEl.classList.remove('hidden');
+        messageEl.classList.add('hidden');
+        return;
+      }
+
       try {
         errorEl.classList.add('hidden');
-        button.disabled = true;
-        button.innerHTML = '<span>⏳</span> Enviando...';
+        if (button) {
+          button.disabled = true;
+          button.innerHTML = '<span>⏳</span> Enviando...';
+        }
 
-        // Enviar email de redefinição de senha
-        await auth.sendPasswordResetEmail(email);
+        await auth.sendPasswordResetEmail(email, {
+          url: getPasswordResetActionUrl(),
+          handleCodeInApp: true
+        });
 
-        messageEl.innerHTML = `✅ Email de redefinição enviado para <strong>${email}</strong>. Verifique sua caixa de entrada e siga as instruções.`;
+        passwordResetCooldownUntil = Date.now() + 30000;
+        messageEl.innerHTML = `✅ Enviamos um link de redefinição para <strong>${email}</strong>. Verifique sua caixa de entrada e spam. O link abrirá esta tela para você criar a nova senha.`;
         messageEl.classList.remove('hidden');
-        
+        errorEl.classList.add('hidden');
+
         document.getElementById('reset-email').value = '';
 
-        // Voltar para login após 5 segundos
         setTimeout(() => {
           showLogin();
         }, 5000);
-
       } catch (error) {
         errorEl.textContent = getErrorMessage(error.code);
         errorEl.classList.remove('hidden');
         messageEl.classList.add('hidden');
       } finally {
-        button.disabled = false;
-        button.innerHTML = '<span>📩</span> Enviar Link de Reset';
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = '📩 Enviar link de redefinição';
+        }
+      }
+    }
+
+    async function handlePasswordResetConfirm(buttonEl = null) {
+      const button = buttonEl || document.getElementById('reset-confirm-submit-btn');
+      const errorEl = document.getElementById('reset-confirm-error');
+      const messageEl = document.getElementById('reset-confirm-message');
+      const newPassword = document.getElementById('reset-new-password').value.trim();
+      const confirmPassword = document.getElementById('reset-confirm-password').value.trim();
+
+      hideAuthFeedback();
+
+      if (!passwordResetContext.verified || !passwordResetContext.oobCode) {
+        errorEl.textContent = 'Link de recuperação inválido. Solicite um novo email.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      if (!newPassword || !confirmPassword) {
+        errorEl.textContent = 'Preencha os dois campos de senha.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        errorEl.textContent = 'Senha muito fraca (mínimo 6 caracteres).';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        errorEl.textContent = 'As senhas não coincidem.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        if (button) {
+          button.disabled = true;
+          button.innerHTML = '⏳ Salvando...';
+        }
+
+        await auth.confirmPasswordReset(passwordResetContext.oobCode, newPassword);
+
+        messageEl.innerHTML = `✅ Senha atualizada com sucesso para <strong>${passwordResetContext.emailMasked || 'sua conta'}</strong>. Faça login com a nova senha.`;
+        messageEl.classList.remove('hidden');
+        setResetConfirmFieldsVisible(false);
+        document.getElementById('reset-new-password').value = '';
+        document.getElementById('reset-confirm-password').value = '';
+        cleanupPasswordResetUrl();
+        resetPasswordResetContext();
+
+        setTimeout(() => {
+          showLogin();
+          showLoginSuccessMessage('✅ Sua senha foi redefinida com sucesso. Entre com a nova senha.');
+        }, 1200);
+      } catch (error) {
+        errorEl.textContent = getErrorMessage(error.code);
+        errorEl.classList.remove('hidden');
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.innerHTML = '🔐 Salvar nova senha';
+        }
       }
     }
 
@@ -13040,11 +13326,17 @@
     async function deleteTransaction(docId) {
       if (!confirm('Deseja remover esta transação?')) return;
       try {
+        const docSnap = await db.collection('transactions').doc(docId).get();
+        const transaction = docSnap.exists ? { id: docId, ...docSnap.data() } : null;
         await db.collection('transactions').doc(docId).delete();
+        if (transaction?.bankAccountId || transaction?.accountId) {
+          await applyBankAccountBalanceDelta(getTransactionAccountId(transaction), -normalizeTransactionAmountByType(transaction));
+        }
         if (typeof showToast === 'function') showToast('✅', 'Transação removida');
-        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
-        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
-        if (typeof updateDashboard === 'function') updateDashboard();
+        await refreshAfterTransactionMutation({
+          type: transaction?.type || null,
+          reloadBankAccounts: Boolean(transaction?.bankAccountId || transaction?.accountId)
+        });
         if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error deleting transaction:', error);
@@ -13109,24 +13401,20 @@
 
       if (!currentFamily || !currentUser) return;
       try {
-        const query = db.collection('goals')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid);
-        const snap = await query.get();
+        const goals = await getCachedGoals();
         const goalsContainer = document.getElementById('goals-list');
         // cache goals for client calculations
         window._goalsCache = window._goalsCache || {};
 
         if (goalsContainer) {
-          if (snap.empty) {
+          if (!goals.length) {
             goalsContainer.innerHTML = renderSurfaceEmptyState('Nenhuma meta cadastrada', 'Crie objetivos para acompanhar progresso, prazo e projeções de aporte.');
           } else {
             const html = [];
-            snap.forEach(doc => {
-              const g = doc.data();
+            goals.forEach((g) => {
               // skip goals already concluded (filter on client side to avoid index creation)
               if (g.completed) return;
-              const id = doc.id;
+              const id = g.id;
               window._goalsCache[id] = { progress: Number(g.progress || 0), target: Number(g.targetAmount || 0) };
               const progress = ((g.progress || 0) / (g.targetAmount || 1)) * 100;
               const safeProgress = Math.max(0, Math.min(progress, 100));
@@ -13581,6 +13869,54 @@
       });
     }
 
+    function invalidateTransactionCaches() {
+      invalidateStoreSlices([
+        'salaries',
+        'incomeHistory',
+        'expenseHistory'
+      ]);
+      invalidateStoreSliceByPrefix('transactions::');
+      invalidateStoreSliceByPrefix('dashboard::');
+      invalidateStoreSliceByPrefix('report::');
+    }
+
+    async function refreshAfterTransactionMutation(options = {}) {
+      const type = options.type || null;
+      const reloadBankAccounts = options.reloadBankAccounts === true;
+
+      invalidateTransactionCaches();
+
+      if (reloadBankAccounts && typeof loadBankAccounts === 'function') {
+        await loadBankAccounts();
+      }
+
+      if (type === 'income' && typeof loadIncomeHistory === 'function') {
+        await loadIncomeHistory();
+      } else if (type === 'expense' && typeof loadExpenseHistory === 'function') {
+        await loadExpenseHistory();
+      } else if (type === 'salary' && typeof loadSalariesList === 'function') {
+        await loadSalariesList();
+      } else {
+        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
+        if (typeof loadSalariesList === 'function') await loadSalariesList();
+      }
+
+      if (typeof updateCommitmentValues === 'function') {
+        await updateCommitmentValues();
+      }
+      if (typeof updateDashboard === 'function') {
+        await updateDashboard();
+      }
+
+      const reportStart = document.getElementById('report-start')?.value;
+      const reportEnd = document.getElementById('report-end')?.value;
+      const isReportVisible = !document.getElementById('finance-report')?.classList.contains('hidden');
+      if (reportStart && reportEnd && isReportVisible && typeof generateReport === 'function') {
+        await generateReport();
+      }
+    }
+
     async function addExtraIncome() {
       if (!requireAuthForAction('adicionar entradas')) return;
       if (!currentFamily || !currentUser) {
@@ -13617,9 +13953,7 @@
         document.getElementById('extra-income-date').value = '';
         document.getElementById('income-account').value = '';
         if (typeof showToast === 'function') showToast('✅', 'Ganho extra adicionado!');
-        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
-        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
-        if (typeof updateDashboard === 'function') updateDashboard();
+        await refreshAfterTransactionMutation({ type: 'income', reloadBankAccounts: true });
         if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error adding extra income:', error);
@@ -13677,9 +14011,7 @@
         document.getElementById('expense-notes').value = '';
         expensePhotoBase64 = null;
         if (typeof showToast === 'function') showToast('✅', 'Despesa adicionada!');
-        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
-        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
-        if (typeof updateDashboard === 'function') updateDashboard();
+        await refreshAfterTransactionMutation({ type: 'expense', reloadBankAccounts: true });
         if (typeof markAIAnalysisStale === 'function') await markAIAnalysisStale();
       } catch (error) {
         console.error('Error adding expense:', error);
@@ -14054,25 +14386,23 @@
       try {
         const reportEl = document.getElementById('report-content');
         reportEl.innerHTML = '<p class="text-slate-400 text-center py-8">Gerando relatório...</p>';
+        const reportTransactions = await getOrLoadStoreSlice(getReportSliceName(startDate, endDate, paymentFilter), async () => {
+          const items = await queryTransactionsFromFirestore({
+            startDate,
+            endDate,
+            orderByDate: true
+          });
 
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid);
-
-        const snap = await query.get();
-        const transactions = [];
-
-        snap.forEach(doc => {
-          const data = doc.data();
-          if (data.date >= startDate && data.date <= endDate) {
-            // Filtro de métodode pagamento (apenas para despesas)
-            if (data.type === 'expense' && paymentFilter !== 'todas') {
-              const paymentMethod = (data.paymentMethod || 'dinheiro').toLowerCase();
-              if (paymentMethod !== paymentFilter) return;
-            }
-
-            transactions.push({
-              id: doc.id,
+          return items
+            .filter((data) => {
+              if (data.type === 'expense' && paymentFilter !== 'todas') {
+                const paymentMethod = (data.paymentMethod || 'dinheiro').toLowerCase();
+                return paymentMethod === paymentFilter;
+              }
+              return true;
+            })
+            .map((data) => ({
+              id: data.id,
               date: data.date,
               type: data.type,
               description: data.description,
@@ -14080,11 +14410,10 @@
               category: data.category || '—',
               paymentMethod: data.paymentMethod || '—',
               installments: data.installments || 1
-            });
-          }
+            }));
         });
 
-        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const transactions = [...reportTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
         const { summaryBanks, transactionBanks } = await fetchBankReportData(startDate, endDate, paymentFilter);
         const bankModel = buildBankReportModel(summaryBanks, transactionBanks);
 
@@ -14853,12 +15182,15 @@
       const messages = {
         'auth/invalid-email': 'Email inválido',
         'auth/user-disabled': 'Usuário desativado',
-        'auth/user-not-found': 'Usuário não encontrado. Crie uma conta primeiro',
+        'auth/user-not-found': 'Email de usuário não encontrado',
         'auth/wrong-password': 'Senha incorreta',
         'auth/email-already-in-use': 'Email já está em uso',
         'auth/weak-password': 'Senha muito fraca (mínimo 6 caracteres)',
         'auth/invalid-credential': 'Credenciais inválidas',
-        'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde'
+        'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde',
+        'auth/invalid-action-code': 'O link de recuperação é inválido ou já foi usado.',
+        'auth/expired-action-code': 'O link de recuperação expirou. Solicite um novo email.',
+        'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.'
       };
       return messages[code] || 'Erro ao processar. Tente novamente.';
     }
@@ -15727,6 +16059,7 @@
         });
         input.value = '';
         if (typeof showToast === 'function') showToast('✅', 'Valor adicionado à meta');
+        invalidateStoreSlices(['goals']);
         await loadGoalsList();
       } catch (error) {
         console.error('Error adding to goal progress:', error);
@@ -15740,6 +16073,7 @@
       try {
         await db.collection('goals').doc(id).delete();
         if (typeof showToast === 'function') showToast('✅', 'Meta excluída');
+        invalidateStoreSlices(['goals']);
         await loadGoalsList();
         if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
       } catch (error) {
@@ -15806,6 +16140,7 @@
 
         closeModal();
         if (typeof showToast === 'function') showToast('✅', 'Meta atualizada com sucesso');
+        invalidateStoreSlices(['goals']);
         await loadGoalsList();
         editingGoalId = null;
       } catch (error) {
@@ -15838,6 +16173,7 @@
         await db.collection('goals').doc(id).update({ completed: true, completedAt });
 
         if (typeof showToast === 'function') showToast('✅', 'Meta marcada como concluída');
+        invalidateStoreSlices(['goals']);
         await loadGoalsList();
         if (typeof loadCompletedGoals === 'function') loadCompletedGoals();
       } catch (error) {
@@ -16026,10 +16362,11 @@
     async function loadCommitmentLabels() {
       if (!currentFamily) return;
       try {
-        const doc = await db.collection('finances').doc(`${currentFamily}_labels`).get();
-        if (doc.exists) {
-          commitmentLabels = { ...commitmentLabels, ...doc.data() };
-        }
+        const data = await getOrLoadStoreSlice('commitmentLabels', async () => {
+          const doc = await db.collection('finances').doc(`${currentFamily}_labels`).get();
+          return doc.exists ? (doc.data() || {}) : {};
+        });
+        commitmentLabels = { ...commitmentLabels, ...data };
       } catch (error) {
         console.error('Error loading commitment labels:', error);
       }
@@ -16252,6 +16589,7 @@
         if (pb) pb.classList.add('hidden');
 
         showToast('✅', 'Empréstimo adicionado!');
+        invalidateStoreSlices(['loans']);
         await loadLoans();
         if (typeof updateDashboard === 'function') updateDashboard();
       } catch (error) {
@@ -16290,21 +16628,16 @@
       container.innerHTML = renderSurfaceEmptyState('Carregando empréstimos...', 'Consultando os contratos ativos e o estágio atual de pagamento.');
 
       try {
-        const snap = await db.collection('loans')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .where('active', '==', true)
-          .get();
+        const loans = await getCachedLoans();
 
-        if (snap.empty) {
+        if (!loans.length) {
           container.innerHTML = renderSurfaceEmptyState('Nenhum empréstimo ativo', 'Os financiamentos e empréstimos com parcelas em aberto aparecerão aqui.');
           return;
         }
 
         const html = [];
-        snap.forEach(doc => {
-          const loan = doc.data();
-          const id = doc.id;
+        loans.forEach((loan) => {
+          const id = loan.id;
           const pmt = loan.installmentValue || (loan.totalAmount / loan.installments);
           const remaining = loan.remainingInstallments ?? (loan.installments - (loan.paidInstallments || 0));
           const paidAmt = (loan.paidInstallments || 0) * pmt;
@@ -16457,6 +16790,8 @@
         closeModal();
         amortizingLoanId = null;
         showToast('✅', isFinished ? '🎉 Empréstimo quitado!' : `${qtd} parcela${qtd > 1 ? 's' : ''} amortizada${qtd > 1 ? 's' : ''}! Restam ${newRemaining}.`);
+        invalidateStoreSlices(['loans']);
+        invalidateStoreSliceByPrefix('dashboard::');
         await loadLoans();
         if (typeof updateDashboard === 'function') updateDashboard();
       } catch (error) {
@@ -16500,6 +16835,8 @@
         });
 
         showToast(isFinished ? '🎉' : '✅', isFinished ? 'Empréstimo quitado!' : `Parcela ${paidCount}/${loan.installments} paga! Restam ${newRemaining}.`);
+        invalidateStoreSlices(['loans']);
+        invalidateStoreSliceByPrefix('dashboard::');
         await loadLoans();
         if (typeof updateDashboard === 'function') updateDashboard();
       } catch (error) {
@@ -16513,6 +16850,8 @@
       try {
         await db.collection('loans').doc(loanId).update({ active: false });
         showToast('✅', 'Empréstimo encerrado');
+        invalidateStoreSlices(['loans']);
+        invalidateStoreSliceByPrefix('dashboard::');
         await loadLoans();
         if (typeof updateDashboard === 'function') updateDashboard();
       } catch (error) {
@@ -16546,6 +16885,7 @@
           bank: bank,
           emoji: emoji,
           initialBalance: initialBalance,
+          balance: initialBalance,
           active: true,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -16558,6 +16898,7 @@
         document.getElementById('account-initial-balance').value = '';
         syncAccountEmojiWithSelectedBank(true);
         showToast('✅', 'Conta cadastrada!');
+        invalidateStoreSlices(['bankAccounts']);
         await loadBankAccounts();
         updateDashboard();
       } catch (error) {
@@ -16679,54 +17020,18 @@
       const container = document.getElementById('accounts-list');
 
       try {
-        const [newCollectionSnap, legacySnap] = await Promise.all([
-          db.collection('bank_accounts')
-            .where('familyId', '==', currentFamily)
-            .get()
-            .catch(() => ({ docs: [] })),
-          db.collection('bankAccounts')
-            .where('familyId', '==', currentFamily)
-            .get()
-        ]);
-
-        const rawAccounts = [];
-        (newCollectionSnap.docs || []).forEach(doc => rawAccounts.push({ id: doc.id, ...doc.data() }));
-        legacySnap.forEach(doc => rawAccounts.push({ id: doc.id, ...doc.data() }));
-
-        bankAccountsCache = mergeBankAccounts(rawAccounts.filter(account => {
-          if (account.active === false) return false;
-          return !account.userId || account.userId === currentUser.uid;
-        }));
-
-        // Atualizar selects de contas em formulários
-        await updateAccountSelects();
+        const accounts = await getCachedBankAccounts();
 
         if (!container) return;
 
-        if (bankAccountsCache.length === 0) {
+        if (accounts.length === 0) {
           container.innerHTML = renderSurfaceEmptyState('Nenhuma conta cadastrada ainda', 'Crie a primeira conta bancária para começar a organizar as movimentações por banco.');
           return;
         }
 
-        // Calcular saldo de cada conta
-        const txSnap = await db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .get();
-
-        const balanceByAccount = {};
-        txSnap.forEach(doc => {
-          const tx = doc.data();
-          const accountId = getTransactionAccountId(tx);
-          if (!accountId) return;
-          if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
-          const amt = Number(tx.amount) || 0;
-          balanceByAccount[accountId] += tx.type === 'income' ? amt : -amt;
-        });
-
-        const html = bankAccountsCache.map(acc => {
-          const txBalance = balanceByAccount[acc.id] || 0;
-          const total = (acc.initialBalance || 0) + txBalance;
+        const html = accounts.map(acc => {
+          const total = getCurrentBalanceForAccount(acc);
+          const movedAmount = total - Number(acc.initialBalance || 0);
           const bankLabel = getBankDisplayName(acc.bank);
           return `
             <div class="stitch-account-panel" style="${getBankThemeStyle(acc.bank)}">
@@ -16748,7 +17053,7 @@
               <div class="stitch-mini-metrics mt-4">
                 <div class="stitch-mini-metric">
                   <div class="stitch-mini-metric-label">Movimentado</div>
-                  <div class="stitch-mini-metric-value ${txBalance < 0 ? 'stitch-value-negative' : 'stitch-value-positive'}">${formatCurrency(txBalance)}</div>
+                  <div class="stitch-mini-metric-value ${movedAmount < 0 ? 'stitch-value-negative' : 'stitch-value-positive'}">${formatCurrency(movedAmount)}</div>
                 </div>
                 <div class="stitch-mini-metric">
                   <div class="stitch-mini-metric-label">Saldo inicial</div>
@@ -16787,30 +17092,16 @@
       const container = document.getElementById('dash-accounts-scroll');
       if (!container) return;
 
-      if (bankAccountsCache.length === 0) {
+      const accounts = bankAccountsCache.length ? bankAccountsCache : await getCachedBankAccounts();
+
+      if (accounts.length === 0) {
         container.innerHTML = '<div class="account-card add-card" onclick="switchTab(\'finances\');setFinanceView(\'accounts\');" title="Adicionar conta">+</div>';
         return;
       }
 
-      // Buscar transações para calcular saldo
-      const txSnap = await db.collection('transactions')
-        .where('familyId', '==', currentFamily)
-        .where('userId', '==', currentUser.uid)
-        .get();
-
-      const balanceByAccount = {};
-      txSnap.forEach(doc => {
-        const tx = doc.data();
-        const accountId = getTransactionAccountId(tx);
-        if (!accountId) return;
-        if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
-        const amt = Number(tx.amount) || 0;
-        balanceByAccount[accountId] += tx.type === 'income' ? amt : -amt;
-      });
-
-      const cards = bankAccountsCache.map(acc => {
-        const txBalance = balanceByAccount[acc.id] || 0;
-        const total = (acc.initialBalance || 0) + txBalance;
+      const cards = accounts.map(acc => {
+        const total = getCurrentBalanceForAccount(acc);
+        const txBalance = total - Number(acc.initialBalance || 0);
         const bankLabel = getBankDisplayName(acc.bank);
         return `
           <div class="account-card" style="${getBankThemeStyle(acc.bank)}">
@@ -16861,6 +17152,8 @@
         const popupInput = document.getElementById('initial-balance-onboarding-input');
         if (popupInput) popupInput.value = balance;
         shouldPromptInitialBalance = false;
+        setStoreSlice('initialBalance', balance);
+        invalidateStoreSliceByPrefix('dashboard::');
         updateDashboard();
       } catch (error) {
         console.error('Error saving initial balance:', error);
@@ -16869,28 +17162,8 @@
     }
 
     async function loadInitialBalanceValue() {
-      if (!currentFamily || !currentUser) return 0;
       try {
-        const key = `${currentFamily}_${currentUser.uid}`;
-        const snap = await db.collection('initialBalance').doc(key).get();
-        if (snap.exists) {
-          const data = snap.data();
-          const info = document.getElementById('initial-balance-info');
-          if (info) info.textContent = `Saldo inicial atual: ${formatCurrency(data.balance || 0)}`;
-          const inputEl = document.getElementById('global-initial-balance-input');
-          if (inputEl) inputEl.value = data.balance || 0;
-          const popupInput = document.getElementById('initial-balance-onboarding-input');
-          if (popupInput) popupInput.value = data.balance || 0;
-          shouldPromptInitialBalance = false;
-          return data.balance || 0;
-        } else {
-          const info = document.getElementById('initial-balance-info');
-          if (info) info.textContent = 'Nenhum saldo inicial configurado';
-          const inputEl = document.getElementById('global-initial-balance-input');
-          if (inputEl) inputEl.value = '';
-          shouldPromptInitialBalance = true;
-          return 0;
-        }
+        return await getCachedInitialBalance();
       } catch (e) { return 0; }
     }
 
@@ -16926,13 +17199,11 @@
         months.forEach(m => { commitsByMonth[m.key] = { installments: 0, loans: 0 }; });
 
         // Despesas parceladas no cartão
-        const expSnap = await db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .where('type', '==', 'expense').get();
+        const expenses = await getCachedTransactionsSlice('expense', {
+          orderByDate: false
+        });
 
-        expSnap.forEach(doc => {
-          const exp = doc.data();
+        expenses.forEach((exp) => {
           const installments = parseInt(exp.installments) || 1;
           if (installments <= 1 || exp.paymentMethod !== 'cartao' || !exp.date) return;
           const startDate = new Date(exp.date + 'T00:00:00');
@@ -16945,13 +17216,9 @@
         });
 
         // Empréstimos ativos
-        const loanSnap = await db.collection('loans')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .where('active', '==', true).get();
+        const loans = await getCachedLoans();
 
-        loanSnap.forEach(doc => {
-          const loan = doc.data();
+        loans.forEach((loan) => {
           const startDate = new Date((loan.startDate || now.toISOString().split('T')[0]) + 'T00:00:00');
           const pmt = loan.installmentValue || (loan.totalAmount / loan.installments);
           const paid = loan.paidInstallments || 0;
@@ -17056,13 +17323,8 @@
 
     // ========== GESTÃO DE ASSINATURAS ==========
     async function getSubscriptions() {
-      if (!currentFamily) return [];
       try {
-        const snapshot = await db.collection('families').doc(currentFamily)
-          .collection('subscriptions')
-          .orderBy('name', 'asc')
-          .get();
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return await getCachedSubscriptions();
       } catch (error) {
         console.error('Erro ao carregar assinaturas:', error);
         return [];
@@ -17080,6 +17342,7 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
         showToast('✅', 'Assinatura adicionada!');
+        invalidateStoreSlices(['subscriptions']);
         renderSubscriptions();
       } catch (error) {
         console.error('Erro ao adicionar assinatura:', error);
@@ -17096,6 +17359,7 @@
           .doc(docId)
           .delete();
         showToast('✅', 'Assinatura removida!');
+        invalidateStoreSlices(['subscriptions']);
         renderSubscriptions();
       } catch (error) {
         console.error('Erro ao remover assinatura:', error);
@@ -17197,14 +17461,10 @@
       if (!alertEl || !currentFamily || !currentUser) return;
 
       try {
-        // Buscar renda total (salários)
-        const salarySnap = await db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('userId', '==', currentUser.uid)
-          .where('type', '==', 'salary')
-          .get();
-
-        const totalIncome = salarySnap.docs.reduce((sum, doc) => sum + (Number(doc.data().amount) || 0), 0);
+        const salaries = await getCachedTransactionsSlice('salary', {
+          orderByDate: false
+        });
+        const totalIncome = salaries.reduce((sum, salary) => sum + (Number(salary.amount) || 0), 0);
 
         if (totalIncome > 0 && totalSubscriptions > 0) {
           const percentage = (totalSubscriptions / totalIncome) * 100;
@@ -17801,6 +18061,8 @@
     }
 
     async function refreshAfterStatementImport() {
+      invalidateTransactionCaches();
+      invalidateStoreSlices(['bankAccounts']);
       if (typeof loadBankAccounts === 'function') await loadBankAccounts();
       if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
       if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
@@ -18260,8 +18522,10 @@
       const docRef = getAIAnalysisCacheDocRef();
       if (!docRef) return aiAnalysisCacheState;
 
-      const snap = await docRef.get();
-      const data = snap.exists ? (snap.data() || {}) : {};
+      const data = await getOrLoadStoreSlice('aiAnalysisDoc', async () => {
+        const snap = await docRef.get();
+        return snap.exists ? (snap.data() || {}) : {};
+      });
       const versions = normalizeAnalysisVersions(data.analyses);
       const activeId = versions.some(item => item.id === data.activeAnalysisId)
         ? data.activeAnalysisId
@@ -18310,6 +18574,12 @@
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
+      setStoreSlice('aiAnalysisDoc', {
+        familyId: currentFamily,
+        analyses: nextVersions,
+        activeAnalysisId: newVersion.id,
+        stale: false
+      });
       aiAnalysisCacheState = nextState;
       return nextState;
     }
@@ -18333,6 +18603,13 @@
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
       }
+
+      setStoreSlice('aiAnalysisDoc', {
+        familyId: currentFamily,
+        analyses: aiAnalysisCacheState.analyses,
+        activeAnalysisId: analysisId,
+        stale: aiAnalysisCacheState.stale
+      });
 
       renderAIAnalysis(selected.payload, {
         analyses: aiAnalysisCacheState.analyses,
@@ -18358,6 +18635,13 @@
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
       }
+
+      setStoreSlice('aiAnalysisDoc', {
+        familyId: currentFamily,
+        analyses: aiAnalysisCacheState.analyses,
+        activeAnalysisId: aiAnalysisCacheState.activeAnalysisId,
+        stale: true
+      });
 
       if (window._activePrimaryTab === 'ai_analysis') {
         const active = getCurrentActiveAIAnalysis();
