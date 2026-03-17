@@ -6910,6 +6910,2092 @@
         font-size: 1rem !important;
       }
     }
+
+    /* === CASH CONTROL REBRAND FINAL === */
+    :root,
+    body:not([data-theme]),
+    body[data-theme="dark"] {
+      --cc-font: 'Manrope', sans-serif;
+      --cc-page: #07111f;
+      --cc-page-2: #0b1830;
+      --cc-shell: rgba(7, 16, 30, 0.86);
+      --cc-surface: #101c2f;
+      --cc-surface-2: #15253d;
+      --cc-surface-3: #1b2f4b;
+      --cc-surface-hero:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 26%),
+        radial-gradient(circle at top left, rgba(34, 197, 188, 0.12), transparent 18%),
+        linear-gradient(145deg, rgba(9, 18, 33, 0.96), rgba(17, 31, 52, 0.94));
+      --cc-page-gradient:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 26%),
+        radial-gradient(circle at top right, rgba(45, 212, 191, 0.1), transparent 18%),
+        linear-gradient(180deg, #07111f 0%, #0b1730 48%, #0d1b36 100%);
+      --cc-card-gradient: linear-gradient(180deg, rgba(16, 28, 47, 0.96), rgba(19, 35, 58, 0.94));
+      --cc-card-gradient-soft: linear-gradient(180deg, rgba(19, 35, 58, 0.92), rgba(16, 28, 47, 0.88));
+      --cc-line: rgba(145, 165, 194, 0.18);
+      --cc-line-strong: rgba(186, 206, 234, 0.28);
+      --cc-text: #f7fbff;
+      --cc-text-2: #c6d3e5;
+      --cc-muted: #8da2bd;
+      --cc-accent: #21c7b7;
+      --cc-accent-2: #3b82f6;
+      --cc-accent-soft: rgba(33, 199, 183, 0.14);
+      --cc-success: #34d399;
+      --cc-danger: #fb7185;
+      --cc-warning: #fbbf24;
+      --cc-shadow-1: 0 18px 44px rgba(2, 8, 23, 0.26);
+      --cc-shadow-2: 0 28px 90px rgba(2, 8, 23, 0.34);
+      --cc-radius-sm: 16px;
+      --cc-radius-md: 22px;
+      --cc-radius-lg: 28px;
+      --cc-radius-xl: 34px;
+    }
+
+    body[data-theme="light"] {
+      --cc-page: #eef3f8;
+      --cc-page-2: #e6edf5;
+      --cc-shell: rgba(250, 252, 255, 0.88);
+      --cc-surface: #ffffff;
+      --cc-surface-2: #f5f8fb;
+      --cc-surface-3: #ebf1f7;
+      --cc-surface-hero:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 24%),
+        radial-gradient(circle at top left, rgba(33, 199, 183, 0.1), transparent 18%),
+        linear-gradient(145deg, rgba(16, 28, 47, 0.96), rgba(21, 37, 61, 0.94));
+      --cc-page-gradient:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 22%),
+        radial-gradient(circle at top right, rgba(33, 199, 183, 0.08), transparent 18%),
+        linear-gradient(180deg, #eef3f8 0%, #e7edf4 50%, #dfe7f0 100%);
+      --cc-card-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 248, 251, 0.96));
+      --cc-card-gradient-soft: linear-gradient(180deg, rgba(252, 253, 255, 0.98), rgba(244, 248, 252, 0.96));
+      --cc-line: rgba(148, 163, 184, 0.18);
+      --cc-line-strong: rgba(122, 150, 183, 0.28);
+      --cc-text: #102033;
+      --cc-text-2: #5f728c;
+      --cc-muted: #8196b0;
+      --cc-accent: #0fbf96;
+      --cc-accent-2: #2563eb;
+      --cc-accent-soft: rgba(15, 191, 150, 0.1);
+      --cc-success: #10b981;
+      --cc-danger: #dc4c64;
+      --cc-warning: #d97706;
+      --cc-shadow-1: 0 16px 36px rgba(15, 23, 42, 0.08);
+      --cc-shadow-2: 0 28px 70px rgba(15, 23, 42, 0.12);
+    }
+
+    html,
+    body,
+    button,
+    input,
+    textarea,
+    select {
+      font-family: var(--cc-font) !important;
+    }
+
+    body {
+      background: var(--cc-page-gradient) !important;
+      color: var(--cc-text) !important;
+      letter-spacing: -0.01em;
+    }
+
+    body::before {
+      opacity: 0.16 !important;
+      background-size: 48px 48px !important;
+    }
+
+    #login-screen,
+    #family-screen,
+    #main-screen,
+    #family-screen main,
+    #main-screen main,
+    .gradient-bg {
+      background: transparent !important;
+    }
+
+    header.app-topbar,
+    header.family-topbar,
+    nav.app-tabs-nav {
+      background: var(--cc-shell) !important;
+      border-bottom: 1px solid var(--cc-line) !important;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+      backdrop-filter: blur(20px);
+    }
+
+    .container {
+      max-width: 1420px !important;
+    }
+
+    .header-brand-icon,
+    .login-logo {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
+      color: #ffffff !important;
+      border-radius: 20px !important;
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.22) !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.04em !important;
+    }
+
+    .header-brand-icon {
+      width: 44px !important;
+      height: 44px !important;
+      font-size: 14px !important;
+    }
+
+    .login-logo {
+      width: 64px !important;
+      height: 64px !important;
+      font-size: 18px !important;
+      margin-bottom: 16px !important;
+    }
+
+    .header-info h1,
+    .family-topbar .header-brand h1 {
+      color: var(--cc-text) !important;
+      font-size: 1.1rem !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.03em !important;
+    }
+
+    .header-info p,
+    .family-topbar .header-brand p,
+    .mobile-nav-trigger-label {
+      color: var(--cc-text-2) !important;
+      font-size: 12px !important;
+    }
+
+    #plan-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      width: fit-content !important;
+      margin-top: 8px !important;
+      padding: 6px 10px !important;
+      border-radius: 999px !important;
+      background: var(--cc-accent-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-accent-2) !important;
+    }
+
+    .tab-btn {
+      background: transparent !important;
+      border: 1px solid transparent !important;
+      color: var(--cc-muted) !important;
+      padding: 10px 14px !important;
+      border-radius: 999px !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      box-shadow: none !important;
+    }
+
+    .tab-btn:hover {
+      background: var(--cc-card-gradient-soft) !important;
+      border-color: var(--cc-line) !important;
+      color: var(--cc-text) !important;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(33, 199, 183, 0.18), rgba(59, 130, 246, 0.16)) !important;
+      border-color: var(--cc-line-strong) !important;
+      color: var(--cc-text) !important;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .mobile-nav-sheet,
+    .mobile-nav-link,
+    .theme-setting-option,
+    .theme-choice-btn,
+    .card,
+    .card-glass,
+    .section,
+    .section-surface,
+    .stitch-panel,
+    .stitch-table-card,
+    .stitch-dashboard-card,
+    .stitch-account-panel,
+    .stitch-loan-card,
+    .stitch-goal-card,
+    .unified-goal-card,
+    .stitch-subscription-card,
+    .subscriptions-summary-card,
+    .analysis-rich-card,
+    .analysis-highlight-card,
+    .stitch-summary-card,
+    .stitch-smart-insights,
+    .stitch-analysis-details,
+    .stitch-ai-note,
+    .family-card,
+    .auth-form-panel,
+    .modal-content,
+    #recent-transactions,
+    #future-commitments-table,
+    #report-content,
+    .initial-balance-card,
+    .loan-preview-box {
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+      box-shadow: var(--cc-shadow-1) !important;
+      border-radius: var(--cc-radius-md) !important;
+    }
+
+    .tab-content.stitch-page {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .section,
+    .section-surface,
+    .stitch-panel,
+    .stitch-unified-section,
+    .stitch-table-card {
+      padding: 24px !important;
+    }
+
+    .section-title,
+    .dash-section-title,
+    .stitch-panel-title,
+    .modal-title {
+      font-size: clamp(1.28rem, 1.45vw, 1.7rem) !important;
+      line-height: 1.1 !important;
+      letter-spacing: -0.04em !important;
+      font-weight: 800 !important;
+      color: var(--cc-text) !important;
+    }
+
+    .section-description,
+    .dash-section-link,
+    .stitch-panel-subtitle,
+    .list-item-subtitle,
+    .stitch-table-card-subtitle,
+    .auth-visual-description,
+    .tab-intro-description,
+    .family-card-subtitle,
+    .hero-preview-note,
+    .dashboard-scan-feedback,
+    .surface-empty-state,
+    label,
+    .text-slate-300,
+    .text-slate-400,
+    .text-slate-500,
+    .text-slate-600,
+    .text-slate-700,
+    .muted {
+      color: var(--cc-text-2) !important;
+    }
+
+    .stitch-form-title,
+    .list-item-title,
+    .stitch-account-title,
+    .stitch-table-card-title,
+    .stitch-mobile-card-title,
+    .family-card-title,
+    .stitch-smart-insights-title,
+    .stitch-analysis-details-title,
+    .loan-card-title,
+    .table-item-title {
+      color: var(--cc-text) !important;
+      font-size: 1.02rem !important;
+      line-height: 1.25 !important;
+      letter-spacing: -0.03em !important;
+      font-weight: 800 !important;
+    }
+
+    .auth-kicker,
+    .tab-kicker,
+    .tab-intro-badge,
+    .stitch-panel-kicker,
+    .meta,
+    .stitch-mobile-card-date,
+    .stitch-table thead th {
+      background: var(--cc-accent-soft) !important;
+      color: var(--cc-text) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+
+    .auth-kicker,
+    .tab-kicker,
+    .tab-intro-badge,
+    .stitch-panel-kicker {
+      display: inline-flex !important;
+      align-items: center !important;
+      padding: 8px 12px !important;
+      border-radius: 999px !important;
+    }
+
+    .input-field,
+    .input-dark,
+    textarea.input-field,
+    select.input-field,
+    select.input-dark,
+    .ai-chat-input {
+      background: var(--cc-surface-2) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+      border-radius: 16px !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+      font-size: 15px !important;
+    }
+
+    .input-field::placeholder,
+    .input-dark::placeholder,
+    .ai-chat-input::placeholder,
+    textarea::placeholder {
+      color: var(--cc-muted) !important;
+    }
+
+    .input-field:focus,
+    .input-dark:focus,
+    .ai-chat-input:focus {
+      border-color: rgba(33, 199, 183, 0.6) !important;
+      box-shadow: 0 0 0 4px rgba(33, 199, 183, 0.14) !important;
+    }
+
+    .btn,
+    .theme-setting-option,
+    .theme-choice-btn,
+    .mobile-nav-trigger,
+    .mobile-nav-link,
+    .stitch-ai-history-chip {
+      border-radius: 16px !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.02em !important;
+    }
+
+    .btn-primary,
+    .stitch-ai-refresh-btn,
+    .stitch-analysis-toggle-btn {
+      background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
+      border: none !important;
+      color: #ffffff !important;
+      box-shadow: 0 16px 34px rgba(37, 99, 235, 0.22) !important;
+    }
+
+    .btn-secondary,
+    .btn-outline,
+    .mobile-nav-trigger,
+    .mobile-nav-link,
+    .theme-setting-option,
+    .theme-choice-btn,
+    .stitch-ai-history-chip {
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+      box-shadow: none !important;
+    }
+
+    .btn-secondary:hover,
+    .btn-outline:hover,
+    .mobile-nav-link:hover,
+    .theme-setting-option:hover,
+    .theme-choice-btn:hover,
+    .stitch-ai-history-chip:hover {
+      border-color: var(--cc-line-strong) !important;
+      background: var(--cc-surface-2) !important;
+      color: var(--cc-text) !important;
+      transform: translateY(-1px);
+    }
+
+    .login-container {
+      padding: 28px !important;
+      min-height: 100vh !important;
+      background: var(--cc-page-gradient) !important;
+    }
+
+    .auth-shell {
+      width: min(1440px, 100%) !important;
+      grid-template-columns: minmax(380px, 450px) minmax(0, 1fr) !important;
+      grid-template-areas: "form visual" !important;
+      gap: 28px !important;
+      align-items: start !important;
+    }
+
+    .auth-form-panel {
+      grid-area: form !important;
+      max-width: none !important;
+      align-self: start !important;
+      position: sticky;
+      top: 36px;
+      padding: 36px !important;
+      border-radius: var(--cc-radius-lg) !important;
+      background: var(--cc-card-gradient-soft) !important;
+    }
+
+    .auth-visual-panel {
+      grid-area: visual !important;
+      min-height: 620px !important;
+      padding: 38px !important;
+      background: var(--cc-surface-hero) !important;
+      border-radius: var(--cc-radius-xl) !important;
+      display: flex !important;
+      justify-content: space-between !important;
+    }
+
+    .auth-visual-panel::before,
+    .family-hero-card::before,
+    .tab-intro-card::before,
+    .scanner-feature-card::before {
+      background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 30%) !important;
+    }
+
+    .auth-visual-title {
+      max-width: 11ch !important;
+      font-size: clamp(2.6rem, 4vw, 4.6rem) !important;
+      line-height: 0.96 !important;
+      letter-spacing: -0.06em !important;
+      color: #ffffff !important;
+    }
+
+    .auth-visual-description {
+      max-width: 540px !important;
+      font-size: 15px !important;
+      line-height: 1.75 !important;
+      color: rgba(233, 241, 255, 0.82) !important;
+    }
+
+    .preview-chip-row {
+      gap: 8px !important;
+      margin-top: 18px !important;
+    }
+
+    .preview-chip {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: #e7f2ff !important;
+      border-radius: 999px !important;
+      padding: 9px 12px !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+    }
+
+    .auth-kpi-grid {
+      gap: 12px !important;
+      margin-top: 22px !important;
+    }
+
+    .auth-kpi-card {
+      background: rgba(255, 255, 255, 0.07) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 20px !important;
+      padding: 16px !important;
+      backdrop-filter: blur(6px);
+    }
+
+    .auth-kpi-label {
+      color: rgba(219, 233, 249, 0.7) !important;
+      font-size: 11px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+    }
+
+    .auth-kpi-value {
+      color: #ffffff !important;
+      font-size: 1.4rem !important;
+      letter-spacing: -0.04em !important;
+      font-weight: 800 !important;
+    }
+
+    .preview-mini-grid {
+      display: none !important;
+    }
+
+    .auth-preview-stack {
+      margin-top: 26px !important;
+      max-width: 780px !important;
+    }
+
+    .preview-window,
+    .hero-preview-card,
+    .tab-intro-preview {
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 24px !important;
+      box-shadow: var(--cc-shadow-1) !important;
+    }
+
+    .login-title {
+      color: var(--cc-text) !important;
+      font-size: 2rem !important;
+      line-height: 1.02 !important;
+      letter-spacing: -0.05em !important;
+    }
+
+    .login-subtitle {
+      color: var(--cc-text-2) !important;
+      max-width: 340px !important;
+      line-height: 1.7 !important;
+    }
+
+    .form-group label {
+      color: var(--cc-muted) !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.06em !important;
+      text-transform: uppercase !important;
+    }
+
+    .family-shell {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 380px !important;
+      grid-template-areas: "content hero" !important;
+      gap: 24px !important;
+      align-items: start !important;
+    }
+
+    .family-grid {
+      grid-area: content !important;
+      grid-template-columns: minmax(0, 1fr) 340px !important;
+      gap: 20px !important;
+    }
+
+    .family-hero-card {
+      grid-area: hero !important;
+      position: sticky;
+      top: 118px;
+      min-height: auto !important;
+      padding: 28px !important;
+      background: var(--cc-card-gradient) !important;
+      border-radius: var(--cc-radius-lg) !important;
+    }
+
+    .family-hero-copy h2 {
+      margin: 16px 0 10px !important;
+      font-size: clamp(2rem, 2.5vw, 2.8rem) !important;
+      line-height: 1.02 !important;
+      letter-spacing: -0.05em !important;
+      color: var(--cc-text) !important;
+    }
+
+    .family-hero-copy p {
+      color: var(--cc-text-2) !important;
+      line-height: 1.72 !important;
+    }
+
+    .family-preview-grid {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+      margin-top: 20px !important;
+    }
+
+    .family-preview-grid .preview-window:last-child {
+      display: none !important;
+    }
+
+    .family-card {
+      padding: 18px !important;
+      background: var(--cc-card-gradient) !important;
+      border-radius: 20px !important;
+    }
+
+    .family-card-title {
+      color: var(--cc-text) !important;
+    }
+
+    .family-card-subtitle,
+    .family-card-arrow {
+      color: var(--cc-text-2) !important;
+    }
+
+    .dashboard-shell,
+    .finances-shell,
+    .commitments-shell,
+    .analysis-shell,
+    .stitch-unified-shell {
+      gap: 20px !important;
+    }
+
+    .dash-hero {
+      padding: 28px !important;
+      border-radius: 28px !important;
+      background: linear-gradient(135deg, rgba(14, 25, 44, 0.96), rgba(18, 61, 85, 0.78)) !important;
+      border: 1px solid rgba(154, 181, 212, 0.18) !important;
+      box-shadow: var(--cc-shadow-2) !important;
+    }
+
+    .dash-hero::before,
+    .dash-hero::after {
+      display: none !important;
+    }
+
+    .dash-hero-content {
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 320px) !important;
+      gap: 20px !important;
+      align-items: start !important;
+    }
+
+    .dash-hero-greeting,
+    .dash-hero-meta,
+    .dash-hero-summary,
+    .hero-preview-note {
+      color: rgba(235, 243, 255, 0.8) !important;
+    }
+
+    .dash-hero-balance {
+      font-size: clamp(2.4rem, 4vw, 4.2rem) !important;
+      letter-spacing: -0.06em !important;
+      margin-bottom: 10px !important;
+      color: #ffffff !important;
+    }
+
+    .dash-hero-stats {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+      margin-top: 20px !important;
+      padding-top: 0 !important;
+      border-top: none !important;
+    }
+
+    .dash-hero-stat {
+      padding: 16px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .dash-hero-stat-label {
+      color: rgba(228, 238, 252, 0.66) !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+    }
+
+    .dash-hero-preview {
+      gap: 10px !important;
+      max-width: 320px !important;
+      justify-self: end !important;
+    }
+
+    .hero-preview-note {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .dashboard-control-row,
+    .dash-section-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      flex-wrap: wrap !important;
+    }
+
+    .dash-section-link {
+      color: var(--cc-accent-2) !important;
+      font-weight: 700 !important;
+    }
+
+    .scanner-feature-card {
+      padding: 22px !important;
+      background: var(--cc-card-gradient) !important;
+      background-image: none !important;
+      border: 1px solid var(--cc-line) !important;
+    }
+
+    .scanner-feature-card::before {
+      display: none !important;
+    }
+
+    .scanner-feature-title {
+      color: var(--cc-text) !important;
+      font-size: clamp(1.45rem, 2vw, 1.95rem) !important;
+      letter-spacing: -0.04em !important;
+    }
+
+    .scanner-feature-kicker {
+      color: var(--cc-accent) !important;
+    }
+
+    .scanner-feature-description,
+    .dashboard-scan-feedback {
+      color: var(--cc-text-2) !important;
+    }
+
+    .dashboard-scan-feedback {
+      margin-top: 16px !important;
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px dashed var(--cc-line) !important;
+      border-radius: 18px !important;
+      padding: 15px 16px !important;
+    }
+
+    .account-card {
+      min-width: 224px !important;
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+      border-radius: 22px !important;
+      box-shadow: var(--cc-shadow-1) !important;
+    }
+
+    .account-card-name,
+    .account-card-balance {
+      color: var(--cc-text) !important;
+    }
+
+    .account-card-bank,
+    .account-card-meta {
+      color: var(--cc-text-2) !important;
+    }
+
+    .account-card.add-card {
+      background: transparent !important;
+      border-style: dashed !important;
+      color: var(--cc-muted) !important;
+    }
+
+    .tab-intro-card {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 290px !important;
+      gap: 20px !important;
+      align-items: center !important;
+      padding: 22px !important;
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+      border-radius: var(--cc-radius-lg) !important;
+      box-shadow: none !important;
+    }
+
+    .tab-intro-card::after {
+      display: none !important;
+    }
+
+    .tab-intro-title {
+      max-width: 16ch !important;
+      font-size: clamp(1.9rem, 2.6vw, 2.7rem) !important;
+      line-height: 1.02 !important;
+      letter-spacing: -0.05em !important;
+      color: var(--cc-text) !important;
+    }
+
+    .tab-intro-description {
+      max-width: 56ch !important;
+      font-size: 14px !important;
+    }
+
+    .tab-intro-preview {
+      max-width: 320px !important;
+      justify-self: end !important;
+    }
+
+    .stitch-finance-nav {
+      gap: 10px !important;
+      margin-top: 0 !important;
+    }
+
+    .stitch-finance-nav .btn {
+      min-height: 44px !important;
+      padding: 0 15px !important;
+    }
+
+    .stitch-unified-shell {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+      gap: 20px !important;
+    }
+
+    .stitch-unified-shell > .section:nth-of-type(3),
+    .stitch-unified-shell > .section:nth-of-type(4) {
+      grid-column: span 2 !important;
+    }
+
+    .stitch-commitments-card,
+    .stitch-commitment-kpi,
+    .stitch-mobile-data-point,
+    .stitch-mini-metric,
+    .stitch-income-division-panel,
+    .stitch-disclosure,
+    .rate-info-box,
+    .loan-preview-box {
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+    }
+
+    .ai-chat-container {
+      min-height: 520px !important;
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+    }
+
+    .ai-chat-box,
+    .ai-chat-input-area {
+      background: transparent !important;
+      border-color: var(--cc-line) !important;
+    }
+
+    .ai-message.bot {
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+      box-shadow: none !important;
+    }
+
+    .ai-message.user {
+      box-shadow: none !important;
+    }
+
+    .stitch-ai-note {
+      background: var(--cc-card-gradient-soft) !important;
+      border-radius: 22px !important;
+    }
+
+    .stitch-smart-summary-panel {
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .stitch-summary-card,
+    .stitch-smart-insights,
+    .stitch-analysis-details,
+    .stitch-ai-note,
+    .stitch-subscriptions-unified,
+    .subscriptions-summary-card {
+      background: var(--cc-card-gradient) !important;
+    }
+
+    .stitch-summary-card-label,
+    .stitch-analysis-details-body,
+    .stitch-ai-note,
+    .stitch-smart-insight-item {
+      color: var(--cc-text-2) !important;
+    }
+
+    .stitch-summary-card-value,
+    .stitch-smart-insights-title,
+    .stitch-analysis-details-title {
+      color: var(--cc-text) !important;
+    }
+
+    .stitch-ai-history-chip.active {
+      background: linear-gradient(135deg, rgba(33, 199, 183, 0.18), rgba(59, 130, 246, 0.18)) !important;
+      border-color: var(--cc-line-strong) !important;
+    }
+
+    .modal-content {
+      padding: 28px !important;
+      border-radius: 28px !important;
+      background: var(--cc-card-gradient) !important;
+    }
+
+    .modal-close {
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text-2) !important;
+    }
+
+    .mobile-nav-sheet-title,
+    .mobile-nav-close,
+    .mobile-nav-link {
+      color: var(--cc-text) !important;
+    }
+
+    .mobile-nav-sheet-subtitle,
+    .mobile-nav-link small {
+      color: var(--cc-text-2) !important;
+    }
+
+    .mobile-nav-link.active {
+      background: linear-gradient(135deg, rgba(33, 199, 183, 0.16), rgba(59, 130, 246, 0.18)) !important;
+      border-color: var(--cc-line-strong) !important;
+    }
+
+    @media (max-width: 1100px) {
+      .auth-shell {
+        grid-template-columns: 1fr !important;
+        grid-template-areas:
+          "form"
+          "visual" !important;
+      }
+
+      .auth-form-panel,
+      .family-hero-card {
+        position: static !important;
+      }
+
+      .family-shell {
+        grid-template-columns: 1fr !important;
+        grid-template-areas:
+          "content"
+          "hero" !important;
+      }
+
+      .dash-hero-content,
+      .tab-intro-card,
+      .stitch-ai-shell {
+        grid-template-columns: 1fr !important;
+      }
+
+      .tab-intro-preview,
+      .dash-hero-preview {
+        max-width: none !important;
+        justify-self: stretch !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 18px !important;
+      }
+
+      .auth-form-panel,
+      .auth-visual-panel,
+      .section,
+      .section-surface,
+      .stitch-panel,
+      .stitch-unified-section,
+      .stitch-table-card,
+      .scanner-feature-card,
+      .tab-intro-card,
+      .dash-hero {
+        padding: 18px !important;
+      }
+
+      .auth-kpi-grid,
+      .dash-hero-stats,
+      .dashboard-grid-2,
+      .family-grid,
+      .stitch-unified-shell,
+      .stitch-summary-cards {
+        grid-template-columns: 1fr !important;
+      }
+
+      .dash-hero-preview,
+      .tab-intro-preview {
+        display: none !important;
+      }
+
+      .tab-intro-title,
+      .auth-visual-title {
+        max-width: none !important;
+      }
+    }
+    /* === CASH CONTROL BRAND SYSTEM 2026 === */
+    :root,
+    body:not([data-theme]),
+    body[data-theme="dark"] {
+      --brand-font: 'Manrope', sans-serif;
+      --brand-bg: #07121f;
+      --brand-shell: rgba(10, 18, 32, 0.82);
+      --brand-surface: #101c2f;
+      --brand-surface-2: #16253b;
+      --brand-surface-3: #1b2f49;
+      --brand-border: rgba(148, 163, 184, 0.18);
+      --brand-border-strong: rgba(191, 210, 235, 0.3);
+      --brand-text: #f7fbff;
+      --brand-text-2: #c9d7e7;
+      --brand-text-3: #91a6bd;
+      --brand-accent: #18c7b7;
+      --brand-accent-2: #327ef6;
+      --brand-accent-soft: rgba(24, 199, 183, 0.12);
+      --brand-success: #2fd39e;
+      --brand-danger: #fb7185;
+      --brand-warning: #f6c453;
+      --brand-shadow-1: 0 20px 40px rgba(2, 8, 23, 0.28);
+      --brand-shadow-2: 0 28px 72px rgba(2, 8, 23, 0.34);
+      --brand-page:
+        radial-gradient(circle at top left, rgba(50, 126, 246, 0.18), transparent 24%),
+        radial-gradient(circle at top right, rgba(24, 199, 183, 0.1), transparent 18%),
+        linear-gradient(180deg, #07121f 0%, #0a1628 48%, #0c1a31 100%);
+      --brand-hero:
+        radial-gradient(circle at top right, rgba(50, 126, 246, 0.16), transparent 28%),
+        linear-gradient(160deg, rgba(11, 20, 35, 0.98), rgba(16, 30, 49, 0.96));
+      --color-primary: var(--brand-accent-2);
+      --color-secondary: var(--brand-accent);
+      --color-primary-dark: #255fd6;
+      --color-background: var(--brand-bg);
+      --color-card: var(--brand-surface);
+      --color-ink: var(--brand-text);
+      --color-ink-soft: var(--brand-text-2);
+      --color-border-soft: var(--brand-border);
+      --cc-page-gradient: var(--brand-page);
+      --cc-shell: var(--brand-shell);
+      --cc-surface: var(--brand-surface);
+      --cc-surface-2: var(--brand-surface-2);
+      --cc-surface-3: var(--brand-surface-3);
+      --cc-surface-hero: var(--brand-hero);
+      --cc-card-gradient: linear-gradient(180deg, rgba(16, 28, 47, 0.96), rgba(19, 35, 57, 0.94));
+      --cc-card-gradient-soft: linear-gradient(180deg, rgba(20, 37, 59, 0.94), rgba(17, 30, 49, 0.92));
+      --cc-line: var(--brand-border);
+      --cc-line-strong: var(--brand-border-strong);
+      --cc-text: var(--brand-text);
+      --cc-text-2: var(--brand-text-2);
+      --cc-muted: var(--brand-text-3);
+      --cc-accent: var(--brand-accent);
+      --cc-accent-2: var(--brand-accent-2);
+      --cc-accent-soft: var(--brand-accent-soft);
+      --cc-success: var(--brand-success);
+      --cc-danger: var(--brand-danger);
+      --cc-warning: var(--brand-warning);
+      --cc-shadow-1: var(--brand-shadow-1);
+      --cc-shadow-2: var(--brand-shadow-2);
+      --cc-radius-md: 22px;
+      --cc-radius-lg: 28px;
+      color-scheme: dark;
+    }
+
+    body[data-theme="light"] {
+      --brand-bg: #eef3f8;
+      --brand-shell: rgba(255, 255, 255, 0.82);
+      --brand-surface: #ffffff;
+      --brand-surface-2: #f6f9fc;
+      --brand-surface-3: #edf3f8;
+      --brand-border: rgba(148, 163, 184, 0.22);
+      --brand-border-strong: rgba(100, 116, 139, 0.3);
+      --brand-text: #0f172a;
+      --brand-text-2: #44556d;
+      --brand-text-3: #6e8096;
+      --brand-accent: #0fb8ab;
+      --brand-accent-2: #2563eb;
+      --brand-accent-soft: rgba(15, 184, 171, 0.1);
+      --brand-success: #0f9f72;
+      --brand-danger: #e4546e;
+      --brand-warning: #c98b18;
+      --brand-shadow-1: 0 18px 38px rgba(15, 23, 42, 0.09);
+      --brand-shadow-2: 0 24px 62px rgba(15, 23, 42, 0.12);
+      --brand-page:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 22%),
+        radial-gradient(circle at top right, rgba(15, 184, 171, 0.08), transparent 18%),
+        linear-gradient(180deg, #eef3f8 0%, #ecf2f8 45%, #e8eff6 100%);
+      --brand-hero:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 26%),
+        linear-gradient(160deg, rgba(250, 252, 255, 0.98), rgba(239, 245, 250, 0.96));
+      --color-primary: var(--brand-accent-2);
+      --color-secondary: var(--brand-accent);
+      --color-primary-dark: #1d4ed8;
+      --color-background: var(--brand-bg);
+      --color-card: var(--brand-surface);
+      --color-ink: var(--brand-text);
+      --color-ink-soft: var(--brand-text-2);
+      --color-border-soft: var(--brand-border);
+      --cc-page-gradient: var(--brand-page);
+      --cc-shell: var(--brand-shell);
+      --cc-surface: var(--brand-surface);
+      --cc-surface-2: var(--brand-surface-2);
+      --cc-surface-3: var(--brand-surface-3);
+      --cc-surface-hero: var(--brand-hero);
+      --cc-card-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 249, 252, 0.98));
+      --cc-card-gradient-soft: linear-gradient(180deg, rgba(248, 251, 255, 0.98), rgba(239, 245, 251, 0.98));
+      --cc-line: var(--brand-border);
+      --cc-line-strong: var(--brand-border-strong);
+      --cc-text: var(--brand-text);
+      --cc-text-2: var(--brand-text-2);
+      --cc-muted: var(--brand-text-3);
+      --cc-accent: var(--brand-accent);
+      --cc-accent-2: var(--brand-accent-2);
+      --cc-accent-soft: var(--brand-accent-soft);
+      --cc-success: var(--brand-success);
+      --cc-danger: var(--brand-danger);
+      --cc-warning: var(--brand-warning);
+      --cc-shadow-1: var(--brand-shadow-1);
+      --cc-shadow-2: var(--brand-shadow-2);
+      color-scheme: light;
+    }
+
+    html {
+      background: var(--cc-page-gradient) !important;
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font-family: var(--brand-font) !important;
+    }
+
+    body {
+      background: var(--cc-page-gradient) !important;
+      color: var(--cc-text) !important;
+      font-size: 15px !important;
+      line-height: 1.55 !important;
+      letter-spacing: -0.01em;
+    }
+
+    body::before {
+      background: transparent !important;
+    }
+
+    .gradient-bg,
+    #login-screen,
+    #family-screen,
+    #main-screen {
+      background: transparent !important;
+    }
+
+    #family-screen main,
+    #main-screen main {
+      background: transparent !important;
+      padding-top: 24px !important;
+    }
+
+    .container {
+      max-width: 1240px !important;
+    }
+
+    .text-white,
+    .section-title,
+    .dash-section-title,
+    .stitch-panel-title,
+    .stitch-form-title,
+    .stitch-table-card-title,
+    .stitch-account-title,
+    .stitch-mobile-card-title,
+    .family-card-title,
+    .stitch-smart-insights-title,
+    .stitch-analysis-details-title,
+    .modal-title,
+    .login-title,
+    .auth-visual-title,
+    .tab-intro-title,
+    .header-info h1,
+    .family-topbar .header-brand h1,
+    .stitch-page .text-slate-800,
+    .stitch-page .text-slate-900 {
+      color: var(--cc-text) !important;
+    }
+
+    .section-description,
+    .stitch-panel-subtitle,
+    .stitch-table-card-subtitle,
+    .auth-visual-description,
+    .tab-intro-description,
+    .family-card-subtitle,
+    .login-subtitle,
+    .hero-preview-note,
+    .dashboard-scan-feedback,
+    .surface-empty-state,
+    label,
+    .muted,
+    .text-slate-200,
+    .text-slate-300,
+    .text-slate-400,
+    .text-slate-500,
+    .text-slate-600,
+    .text-slate-700 {
+      color: var(--cc-text-2) !important;
+    }
+
+    .auth-kicker,
+    .tab-intro-badge,
+    .stitch-panel-kicker {
+      display: inline-flex !important;
+      align-items: center !important;
+      padding: 8px 12px !important;
+      border-radius: 999px !important;
+      background: var(--cc-accent-soft) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      color: var(--cc-text) !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+
+    .meta,
+    .stitch-mobile-card-date,
+    .stitch-table thead th,
+    .stitch-mini-metric-label,
+    .dash-hero-stat-label,
+    .dash-hero-period {
+      color: var(--cc-muted) !important;
+      font-size: 11px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      background: transparent !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+
+    .auth-visual-title {
+      margin: 16px 0 12px !important;
+      max-width: 11ch !important;
+      font-size: clamp(2.8rem, 5vw, 4.8rem) !important;
+      line-height: 0.96 !important;
+      letter-spacing: -0.06em !important;
+    }
+
+    .tab-intro-title {
+      margin: 12px 0 10px !important;
+      max-width: 14ch !important;
+      font-size: clamp(1.9rem, 3vw, 3rem) !important;
+      line-height: 1 !important;
+      letter-spacing: -0.05em !important;
+    }
+
+    .section-title,
+    .dash-section-title,
+    .stitch-panel-title,
+    .modal-title {
+      font-size: clamp(1.28rem, 1.6vw, 1.85rem) !important;
+      line-height: 1.08 !important;
+      letter-spacing: -0.04em !important;
+      font-weight: 800 !important;
+    }
+
+    .login-title {
+      font-size: clamp(2.25rem, 3.1vw, 3rem) !important;
+      line-height: 1 !important;
+      letter-spacing: -0.05em !important;
+    }
+
+    .auth-visual-description,
+    .tab-intro-description,
+    .login-subtitle,
+    .section-description,
+    .stitch-panel-subtitle {
+      font-size: 15px !important;
+      line-height: 1.72 !important;
+    }
+    header.app-topbar,
+    header.family-topbar,
+    nav.app-tabs-nav {
+      background: transparent !important;
+      border-bottom: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+    }
+
+    header.app-topbar .container,
+    header.family-topbar .container {
+      margin-top: 24px !important;
+      padding: 18px 20px !important;
+      border-radius: 24px !important;
+      background: var(--cc-shell) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-1) !important;
+    }
+
+    nav.app-tabs-nav .container {
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+    }
+
+    nav.app-tabs-nav .tabs {
+      width: auto !important;
+      max-width: 100% !important;
+      margin-top: 14px !important;
+      padding: 8px !important;
+      border-radius: 20px !important;
+      background: var(--cc-shell) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-1) !important;
+      gap: 8px !important;
+    }
+
+    .mobile-nav-sheet,
+    .bottom-sheet,
+    .mobile-nav-trigger {
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-1) !important;
+    }
+
+    .btn,
+    .tab-btn,
+    .bottom-sheet-action,
+    .stitch-ai-refresh-btn,
+    .stitch-analysis-toggle-btn {
+      min-height: 46px !important;
+      border-radius: 16px !important;
+      padding: 0 18px !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.01em !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease !important;
+    }
+
+    .btn:hover,
+    .tab-btn:hover,
+    .bottom-sheet-action:hover,
+    .stitch-ai-refresh-btn:hover,
+    .stitch-analysis-toggle-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary,
+    .stitch-ai-refresh-btn,
+    .stitch-analysis-toggle-btn,
+    .ai-chat-send-btn {
+      background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
+      border: none !important;
+      color: #ffffff !important;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.2) !important;
+    }
+
+    .btn-secondary,
+    .btn-outline,
+    .tab-btn,
+    .bottom-sheet-action,
+    .mobile-nav-link,
+    .theme-setting-option,
+    .theme-choice-btn {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+    }
+
+    body[data-theme="light"] .btn-secondary,
+    body[data-theme="light"] .btn-outline,
+    body[data-theme="light"] .tab-btn,
+    body[data-theme="light"] .bottom-sheet-action,
+    body[data-theme="light"] .mobile-nav-link,
+    body[data-theme="light"] .theme-setting-option,
+    body[data-theme="light"] .theme-choice-btn {
+      background: rgba(255, 255, 255, 0.72) !important;
+    }
+
+    .tab-btn.active,
+    .mobile-nav-link.active {
+      background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
+      border-color: transparent !important;
+      color: #ffffff !important;
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18) !important;
+    }
+
+    .input-field,
+    .input-dark,
+    textarea.input-field,
+    select.input-field,
+    select.input-dark,
+    .ai-chat-input,
+    input[type="date"].input-field,
+    input[type="number"],
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      min-height: 54px !important;
+      padding: 0 16px !important;
+      border-radius: 16px !important;
+      background: var(--cc-surface-2) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+      box-shadow: none !important;
+    }
+
+    textarea.input-field {
+      min-height: 132px !important;
+      padding: 14px 16px !important;
+    }
+
+    .input-field::placeholder,
+    .input-dark::placeholder,
+    .ai-chat-input::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--cc-muted) !important;
+    }
+
+    .input-field:focus,
+    .input-dark:focus,
+    textarea.input-field:focus,
+    select.input-field:focus,
+    .ai-chat-input:focus,
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(50, 126, 246, 0.55) !important;
+      box-shadow: 0 0 0 4px rgba(50, 126, 246, 0.12) !important;
+      outline: none !important;
+    }
+
+    .section,
+    .section-surface,
+    .card,
+    .stitch-panel,
+    .stitch-unified-section,
+    .stitch-table-card,
+    .stitch-account-panel,
+    .stitch-dashboard-card,
+    .stitch-loan-card,
+    .stitch-goal-card,
+    .unified-goal-card,
+    .analysis-rich-card,
+    .analysis-highlight-card,
+    .stitch-subscription-card,
+    .subscriptions-summary-card,
+    .stitch-summary-card,
+    .stitch-smart-insights,
+    .stitch-analysis-details,
+    .stitch-ai-note,
+    .family-card,
+    .auth-form-panel,
+    .modal-content,
+    #recent-transactions,
+    #future-commitments-table,
+    #report-content,
+    .initial-balance-card,
+    .loan-preview-box {
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+      border-radius: 24px !important;
+      box-shadow: var(--cc-shadow-1) !important;
+      color: var(--cc-text) !important;
+    }
+
+    .section,
+    .section-surface,
+    .stitch-panel,
+    .stitch-unified-section,
+    .stitch-table-card {
+      padding: 26px !important;
+    }
+
+    .surface-empty-state {
+      padding: 24px !important;
+      border-radius: 22px !important;
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px dashed var(--cc-line-strong) !important;
+      color: var(--cc-text-2) !important;
+      text-align: center !important;
+    }
+
+    .auth-shell {
+      grid-template-columns: minmax(360px, 430px) minmax(0, 1fr) !important;
+      grid-template-areas: "form visual" !important;
+      gap: 32px !important;
+      align-items: stretch !important;
+    }
+
+    .auth-form-panel {
+      grid-area: form !important;
+      position: sticky !important;
+      top: 28px !important;
+      align-self: start !important;
+      padding: 34px !important;
+    }
+
+    .auth-visual-panel {
+      grid-area: visual !important;
+      min-height: 0 !important;
+      padding: 34px !important;
+      background: var(--cc-surface-hero) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-2) !important;
+      overflow: hidden !important;
+    }
+
+    .login-header {
+      text-align: left !important;
+    }
+
+    .login-logo,
+    .header-brand-icon {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
+      color: #ffffff !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.06em !important;
+      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.18) !important;
+    }
+
+    .login-logo {
+      width: 68px !important;
+      height: 68px !important;
+      margin: 0 0 22px 0 !important;
+      border-radius: 20px !important;
+      font-size: 22px !important;
+    }
+
+    .header-brand-icon {
+      width: 46px !important;
+      height: 46px !important;
+      border-radius: 16px !important;
+      font-size: 16px !important;
+    }
+
+    .preview-mini-grid {
+      display: none !important;
+    }
+
+    .family-shell {
+      grid-template-columns: minmax(0, 1fr) 360px !important;
+      grid-template-areas: "content hero" !important;
+      gap: 28px !important;
+      align-items: start !important;
+    }
+
+    .family-grid {
+      grid-area: content !important;
+      gap: 24px !important;
+    }
+
+    .family-hero-card {
+      grid-area: hero !important;
+      position: sticky !important;
+      top: 28px !important;
+      min-height: 0 !important;
+      padding: 28px !important;
+      background: var(--cc-surface-hero) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-2) !important;
+    }
+
+    .family-card-mark {
+      min-width: 80px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--cc-line);
+      color: var(--cc-text);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .family-card:hover,
+    .card:hover,
+    .loan-card:hover,
+    .list-item:hover,
+    .stitch-subscription-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--cc-line-strong) !important;
+      box-shadow: var(--cc-shadow-2) !important;
+    }
+
+    .dashboard-shell,
+    .finances-shell,
+    .commitments-shell,
+    .analysis-shell,
+    .stitch-unified-shell {
+      gap: 22px !important;
+    }
+
+    .dash-hero {
+      padding: 30px !important;
+      border-radius: 28px !important;
+      background: var(--cc-surface-hero) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-2) !important;
+      overflow: hidden !important;
+    }
+
+    .dash-hero::before,
+    .dash-hero::after,
+    .scanner-feature-card::before,
+    .tab-intro-card::before,
+    .tab-intro-card::after {
+      display: none !important;
+    }
+
+    .dash-hero-content {
+      grid-template-columns: minmax(0, 1fr) 300px !important;
+      gap: 20px !important;
+      align-items: start !important;
+    }
+
+    .dash-hero-greeting,
+    .dash-hero-meta,
+    .dash-hero-summary,
+    .hero-preview-note {
+      color: var(--cc-text-2) !important;
+    }
+
+    .dash-hero-balance {
+      margin: 10px 0 8px !important;
+      font-size: clamp(2.7rem, 4vw, 4.5rem) !important;
+      line-height: 0.94 !important;
+      letter-spacing: -0.08em !important;
+      color: var(--cc-text) !important;
+    }
+
+    .dash-hero-stats {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+      margin-top: 20px !important;
+      padding-top: 0 !important;
+      border-top: none !important;
+    }
+
+    .dash-hero-stat {
+      padding: 16px 18px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .hero-preview-card,
+    .preview-window,
+    .tab-intro-device {
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: none !important;
+    }
+
+    .hero-preview-card {
+      padding: 10px !important;
+      border-radius: 22px !important;
+    }
+
+    .preview-window {
+      border-radius: 24px !important;
+    }
+
+    .preview-window img,
+    .hero-preview-card img,
+    .tab-intro-device-screen img {
+      display: block !important;
+      width: 100% !important;
+      height: auto !important;
+      object-fit: cover !important;
+    }
+
+    .hero-preview-note {
+      padding: 16px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid var(--cc-line) !important;
+    }
+
+    .scanner-feature-card {
+      padding: 24px !important;
+      min-height: 0 !important;
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      overflow: hidden !important;
+    }
+
+    .scanner-feature-title {
+      max-width: 12ch !important;
+      font-size: clamp(1.7rem, 2.2vw, 2.35rem) !important;
+      line-height: 1.02 !important;
+      letter-spacing: -0.05em !important;
+      color: var(--cc-text) !important;
+    }
+
+    .scanner-feature-kicker {
+      color: var(--cc-accent) !important;
+    }
+
+    .scanner-feature-description,
+    .dashboard-scan-feedback {
+      color: var(--cc-text-2) !important;
+    }
+
+    .tab-content.stitch-page {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+    }
+
+    .tab-intro-card {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 240px !important;
+      gap: 20px !important;
+      align-items: center !important;
+      padding: 24px !important;
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      border-radius: 26px !important;
+      box-shadow: var(--cc-shadow-1) !important;
+      overflow: hidden !important;
+    }
+
+    .tab-intro-device {
+      width: min(100%, 240px) !important;
+      padding: 8px !important;
+      border-radius: 22px !important;
+      justify-self: end !important;
+    }
+
+    .tab-intro-device-screen {
+      border-radius: 16px !important;
+      overflow: hidden !important;
+    }
+
+    .stitch-finance-nav {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 8px !important;
+      padding: 8px !important;
+      border-radius: 20px !important;
+      background: var(--cc-shell) !important;
+      border: 1px solid var(--cc-line) !important;
+      box-shadow: var(--cc-shadow-1) !important;
+      margin-bottom: 22px !important;
+    }
+
+    .stitch-finance-nav .btn {
+      min-height: 48px !important;
+      width: 100% !important;
+      justify-content: center !important;
+    }
+
+    .stitch-table thead th {
+      border-bottom: 1px solid var(--cc-line) !important;
+      color: var(--cc-muted) !important;
+    }
+
+    .stitch-table tbody td {
+      color: var(--cc-text) !important;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
+    }
+
+    .stitch-table tbody tr:hover td {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    .stitch-badge,
+    .balance-prev-badge {
+      border-radius: 999px !important;
+    }
+
+    .stitch-icon-btn {
+      border-radius: 14px !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+    }
+
+    .stitch-icon-btn.danger:hover {
+      background: rgba(251, 113, 133, 0.1) !important;
+      border-color: rgba(251, 113, 133, 0.28) !important;
+    }
+    .stitch-ai-shell {
+      grid-template-columns: minmax(0, 1.1fr) 400px !important;
+      gap: 22px !important;
+    }
+
+    .stitch-smart-summary-panel {
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .stitch-smart-summary-layout {
+      gap: 16px !important;
+    }
+
+    .stitch-ai-analysis-toolbar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 16px !important;
+      flex-wrap: wrap !important;
+    }
+
+    .stitch-ai-analysis-history {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      flex-wrap: wrap !important;
+    }
+
+    .stitch-ai-history-chip {
+      min-height: 40px !important;
+      padding: 0 14px !important;
+      border-radius: 999px !important;
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text-2) !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      box-shadow: none !important;
+    }
+
+    .stitch-ai-history-chip.active {
+      background: linear-gradient(135deg, rgba(24, 199, 183, 0.16), rgba(50, 126, 246, 0.18)) !important;
+      border-color: var(--cc-line-strong) !important;
+      color: var(--cc-text) !important;
+    }
+
+    .stitch-ai-stale-alert {
+      padding: 14px 16px !important;
+      border-radius: 18px !important;
+      background: rgba(246, 196, 83, 0.1) !important;
+      border: 1px solid rgba(246, 196, 83, 0.24) !important;
+      color: #f1d37a !important;
+    }
+
+    body[data-theme="light"] .stitch-ai-stale-alert {
+      color: #8a5e0a !important;
+    }
+
+    .stitch-summary-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 14px !important;
+    }
+
+    .stitch-summary-card {
+      padding: 20px !important;
+    }
+
+    .stitch-summary-card-head {
+      gap: 12px !important;
+      margin-bottom: 14px !important;
+    }
+
+    .stitch-summary-card-icon {
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 14px !important;
+      font-size: 20px !important;
+    }
+
+    .stitch-summary-card-label,
+    .stitch-analysis-details-body,
+    .stitch-ai-note,
+    .stitch-smart-insight-item {
+      color: var(--cc-text-2) !important;
+    }
+
+    .stitch-summary-card-value {
+      color: var(--cc-text) !important;
+      font-size: clamp(1.6rem, 2vw, 2.1rem) !important;
+      line-height: 1 !important;
+      letter-spacing: -0.05em !important;
+    }
+
+    .stitch-smart-insights {
+      padding: 22px !important;
+    }
+
+    .stitch-smart-insight-item {
+      gap: 12px !important;
+      padding: 10px 0 !important;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
+    }
+
+    .stitch-smart-insight-item:last-child {
+      border-bottom: none !important;
+      padding-bottom: 0 !important;
+    }
+
+    .stitch-smart-insight-item strong {
+      color: var(--cc-text) !important;
+    }
+
+    .stitch-analysis-details {
+      padding: 20px !important;
+    }
+
+    .stitch-analysis-details-body {
+      white-space: pre-wrap !important;
+      line-height: 1.75 !important;
+    }
+
+    .stitch-ai-note {
+      padding: 18px 20px !important;
+      line-height: 1.72 !important;
+      background: var(--cc-card-gradient-soft) !important;
+    }
+
+    .ai-chat-container {
+      min-height: 540px !important;
+      background: var(--cc-card-gradient) !important;
+      border: 1px solid var(--cc-line) !important;
+      border-radius: 24px !important;
+    }
+
+    .ai-chat-box {
+      background: transparent !important;
+      border-color: var(--cc-line) !important;
+      padding: 18px !important;
+    }
+
+    .ai-chat-input-area {
+      padding: 14px !important;
+      background: transparent !important;
+      border-top: 1px solid var(--cc-line) !important;
+    }
+
+    .ai-message.bot {
+      background: var(--cc-card-gradient-soft) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text) !important;
+      border-radius: 18px !important;
+      box-shadow: none !important;
+    }
+
+    .ai-message.user {
+      background: linear-gradient(135deg, rgba(24, 199, 183, 0.16), rgba(50, 126, 246, 0.18)) !important;
+      color: var(--cc-text) !important;
+      border-radius: 18px !important;
+      box-shadow: none !important;
+    }
+
+    .ai-chat-send-btn {
+      width: 48px !important;
+      height: 48px !important;
+      border-radius: 16px !important;
+    }
+
+    .stitch-subscriptions-unified {
+      grid-template-columns: minmax(0, 1fr) 240px !important;
+      gap: 14px !important;
+    }
+
+    .subscription-mark {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--cc-line);
+    }
+
+    .modal-content {
+      padding: 26px !important;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 1px solid var(--cc-line) !important;
+      color: var(--cc-text-2) !important;
+    }
+
+    .mobile-nav-sheet-title,
+    .mobile-nav-close,
+    .mobile-nav-link,
+    .mobile-nav-trigger-current {
+      color: var(--cc-text) !important;
+    }
+
+    .mobile-nav-sheet-subtitle,
+    .mobile-nav-link small,
+    .mobile-nav-trigger-label,
+    .header-info p,
+    #plan-badge {
+      color: var(--cc-text-2) !important;
+    }
+
+    .import-preview-dialog,
+    .import-preview-item,
+    .import-preview-head,
+    .import-preview-foot {
+      background: var(--cc-card-gradient) !important;
+      color: var(--cc-text) !important;
+      border-color: var(--cc-line) !important;
+    }
+
+    @media (max-width: 1180px) {
+      .auth-shell,
+      .family-shell,
+      .dash-hero-content,
+      .tab-intro-card,
+      .stitch-ai-shell,
+      .stitch-subscriptions-unified {
+        grid-template-columns: 1fr !important;
+      }
+
+      .auth-shell {
+        grid-template-areas:
+          "form"
+          "visual" !important;
+      }
+
+      .family-shell {
+        grid-template-areas:
+          "content"
+          "hero" !important;
+      }
+
+      .auth-form-panel,
+      .family-hero-card {
+        position: static !important;
+      }
+
+      .tab-intro-device,
+      .dash-hero-preview {
+        justify-self: stretch !important;
+        max-width: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px !important;
+      }
+
+      #login-screen {
+        padding: 18px !important;
+      }
+
+      header.app-topbar .container,
+      header.family-topbar .container {
+        margin-top: 16px !important;
+        padding: 16px !important;
+        border-radius: 20px !important;
+      }
+
+      nav.app-tabs-nav .tabs {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      .tab-btn,
+      .bottom-sheet-action {
+        justify-content: center !important;
+      }
+
+      .auth-form-panel,
+      .auth-visual-panel,
+      .family-hero-card,
+      .tab-intro-card,
+      .section,
+      .section-surface,
+      .stitch-panel,
+      .stitch-unified-section,
+      .stitch-table-card,
+      .dash-hero,
+      .scanner-feature-card {
+        padding: 20px !important;
+      }
+
+      .auth-preview-stack,
+      .family-preview-grid,
+      .tab-intro-preview,
+      .dash-hero-preview {
+        display: none !important;
+      }
+
+      .auth-kpi-grid,
+      .dash-hero-stats,
+      .stitch-summary-cards,
+      .stitch-finance-nav,
+      .stitch-subscriptions-unified,
+      .stitch-subscription-grid,
+      .family-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .dash-hero-balance {
+        font-size: clamp(2.25rem, 8vw, 3.1rem) !important;
+      }
+
+      .auth-visual-title,
+      .tab-intro-title {
+        max-width: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -6921,29 +9007,29 @@
       <div class="auth-shell">
         <section class="auth-visual-panel">
           <div class="auth-visual-content">
-            <span class="auth-kicker">Cash Control Studio</span>
-            <h2 class="auth-visual-title">Controle financeiro familiar com cara de produto premium.</h2>
+            <span class="auth-kicker">Cash Control</span>
+            <h2 class="auth-visual-title">Gestão financeira familiar com clareza operacional.</h2>
             <p class="auth-visual-description">
-              Entradas, despesas, contas, scanner de extrato, bancos e IA financeira em um fluxo único. O redesign usa
-              as referências do Stitch para entregar uma experiência mais clara, organizada e escaneável.
+              Concentre contas, extratos, entradas, despesas, metas e análises em um único ambiente estruturado por
+              família, com histórico confiável para operação diária.
             </p>
             <div class="preview-chip-row">
-              <span class="preview-chip">Scanner único no dashboard</span>
+              <span class="preview-chip">Extratos estruturados</span>
               <span class="preview-chip">Contas por banco</span>
-              <span class="preview-chip">Resumo financeiro com IA</span>
+              <span class="preview-chip">Leitura financeira com IA</span>
             </div>
             <div class="auth-kpi-grid">
               <div class="auth-kpi-card">
-                <div class="auth-kpi-label">Fluxo</div>
-                <div class="auth-kpi-value">PDF → Firestore</div>
+                <div class="auth-kpi-label">Operação</div>
+                <div class="auth-kpi-value">Extrato para histórico</div>
               </div>
               <div class="auth-kpi-card">
-                <div class="auth-kpi-label">Leitura</div>
-                <div class="auth-kpi-value">Mais limpa</div>
+                <div class="auth-kpi-label">Visão</div>
+                <div class="auth-kpi-value">Controles consolidados</div>
               </div>
               <div class="auth-kpi-card">
-                <div class="auth-kpi-label">Modo</div>
-                <div class="auth-kpi-value">Claro + Escuro</div>
+                <div class="auth-kpi-label">Temas</div>
+                <div class="auth-kpi-value">Dark e light</div>
               </div>
             </div>
           </div>
@@ -6965,73 +9051,61 @@
 
         <div class="login-card card-glass auth-form-panel">
           <div class="login-header">
-            <div class="login-logo">💰</div>
+            <div class="login-logo">CC</div>
             <h1 class="login-title">Cash Control</h1>
-            <p class="login-subtitle">Gestão financeira familiar com scanner de extrato, contas por banco e inteligência financeira.</p>
+            <p class="login-subtitle">Operação financeira familiar com extratos, contas, metas e inteligência aplicada aos seus dados.</p>
           </div>
 
           <div id="login-form">
             <div class="form-group">
-              <label>📧 Email</label>
+              <label>Email</label>
               <input type="email" id="login-email" class="input-field w-full" placeholder="seu@email.com">
             </div>
 
             <div class="form-group">
-              <label>🔐 Senha</label>
+              <label>Senha</label>
               <input type="password" id="login-password" class="input-field w-full" placeholder="••••••••">
             </div>
 
             <div id="login-error"
               class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
 
-            <button onclick="handleLogin()" class="btn btn-primary w-full mb-3">
-              <span>🚀</span> Entrar
-            </button>
+            <button onclick="handleLogin()" class="btn btn-primary w-full mb-3">Entrar</button>
 
-            <button type="button" onclick="showForgotPassword()" class="btn btn-outline w-full mb-3">
-              <span>🔑</span> Esqueceu a Senha?
-            </button>
+            <button type="button" onclick="showForgotPassword()" class="btn btn-outline w-full mb-3">Recuperar acesso</button>
 
-            <button type="button" onclick="enterGuestMode()" class="btn btn-secondary w-full mb-3">
-              <span>👀</span> Entrar como visitante
-            </button>
+            <button type="button" onclick="enterGuestMode()" class="btn btn-secondary w-full mb-3">Entrar como visitante</button>
 
-            <button onclick="showRegister()" class="btn btn-outline w-full">
-              <span>✨</span> Criar Conta
-            </button>
+            <button onclick="showRegister()" class="btn btn-outline w-full">Criar conta</button>
           </div>
 
           <div id="register-form" class="hidden">
             <div class="form-group">
-              <label>👤 Nome Completo</label>
+              <label>Nome completo</label>
               <input type="text" id="register-name" class="input-field w-full" placeholder="Seu nome">
             </div>
 
             <div class="form-group">
-              <label>📧 Email</label>
+              <label>Email</label>
               <input type="email" id="register-email" class="input-field w-full" placeholder="seu@email.com">
             </div>
 
             <div class="form-group">
-              <label>🔐 Senha</label>
+              <label>Senha</label>
               <input type="password" id="register-password" class="input-field w-full" placeholder="Mínimo 6 caracteres">
             </div>
 
             <div id="register-error"
               class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
 
-            <button onclick="handleRegister()" class="btn btn-primary w-full mb-3">
-              <span>✨</span> Criar Conta
-            </button>
+            <button onclick="handleRegister()" class="btn btn-primary w-full mb-3">Criar conta</button>
 
-            <button onclick="showLogin()" class="btn btn-outline w-full">
-              <span>←</span> Voltar
-            </button>
+            <button onclick="showLogin()" class="btn btn-outline w-full">Voltar</button>
           </div>
 
           <div id="reset-form" class="hidden">
             <div class="form-group">
-              <label>📧 Email</label>
+              <label>Email</label>
               <input type="email" id="reset-email" class="input-field w-full" placeholder="seu@email.com">
             </div>
 
@@ -7041,13 +9115,9 @@
             <div id="reset-error"
               class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
 
-            <button onclick="handlePasswordReset()" class="btn btn-primary w-full mb-3">
-              <span>📩</span> Enviar Link de Reset
-            </button>
+            <button onclick="handlePasswordReset()" class="btn btn-primary w-full mb-3">Enviar link de redefinição</button>
 
-            <button onclick="showLogin()" class="btn btn-outline w-full">
-              <span>←</span> Voltar
-            </button>
+            <button onclick="showLogin()" class="btn btn-outline w-full">Voltar</button>
           </div>
         </div>
       </div>
@@ -7059,16 +9129,14 @@
         <div class="container">
           <div class="header-left">
             <div class="header-brand">
-              <div class="header-brand-icon">👨‍👩‍👧‍👦</div>
+              <div class="header-brand-icon">CC</div>
               <div>
                 <h1>Minhas Famílias</h1>
-                <p>Selecione ou crie uma</p>
+                <p>Escolha o ambiente que deseja gerenciar</p>
               </div>
             </div>
           </div>
-          <button onclick="handleLogout()" class="btn btn-danger">
-            <span>👋</span> Sair
-          </button>
+          <button onclick="handleLogout()" class="btn btn-danger">Sair</button>
         </div>
       </header>
 
@@ -7077,11 +9145,11 @@
           <section class="family-hero-card">
             <div class="family-hero-content">
               <div class="family-hero-copy">
-                <span class="auth-kicker">Espaço colaborativo</span>
-                <h2>Organize a vida financeira da sua família em um app só.</h2>
+                <span class="auth-kicker">Gestão compartilhada</span>
+                <h2>Centralize a operação financeira da família em um único ambiente.</h2>
                 <p>
-                  Escolha uma família existente ou crie uma nova estrutura para começar com contas, extratos,
-                  transações, relatórios e análises de IA baseadas nos dados salvos.
+                  Mantenha contas, extratos, transações, metas e análises organizados por contexto, com acesso
+                  compartilhado e histórico persistido.
                 </p>
               </div>
               <div class="family-preview-grid">
@@ -7099,7 +9167,7 @@
             <div class="section section-surface">
               <div class="section-heading">
                 <div>
-                  <h3>📋 Suas Famílias</h3>
+                  <h3>Suas famílias</h3>
                   <p>Selecione um ambiente para continuar.</p>
                 </div>
               </div>
@@ -7109,17 +9177,15 @@
             </div>
 
             <div class="section card rounded-2xl p-8">
-              <h3 class="section-title">➕ Criar Nova Família</h3>
-              <p class="section-description">Crie uma família para começar a gerenciar suas finanças juntos</p>
+              <h3 class="section-title">Nova família</h3>
+              <p class="section-description">Crie uma estrutura de trabalho para começar a operar as finanças em conjunto.</p>
 
               <div class="form-group">
-                <label>Nome da Família</label>
+                <label>Nome da família</label>
                 <input type="text" id="new-family-name" class="input-field w-full" placeholder="Ex: Fonseca">
               </div>
 
-              <button onclick="createFamily()" class="btn btn-primary w-full">
-                <span>🎯</span> Criar Família
-              </button>
+              <button onclick="createFamily()" class="btn btn-primary w-full">Criar família</button>
             </div>
           </div>
         </div>
@@ -7134,11 +9200,11 @@
           <div class="header-left">
             <button onclick="goToFamilySelection()" class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0">←</button>
             <div class="header-brand">
-              <div class="header-brand-icon">💰</div>
+              <div class="header-brand-icon">CC</div>
               <div class="header-info">
                 <h1 id="current-family-name">Cash Control</h1>
                 <p id="current-user-name">Usuário</p>
-                <span id="plan-badge" class="text-xs font-bold text-slate-400">🆓 Free</span>
+                <span id="plan-badge" class="text-xs font-bold text-slate-400">Plano Free</span>
               </div>
             </div>
           </div>
@@ -7162,10 +9228,10 @@
       <nav class="app-tabs-nav">
         <div class="container">
           <div class="tabs">
-            <button onclick="switchTab('dashboard')" class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
-            <button onclick="switchTab('finances')" class="tab-btn" data-tab="finances">💰 Finanças</button>
-            <button onclick="switchTab('commitments_goals')" class="tab-btn" data-tab="commitments_goals">📋 Divisões &amp; Objetivos</button>
-            <button onclick="switchTab('ai_analysis')" class="tab-btn" data-tab="ai_analysis">🤖 Análise da IA</button>
+            <button onclick="switchTab('dashboard')" class="tab-btn active" data-tab="dashboard">Dashboard</button>
+            <button onclick="switchTab('finances')" class="tab-btn" data-tab="finances">Finanças</button>
+            <button onclick="switchTab('commitments_goals')" class="tab-btn" data-tab="commitments_goals">Objetivos</button>
+            <button onclick="switchTab('ai_analysis')" class="tab-btn" data-tab="ai_analysis">Análise IA</button>
           </div>
         </div>
       </nav>
@@ -7182,20 +9248,20 @@
           </div>
           <div class="mobile-nav-links">
             <button type="button" class="mobile-nav-link active" data-tab="dashboard" onclick="switchTab('dashboard')">
-              <span>📊 Dashboard</span>
+              <span>Dashboard</span>
               <small>Resumo geral</small>
             </button>
             <button type="button" class="mobile-nav-link" data-tab="finances" onclick="switchTab('finances')">
-              <span>💰 Finanças</span>
+              <span>Finanças</span>
               <small>Entradas e despesas</small>
             </button>
             <button type="button" class="mobile-nav-link" data-tab="commitments_goals" onclick="switchTab('commitments_goals')">
-              <span>📋 Divisões &amp; Objetivos</span>
+              <span>Objetivos</span>
               <small>Planejamento</small>
             </button>
             <button type="button" class="mobile-nav-link" data-tab="ai_analysis" onclick="switchTab('ai_analysis')">
-              <span>🤖 Análise da IA</span>
-              <small>Insights e chat</small>
+              <span>Análise IA</span>
+              <small>Leitura e assistente</small>
             </button>
           </div>
         </div>
@@ -7214,17 +9280,16 @@
         <div class="bottom-sheet-content">
           <div class="bottom-sheet-actions">
             <button onclick="switchTab('finances'); setFinanceView('expenses'); closeBottomSheet()"
-              class="bottom-sheet-action">📤 Nova Despesa</button>
+              class="bottom-sheet-action">Nova despesa</button>
             <button onclick="switchTab('finances'); setFinanceView('income'); closeBottomSheet()"
-              class="bottom-sheet-action">📥 Novo Ganho</button>
+              class="bottom-sheet-action">Novo ganho</button>
             <button onclick="switchTab('finances'); setFinanceView('income'); openModal('salary'); closeBottomSheet()"
-              class="bottom-sheet-action">💼 Novo Salário</button>
+              class="bottom-sheet-action">Novo salário</button>
             <button onclick="switchTab('finances'); setFinanceView('loans'); closeBottomSheet()"
-              class="bottom-sheet-action">🏦 Novo Empréstimo</button>
+              class="bottom-sheet-action">Novo empréstimo</button>
             <button onclick="switchTab('commitments_goals'); openModal('goal'); closeBottomSheet()"
-              class="bottom-sheet-action">🎯 Nova Meta</button>
-            <button onclick="switchTab('ai_analysis'); closeBottomSheet()" class="bottom-sheet-action">🤖 Análise da
-              IA</button>
+              class="bottom-sheet-action">Nova meta</button>
+            <button onclick="switchTab('ai_analysis'); closeBottomSheet()" class="bottom-sheet-action">Análise IA</button>
           </div>
         </div>
       </div>
@@ -7240,9 +9305,9 @@
               <div class="dash-hero" id="dash-hero-card">
                 <div class="dash-hero-content">
                   <div style="position:relative;z-index:1;">
-                    <p class="dash-hero-greeting">Olá, <span id="dash-hero-name">Usuário</span>! 👋</p>
+                    <p class="dash-hero-greeting">Olá, <span id="dash-hero-name">Usuário</span></p>
                         <p class="dash-hero-meta" id="dash-hero-date"></p>
-                        <p class="dash-hero-summary">Saldo total disponível</p>
+                        <p class="dash-hero-summary">Visão consolidada da família</p>
                     <p class="dash-hero-balance" id="dash-balance">R$ 0,00</p>
                     <p class="balance-prev-badge" id="dash-balance-prev-badge" style="margin-bottom:4px;"></p>
                     <div class="dash-hero-stats">
@@ -7363,10 +9428,10 @@
               <div class="tab-intro-inner">
                 <div class="tab-intro-copy">
                   <span class="tab-intro-badge">Gestão financeira</span>
-                  <h2 class="tab-intro-title">Entradas, despesas, contas e relatórios organizados como no Stitch.</h2>
+                  <h2 class="tab-intro-title">Entradas, despesas, contas e relatórios em uma operação única.</h2>
                   <p class="tab-intro-description">
-                    Formulários, histórico, contas bancárias e leitura de movimentações agora seguem a estrutura clara,
-                    espaçada e mais profissional da referência principal da área financeira.
+                    Registre movimentações, acompanhe históricos, gerencie contas bancárias e revise relatórios com uma
+                    leitura mais limpa e orientada à rotina financeira.
                   </p>
                 </div>
                 <div class="tab-intro-preview">
@@ -7380,11 +9445,11 @@
             </div>
 
             <div class="btn-grid-mobile stitch-finance-nav mt-4">
-              <button onclick="setFinanceView('income')" class="btn btn-secondary" data-view="income">📥 Entradas</button>
-              <button onclick="setFinanceView('expenses')" class="btn btn-secondary" data-view="expenses">📤 Despesas</button>
-              <button onclick="setFinanceView('accounts')" class="btn btn-secondary" data-view="accounts">🏦 Contas</button>
-              <button onclick="setFinanceView('loans')" class="btn btn-secondary" data-view="loans">💳 Empréstimos</button>
-              <button onclick="setFinanceView('report')" class="btn btn-secondary col-span-2" data-view="report">📊 Relatório</button>
+              <button onclick="setFinanceView('income')" class="btn btn-secondary" data-view="income">Entradas</button>
+              <button onclick="setFinanceView('expenses')" class="btn btn-secondary" data-view="expenses">Despesas</button>
+              <button onclick="setFinanceView('accounts')" class="btn btn-secondary" data-view="accounts">Contas</button>
+              <button onclick="setFinanceView('loans')" class="btn btn-secondary" data-view="loans">Empréstimos</button>
+              <button onclick="setFinanceView('report')" class="btn btn-secondary col-span-2" data-view="report">Relatórios</button>
             </div>
 
             <!-- Income View -->
@@ -7451,7 +9516,7 @@
               <div class="section">
                 <h2 class="section-title">➕ Nova Despesa</h2>
                 <div class="card stitch-form-card rounded-2xl p-6 space-y-4">
-                  <div class="stitch-form-title">Add New Expense</div>
+                  <div class="stitch-form-title">Nova despesa</div>
                   <!-- Botão de Scan IA para Despesa -->
                   <div
                     class="flex items-center justify-between p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-2">
@@ -7736,10 +9801,10 @@
               <div class="tab-intro-inner">
                 <div class="tab-intro-copy">
                   <span class="tab-intro-badge">Divisões &amp; Objetivos</span>
-                  <h2 class="tab-intro-title">Distribuição de renda e metas unificadas em uma única visão.</h2>
+                  <h2 class="tab-intro-title">Distribuição de renda e metas em uma única visão operacional.</h2>
                   <p class="tab-intro-description">
-                    Ajuste os percentuais com sliders, acompanhe os valores calculados e gerencie objetivos no mesmo fluxo,
-                    como na referência principal do Stitch.
+                    Ajuste percentuais, acompanhe valores calculados e conduza objetivos com contexto financeiro claro no
+                    mesmo fluxo.
                   </p>
                 </div>
                 <div class="tab-intro-preview">
@@ -7900,10 +9965,10 @@
               <div class="tab-intro-inner">
                 <div class="tab-intro-copy">
                   <span class="tab-intro-badge">IA financeira</span>
-                  <h2 class="tab-intro-title">Resumo inteligente e chat ancorados nas transações já salvas.</h2>
+                  <h2 class="tab-intro-title">Leitura financeira e assistente ancorados nas transações salvas.</h2>
                   <p class="tab-intro-description">
-                    O upload de extrato foi retirado desta área. Agora a IA consome apenas os dados estruturados do
-                    scanner único no dashboard.
+                    A IA opera apenas sobre os dados estruturados da família ativa, com histórico persistido e contexto
+                    real das movimentações registradas.
                   </p>
                 </div>
                 <div class="tab-intro-preview">
@@ -7919,8 +9984,8 @@
               <div class="stitch-panel-head">
                 <div>
                   <span class="stitch-panel-kicker">Inteligência financeira</span>
-                  <h2 class="stitch-panel-title">Resumo Inteligente e Chat Financeiro</h2>
-                  <p class="stitch-panel-subtitle">O extrato agora é importado no scanner único do Dashboard. A IA trabalha apenas sobre as transações já salvas e estruturadas no Firestore.</p>
+                  <h2 class="stitch-panel-title">Leitura financeira da família</h2>
+                  <p class="stitch-panel-subtitle">A análise usa exclusivamente as transações salvas da família ativa para produzir resumo, alertas e respostas contextualizadas.</p>
                 </div>
               </div>
 
@@ -7929,13 +9994,13 @@
                   <div class="stitch-panel stitch-smart-summary-panel">
                     <div class="stitch-panel-head">
                       <div>
-                        <span class="stitch-panel-kicker">Smart Summary</span>
-                        <h3 class="stitch-panel-title">Resumo Inteligente</h3>
+                        <span class="stitch-panel-kicker">Resumo financeiro</span>
+                        <h3 class="stitch-panel-title">Leitura rápida</h3>
                         <p class="stitch-panel-subtitle">Visão rápida de entradas, saídas, saldo, alertas e próximos passos da sua família.</p>
                       </div>
                     </div>
                     <div id="ai-insights-output" class="ai-analysis-output">
-                      <div class="analysis-rich-card text-slate-500 text-center p-6">Importe um extrato no Dashboard para atualizar este resumo automaticamente.</div>
+                      <div class="analysis-rich-card text-slate-500 text-center p-6">Gere uma análise para salvar um resumo financeiro persistido desta família.</div>
                     </div>
                   </div>
                 </div>
@@ -7948,9 +10013,9 @@
                   <div class="ai-chat-container">
                     <div class="stitch-panel-head" style="padding:20px 20px 0;">
                       <div>
-                        <span class="stitch-panel-kicker">Financial Chat</span>
-                    <h3 class="stitch-panel-title">Chat Financeiro</h3>
-                        <p class="stitch-panel-subtitle">Pergunte sobre gastos, transferências, categorias, bancos e comparações com base nas transações importadas.</p>
+                        <span class="stitch-panel-kicker">Assistente financeiro</span>
+                    <h3 class="stitch-panel-title">Perguntas e contexto</h3>
+                        <p class="stitch-panel-subtitle">Pergunte sobre gastos, transferências, categorias, bancos e comparações com base no histórico financeiro salvo.</p>
                       </div>
                     </div>
                     <div class="ai-chat-box" id="ai-chat-box">
@@ -7973,7 +10038,7 @@
                     <h3 class="stitch-panel-title">Minhas Assinaturas</h3>
                         <p class="stitch-panel-subtitle">Serviços recorrentes e impacto mensal reunidos na mesma leitura da IA.</p>
                       </div>
-                      <button onclick="openModal('subscription')" class="btn btn-primary px-4 py-2 text-sm">➕ Nova</button>
+                      <button onclick="openModal('subscription')" class="btn btn-primary px-4 py-2 text-sm">Nova assinatura</button>
                     </div>
 
                     <div class="stitch-subscriptions-unified">
@@ -7984,7 +10049,7 @@
                       <div class="card subscriptions-summary-card rounded-2xl p-5">
                         <div class="flex items-center justify-between mb-3">
                           <div>
-                            <p class="text-sm text-slate-400 font-semibold">Total Mensal em Assinaturas</p>
+                            <p class="text-sm text-slate-400 font-semibold">Custo mensal de assinaturas</p>
                             <p class="text-2xl font-extrabold text-white mt-1" id="subscriptions-total">R$ 0,00</p>
                           </div>
                           <span class="text-3xl">💳</span>
@@ -8460,15 +10525,429 @@
       }
     }
 
-    // Cache de dados para reduzir leituras
-    let transactionCache = {
-      salaries: [],
-      incomes: [],
-      expenses: [],
-      lastUpdate: 0
-    };
+    // Cache em memoria por familia/usuario para reduzir leituras redundantes no Firestore
+    const DATA_STORE_TTL_MS = 5 * 60 * 1000;
+    const appDataStore = new Map();
+    let transactionCache = [];
 
-    const CACHE_DURATION = 60000; // 60 segundos
+    function getStoreScopeKey() {
+      if (isGuestMode && guestDemoState?.family?.id) {
+        return `guest::${guestDemoState.family.id}`;
+      }
+
+      const familyKey = currentFamily || 'no-family';
+      const userKey = currentUser?.uid || 'anonymous';
+      return `${familyKey}::${userKey}`;
+    }
+
+    function getScopedStore() {
+      const scopeKey = getStoreScopeKey();
+      if (!appDataStore.has(scopeKey)) {
+        appDataStore.set(scopeKey, {});
+      }
+      return appDataStore.get(scopeKey);
+    }
+
+    function setStoreSlice(sliceName, data, options = {}) {
+      const store = getScopedStore();
+      const ttlMs = Number(options.ttlMs) > 0 ? Number(options.ttlMs) : DATA_STORE_TTL_MS;
+      store[sliceName] = {
+        data,
+        updatedAt: Date.now(),
+        ttlMs,
+        promise: null
+      };
+      return data;
+    }
+
+    function getStoreEntry(sliceName) {
+      const store = getScopedStore();
+      return store[sliceName] || null;
+    }
+
+    function isStoreEntryFresh(entry, ttlOverride) {
+      if (!entry || typeof entry.updatedAt !== 'number') return false;
+      const ttlMs = Number(ttlOverride) > 0 ? Number(ttlOverride) : Number(entry.ttlMs || DATA_STORE_TTL_MS);
+      return (Date.now() - entry.updatedAt) < ttlMs;
+    }
+
+    async function getOrLoadStoreSlice(sliceName, loader, options = {}) {
+      const store = getScopedStore();
+      const entry = store[sliceName];
+      if (!options.force && isStoreEntryFresh(entry, options.ttlMs)) {
+        return entry.data;
+      }
+
+      if (entry?.promise && !options.force) {
+        return entry.promise;
+      }
+
+      const promise = (async () => {
+        const data = await loader();
+        setStoreSlice(sliceName, data, options);
+        return data;
+      })();
+
+      store[sliceName] = {
+        data: entry?.data,
+        updatedAt: entry?.updatedAt || 0,
+        ttlMs: Number(options.ttlMs) > 0 ? Number(options.ttlMs) : DATA_STORE_TTL_MS,
+        promise
+      };
+
+      try {
+        return await promise;
+      } finally {
+        const currentEntry = store[sliceName];
+        if (currentEntry?.promise === promise) {
+          currentEntry.promise = null;
+        }
+      }
+    }
+
+    function invalidateStoreSlices(sliceNames = []) {
+      const store = getScopedStore();
+      sliceNames.forEach((sliceName) => {
+        delete store[sliceName];
+      });
+    }
+
+    function invalidateStoreSliceByPrefix(prefix) {
+      const store = getScopedStore();
+      Object.keys(store).forEach((sliceName) => {
+        if (sliceName.startsWith(prefix)) {
+          delete store[sliceName];
+        }
+      });
+    }
+
+    function clearAllScopedStoreData() {
+      appDataStore.delete(getStoreScopeKey());
+      transactionCache = [];
+    }
+
+    function toTransactionDoc(record) {
+      if (!record) return null;
+      const data = { ...record };
+      delete data.id;
+      return {
+        id: record.id,
+        data: () => data
+      };
+    }
+
+    function getTransactionsSliceName(type, options = {}) {
+      const parts = ['transactions', type || 'all'];
+      if (options.activeOnly) parts.push('active');
+      if (options.startDate || options.endDate) parts.push(options.startDate || 'start', options.endDate || 'end');
+      if (options.limit) parts.push(`limit-${options.limit}`);
+      if (options.isFamilyView) parts.push('family-view');
+      return parts.join('::');
+    }
+
+    function normalizeTransactionAmountByType(transaction) {
+      const amount = Number(transaction?.amount) || 0;
+      const type = transaction?.type;
+      if (type === 'expense') return -amount;
+      return amount;
+    }
+
+    function syncLegacyTransactionCacheFromSlices() {
+      const store = getScopedStore();
+      const combined = [];
+      ['salaries', 'incomeHistory', 'expenseHistory'].forEach((sliceName) => {
+        const entry = store[sliceName];
+        if (entry && Array.isArray(entry.data)) {
+          combined.push(...entry.data);
+        }
+      });
+
+      const unique = new Map();
+      combined.forEach((item) => {
+        if (item?.id) unique.set(item.id, item);
+      });
+      transactionCache = Array.from(unique.values());
+    }
+
+    async function queryTransactionsFromFirestore(options = {}) {
+      if (!currentFamily || !currentUser) return [];
+
+      let query = db.collection('transactions').where('familyId', '==', currentFamily);
+      if (!options.isFamilyView) {
+        query = query.where('userId', '==', currentUser.uid);
+      }
+      if (options.type) {
+        query = query.where('type', '==', options.type);
+      }
+      if (options.activeOnly) {
+        query = query.where('isActive', '==', true);
+      }
+      if (options.startDate) {
+        query = query.where('date', '>=', options.startDate);
+      }
+      if (options.endDate) {
+        query = query.where('date', '<=', options.endDate);
+      }
+      if (options.orderByDate !== false) {
+        query = query.orderBy('date', options.orderDirection || 'desc');
+      }
+      if (options.limit) {
+        query = query.limit(options.limit);
+      }
+
+      const snap = await query.get();
+      return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    }
+
+    async function getCachedTransactionsSlice(type, options = {}) {
+      const sliceName = getTransactionsSliceName(type, options);
+      const records = await getOrLoadStoreSlice(sliceName, async () => {
+        const items = await queryTransactionsFromFirestore({ ...options, type });
+        if (type === 'salary') {
+          setStoreSlice('salaries', items, options);
+        } else if (type === 'income' && !options.startDate && !options.endDate && options.limit === 50) {
+          setStoreSlice('incomeHistory', items, options);
+        } else if (type === 'expense' && !options.startDate && !options.endDate && options.limit === 50) {
+          setStoreSlice('expenseHistory', items, options);
+        }
+        syncLegacyTransactionCacheFromSlices();
+        return items;
+      }, options);
+
+      return records;
+    }
+
+    function getDashboardSliceName(period = dashboardPeriod, isFamilyView = (window.dashboardView === 'family')) {
+      return `dashboard::${isFamilyView ? 'family' : 'personal'}::${period}`;
+    }
+
+    function getReportSliceName(startDate, endDate, paymentFilter) {
+      return `report::${startDate || 'none'}::${endDate || 'none'}::${paymentFilter || 'todas'}`;
+    }
+
+    function getCurrentBalanceForAccount(account) {
+      if (!account) return 0;
+      if (Number.isFinite(Number(account.balance))) return Number(account.balance) || 0;
+      return Number(account.initialBalance || 0);
+    }
+
+    async function applyBankAccountBalanceDelta(bankAccountId, delta) {
+      if (!bankAccountId || !Number.isFinite(Number(delta)) || Number(delta) === 0) return;
+
+      const numericDelta = Number(delta);
+      const collectionsToUpdate = [];
+      try {
+        const primaryDoc = await db.collection('bankAccounts').doc(bankAccountId).get();
+        if (primaryDoc.exists) collectionsToUpdate.push('bankAccounts');
+      } catch (error) { }
+      try {
+        const legacyDoc = await db.collection('bank_accounts').doc(bankAccountId).get();
+        if (legacyDoc.exists) collectionsToUpdate.push('bank_accounts');
+      } catch (error) { }
+
+      const targets = collectionsToUpdate.length ? [...new Set(collectionsToUpdate)] : ['bankAccounts'];
+      await Promise.all(targets.map((collectionName) =>
+        db.collection(collectionName).doc(bankAccountId).set({
+          balance: firebase.firestore.FieldValue.increment(numericDelta),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true })
+      ));
+
+      const updatedAccounts = (bankAccountsCache || []).map((account) => {
+        if (account.id !== bankAccountId) return account;
+        return {
+          ...account,
+          balance: getCurrentBalanceForAccount(account) + numericDelta
+        };
+      });
+
+      bankAccountsCache = updatedAccounts;
+      setStoreSlice('bankAccounts', updatedAccounts);
+    }
+
+    async function getCachedBankAccounts(options = {}) {
+      if (isGuestMode && guestDemoState) {
+        bankAccountsCache = mergeBankAccounts(guestDemoState.bankAccounts);
+        return bankAccountsCache;
+      }
+
+      if (!currentFamily || !currentUser) return [];
+
+      const accounts = await getOrLoadStoreSlice('bankAccounts', async () => {
+        const [newCollectionSnap, legacySnap] = await Promise.all([
+          db.collection('bank_accounts')
+            .where('familyId', '==', currentFamily)
+            .get()
+            .catch(() => ({ docs: [] })),
+          db.collection('bankAccounts')
+            .where('familyId', '==', currentFamily)
+            .get()
+        ]);
+
+        const rawAccounts = [];
+        (newCollectionSnap.docs || []).forEach((doc) => rawAccounts.push({ id: doc.id, collectionName: 'bank_accounts', ...doc.data() }));
+        legacySnap.forEach((doc) => rawAccounts.push({ id: doc.id, collectionName: 'bankAccounts', ...doc.data() }));
+
+        const mergedAccounts = mergeBankAccounts(rawAccounts.filter((account) => {
+          if (account.active === false) return false;
+          return !account.userId || account.userId === currentUser.uid;
+        }));
+
+        const accountsMissingBalance = mergedAccounts.filter((account) => !Number.isFinite(Number(account.balance)));
+        if (!accountsMissingBalance.length) {
+          return mergedAccounts;
+        }
+
+        const transactions = await queryTransactionsFromFirestore({
+          orderByDate: false
+        });
+        const balanceByAccount = {};
+        transactions.forEach((transaction) => {
+          const accountId = getTransactionAccountId(transaction);
+          if (!accountId) return;
+          if (!balanceByAccount[accountId]) balanceByAccount[accountId] = 0;
+          balanceByAccount[accountId] += normalizeTransactionAmountByType(transaction);
+        });
+
+        const batch = db.batch();
+        const backfilledAccounts = mergedAccounts.map((account) => {
+          if (!accountsMissingBalance.find((item) => item.id === account.id)) return account;
+          const totalBalance = Number(account.initialBalance || 0) + Number(balanceByAccount[account.id] || 0);
+          const collectionNames = Array.isArray(account.collections) && account.collections.length
+            ? [...new Set(account.collections)]
+            : ['bankAccounts'];
+          collectionNames.forEach((collectionName) => {
+            batch.set(db.collection(collectionName).doc(account.id), {
+              balance: totalBalance,
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          });
+          return {
+            ...account,
+            balance: totalBalance
+          };
+        });
+
+        await batch.commit();
+        return backfilledAccounts;
+      }, options);
+
+      bankAccountsCache = accounts;
+      await updateAccountSelects();
+      return accounts;
+    }
+
+    async function getCachedInitialBalance(options = {}) {
+      if (!currentFamily || !currentUser) return 0;
+      return getOrLoadStoreSlice('initialBalance', async () => {
+        const key = `${currentFamily}_${currentUser.uid}`;
+        const snap = await db.collection('initialBalance').doc(key).get();
+        let balance = 0;
+        if (snap.exists) {
+          const data = snap.data();
+          balance = Number(data.balance || 0);
+          shouldPromptInitialBalance = false;
+        } else {
+          shouldPromptInitialBalance = true;
+        }
+
+        const info = document.getElementById('initial-balance-info');
+        if (info) {
+          info.textContent = snap.exists ? `Saldo inicial atual: ${formatCurrency(balance)}` : 'Nenhum saldo inicial configurado';
+        }
+        const inputEl = document.getElementById('global-initial-balance-input');
+        if (inputEl) inputEl.value = snap.exists ? balance : '';
+        const popupInput = document.getElementById('initial-balance-onboarding-input');
+        if (popupInput) popupInput.value = snap.exists ? balance : '';
+
+        return balance;
+      }, options);
+    }
+
+    async function getCachedDashboardData(options = {}) {
+      if (!currentFamily || !currentUser) {
+        return {
+          transactions: [],
+          totalIncome: 0,
+          totalExpenses: 0,
+          monthBalance: 0,
+          categoryTotals: {}
+        };
+      }
+
+      const isFamilyView = options.isFamilyView === true;
+      const period = options.period || dashboardPeriod;
+      const { startISO, endISO } = getPeriodLimits(period);
+      const sliceName = getDashboardSliceName(period, isFamilyView);
+
+      return getOrLoadStoreSlice(sliceName, async () => {
+        const transactions = await queryTransactionsFromFirestore({
+          startDate: startISO,
+          endDate: endISO,
+          isFamilyView,
+          orderByDate: true
+        });
+
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        const categoryTotals = {};
+
+        transactions.forEach((transaction) => {
+          const amount = Number(transaction.amount || 0);
+          if (transaction.type === 'income' || transaction.type === 'salary') {
+            totalIncome += amount;
+          } else if (transaction.type === 'expense') {
+            totalExpenses += amount;
+            const category = transaction.category || 'outros';
+            categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+          }
+        });
+
+        return {
+          transactions,
+          totalIncome,
+          totalExpenses,
+          monthBalance: totalIncome - totalExpenses,
+          categoryTotals,
+          startISO,
+          endISO
+        };
+      }, options);
+    }
+
+    async function getCachedGoals(options = {}) {
+      if (!currentFamily || !currentUser) return [];
+      return getOrLoadStoreSlice('goals', async () => {
+        const query = db.collection('goals')
+          .where('familyId', '==', currentFamily)
+          .where('userId', '==', currentUser.uid);
+        const snap = await query.get();
+        return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      }, options);
+    }
+
+    async function getCachedLoans(options = {}) {
+      if (!currentFamily || !currentUser) return [];
+      return getOrLoadStoreSlice('loans', async () => {
+        const snap = await db.collection('loans')
+          .where('familyId', '==', currentFamily)
+          .where('userId', '==', currentUser.uid)
+          .where('active', '==', true)
+          .get();
+        return snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      }, options);
+    }
+
+    async function getCachedSubscriptions(options = {}) {
+      if (!currentFamily) return [];
+      return getOrLoadStoreSlice('subscriptions', async () => {
+        const snapshot = await db.collection('families').doc(currentFamily)
+          .collection('subscriptions')
+          .orderBy('name', 'asc')
+          .get();
+        return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      }, options);
+    }
 
     // Commitment Labels (customizable names)
     let commitmentLabels = {
@@ -8556,8 +11035,8 @@
     function updatePlanBadge() {
       const badge = document.getElementById('plan-badge');
       if (!badge) return;
-      const labels = { basic: '🆓 Free', premium: '⭐ Premium', executive: '👑 Executivo' };
-      const colors = { basic: 'text-slate-400', premium: 'text-yellow-400', executive: 'text-purple-400' };
+      const labels = { basic: 'Plano Free', premium: 'Plano Premium', executive: 'Plano Executivo' };
+      const colors = { basic: 'text-slate-400', premium: 'text-amber-400', executive: 'text-emerald-400' };
       badge.textContent = labels[userPlan] || labels.basic;
       badge.className = `text-xs font-bold ${colors[userPlan] || colors.basic}`;
     }
@@ -8642,12 +11121,7 @@
       const activeTab = window._activePrimaryTab || 'dashboard';
 
       if (activeTab === 'finances') {
-        if (typeof loadSalariesList === 'function') await loadSalariesList();
-        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
-        if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
-        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
-        if (typeof loadLoans === 'function') await loadLoans();
-
+        await setFinanceView(currentFinanceView || 'income');
         const reportStart = document.getElementById('report-start')?.value;
         const reportEnd = document.getElementById('report-end')?.value;
         if (reportStart && reportEnd && typeof generateReport === 'function') {
@@ -9025,7 +11499,7 @@
               <!-- Plano Premium -->
               <div class="relative rounded-2xl p-5 border plan-card-premium ${requiredPlan === 'premium' ? 'border-yellow-400 border-2' : 'border-yellow-500/40'} ${requiredPlan && requiredPlan !== 'premium' ? 'opacity-60' : ''}" style="transform: ${requiredPlan === 'premium' ? 'scale(1.02)' : 'scale(1)'};">
                 ${requiredPlan === 'premium' ? '<div class="absolute -top-3 left-4 bg-yellow-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full shadow-lg z-10">REQUISITO</div>' : ''}
-                <h4 class="text-lg font-bold text-white mb-1">⭐ Premium</h4>
+              <h4 class="text-lg font-bold text-white mb-1">Plano Premium</h4>
                 <p class="text-2xl font-extrabold text-yellow-400 mb-3">R$ 9,90<span class="text-sm font-normal text-slate-400">/mês</span></p>
                 <ul class="space-y-2 text-sm text-slate-300">
                   <li>✅ Tudo do Básico</li>
@@ -9039,7 +11513,7 @@
               <!-- Plano Executivo -->
               <div class="relative rounded-2xl p-5 border plan-card-executive ${requiredPlan === 'executive' ? 'border-purple-400 border-2' : 'border-purple-500/40'} ${requiredPlan && requiredPlan !== 'executive' ? 'opacity-60' : ''}" style="transform: ${requiredPlan === 'executive' ? 'scale(1.02)' : 'scale(1)'};">
                 ${requiredPlan === 'executive' ? '<div class="absolute -top-3 left-4 bg-purple-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg z-10">REQUISITO PARA ESSA FUNÇÃO</div>' : '<div class="absolute -top-3 right-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">🔥 Mais Vendido</div>'}
-                <h4 class="text-lg font-bold text-white mb-1">👑 Executivo</h4>
+              <h4 class="text-lg font-bold text-white mb-1">Plano Executivo</h4>
                 <p class="text-2xl font-extrabold text-purple-400 mb-3">R$ 19,90<span class="text-sm font-normal text-slate-400">/mês</span></p>
                 <ul class="space-y-2 text-sm text-slate-300">
                   <li>✅ Tudo do Premium</li>
@@ -10096,7 +12570,7 @@
     }
 
     // UI Navigation: Finance View
-    function setFinanceView(view) {
+    async function setFinanceView(view) {
       currentFinanceView = view;
       document.querySelectorAll('.finance-content').forEach(el => el.classList.add('hidden'));
       const target = document.getElementById(`finance-${view}`);
@@ -10117,10 +12591,16 @@
         }
       }
 
-      if (view === 'income' && typeof loadSalariesList === 'function') loadSalariesList();
-      else if (view === 'expenses' && typeof loadExpenseHistory === 'function') loadExpenseHistory();
-      else if (view === 'loans' && typeof loadLoans === 'function') loadLoans();
-      else if (view === 'report') {
+      if (view === 'income') {
+        if (typeof loadSalariesList === 'function') await loadSalariesList();
+        if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
+      } else if (view === 'expenses' && typeof loadExpenseHistory === 'function') {
+        await loadExpenseHistory();
+      } else if (view === 'accounts' && typeof loadBankAccounts === 'function') {
+        await loadBankAccounts();
+      } else if (view === 'loans' && typeof loadLoans === 'function') {
+        await loadLoans();
+      } else if (view === 'report') {
         // Reset report display
         document.getElementById('report-content').innerHTML = '<p class="text-slate-400 text-center py-8">Selecione datas para gerar o relatório</p>';
         document.getElementById('report-start').value = '';
@@ -10129,35 +12609,16 @@
       }
     }
 
-    async function updateCategoryChart() {
+    async function updateCategoryChart(preloadedDashboardData = null) {
       if (!currentFamily || !currentUser) return;
       try {
-        const { startISO, endISO } = getPeriodLimits(dashboardPeriod);
         const isFamily = (window.dashboardView === 'family');
-
-        // Query simples - apenas por familyId (usa índice automático)
-        const snap = await db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .get();
-
-        const categoryTotals = {};
-        let total = 0;
-
-        snap.forEach(doc => {
-          const data = doc.data();
-
-          // Filtrar em código: type, userId, date
-          const isMatchingUser = isFamily || data.userId === currentUser.uid;
-          const isInPeriod = (data.date || '') >= startISO && (data.date || '') <= endISO;
-          const isExpense = data.type === 'expense';
-
-          if (!isMatchingUser || !isInPeriod || !isExpense) return;
-
-          const category = data.category || 'outros';
-          const amount = Number(data.amount) || 0;
-          categoryTotals[category] = (categoryTotals[category] || 0) + amount;
-          total += amount;
+        const dashboardData = preloadedDashboardData || await getCachedDashboardData({
+          period: dashboardPeriod,
+          isFamilyView: isFamily
         });
+        const categoryTotals = { ...(dashboardData.categoryTotals || {}) };
+        const total = Object.values(categoryTotals).reduce((sum, amount) => sum + (Number(amount) || 0), 0);
 
         const chartContainer = document.getElementById('category-chart');
         if (!chartContainer) return;
@@ -10237,6 +12698,27 @@
         console.error('Error updating category chart:', error);
       }
     }
+
+    async function renderActivePrimaryTab() {
+      const activeTab = normalizePrimaryTabName(window._activePrimaryTab || 'dashboard');
+      if (activeTab === 'finances') {
+        await setFinanceView(currentFinanceView || 'income');
+        return;
+      }
+      if (activeTab === 'commitments_goals') {
+        if (typeof loadGoalsList === 'function') await loadGoalsList();
+        if (typeof updateCommitmentValues === 'function') await updateCommitmentValues();
+        return;
+      }
+      if (activeTab === 'ai_analysis') {
+        if (typeof renderAIAnalysisFromCache === 'function') await renderAIAnalysisFromCache();
+        if (typeof renderSubscriptions === 'function') await renderSubscriptions();
+        return;
+      }
+      if (typeof updateDashboard === 'function') {
+        await updateDashboard();
+      }
+    }
     async function loadIncomeHistory() {
       if (isGuestMode && guestDemoState) {
         closeIncomeDivisionPopover();
@@ -10286,23 +12768,18 @@
       if (!currentFamily || !currentUser) return;
       try {
         closeIncomeDivisionPopover();
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'income')
-          .where('userId', '==', currentUser.uid)
-          .orderBy('date', 'desc')
-          .limit(50);
-        const snap = await query.get();
+        const items = await getCachedTransactionsSlice('income', {
+          limit: 50
+        });
         const container = document.getElementById('income-history');
         if (!container) return;
 
-        if (snap.empty) {
+        if (!items.length) {
           container.innerHTML = renderSurfaceEmptyState('Nenhuma entrada extra registrada', 'Ganhos manuais importados ou cadastrados aqui passam a aparecer neste histórico.');
           return;
         }
 
-        const itemsHtml = snap.docs.map(doc => {
-          const inc = doc.data();
+        const itemsHtml = items.map((inc) => {
           const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
           const investPercent = parseFloat(document.getElementById('commit-invest').value) || 20;
           const tithePercent = parseFloat(document.getElementById('commit-tithe').value) || 0;
@@ -10338,10 +12815,10 @@
                   ${renderMobileDataPoint('Status', '<span class="stitch-badge stitch-badge-success">Entrada</span>')}
                 </div>
                 <div class="stitch-mobile-card-actions">
-                  ${renderIncomeAllocationSummary(allocationItems, doc.id)}
+                  ${renderIncomeAllocationSummary(allocationItems, inc.id)}
                   <div class="stitch-row-actions">
-                    ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'income')`)}
-                    ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
+                    ${renderActionIconButton('✏️', `editTransaction('${inc.id}', 'income')`)}
+                    ${renderActionIconButton('🗑️', `deleteTransaction('${inc.id}')`, true)}
                   </div>
                 </div>
               </div>
@@ -10361,9 +12838,9 @@
               <td class="align-right stitch-value-positive">+${formatCurr(inc.amount)}</td>
               <td class="align-right">
                 <div class="stitch-row-actions">
-                  ${renderIncomeAllocationSummary(allocationItems, doc.id)}
-                  ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'income')`)}
-                  ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
+                  ${renderIncomeAllocationSummary(allocationItems, inc.id)}
+                  ${renderActionIconButton('✏️', `editTransaction('${inc.id}', 'income')`)}
+                  ${renderActionIconButton('🗑️', `deleteTransaction('${inc.id}')`, true)}
                 </div>
               </td>
             </tr>
@@ -10377,7 +12854,7 @@
                 <div class="stitch-table-card-title">Histórico de entradas extras</div>
                 <div class="stitch-table-card-subtitle">Lançamentos manuais e importados vinculados às suas contas bancárias.</div>
               </div>
-              <span class="stitch-badge stitch-badge-soft">${snap.size} itens</span>
+              <span class="stitch-badge stitch-badge-soft">${items.length} itens</span>
             </div>
             ${isMobileLayout() ? `
               <div class="stitch-mobile-list">${itemsHtml}</div>
@@ -10455,23 +12932,18 @@
 
       if (!currentFamily || !currentUser) return;
       try {
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'expense')
-          .where('userId', '==', currentUser.uid)
-          .orderBy('date', 'desc')
-          .limit(50);
-        const snap = await query.get();
+        const items = await getCachedTransactionsSlice('expense', {
+          limit: 50
+        });
         const container = document.getElementById('expense-history');
         if (!container) return;
 
-        if (snap.empty) {
+        if (!items.length) {
           container.innerHTML = renderSurfaceEmptyState('Nenhuma despesa registrada', 'As saídas vinculadas às suas contas aparecem aqui com categoria, forma de pagamento e valor.');
           return;
         }
 
-        const itemsHtml = snap.docs.map(doc => {
-          const exp = doc.data();
+        const itemsHtml = items.map((exp) => {
           const paymentDisplay = getPaymentMethodDisplay(exp.paymentMethod || 'dinheiro', exp.installments || 1);
           const account = findBankAccountInCache(getTransactionAccountId(exp));
           const bankLabel = account ? getBankAccountLabel(account) : getBankDisplayName(exp.bank || 'Banco não definido');
@@ -10492,10 +12964,10 @@
                   ${renderMobileDataPoint('Pagamento', `<span class="stitch-badge stitch-badge-info">${escapeHTML(paymentDisplay)}</span>`)}
                 </div>
                 <div class="stitch-mobile-card-actions">
-                  ${exp.photoBase64 ? renderActionIconButton('📸', `currentViewingPhotoDocId='${doc.id}'; viewExpensePhoto('${exp.photoBase64}')`) : '<span></span>'}
+                  ${exp.photoBase64 ? renderActionIconButton('📸', `currentViewingPhotoDocId='${exp.id}'; viewExpensePhoto('${exp.photoBase64}')`) : '<span></span>'}
                   <div class="stitch-row-actions">
-                    ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'expense')`)}
-                    ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
+                    ${renderActionIconButton('✏️', `editTransaction('${exp.id}', 'expense')`)}
+                    ${renderActionIconButton('🗑️', `deleteTransaction('${exp.id}')`, true)}
                   </div>
                 </div>
               </div>
@@ -10516,9 +12988,9 @@
               <td class="align-right stitch-value-negative">-${(typeof formatCurrency === 'function') ? formatCurrency(exp.amount) : 'R$ ' + exp.amount.toFixed(2)}</td>
               <td class="align-right">
                 <div class="stitch-row-actions">
-                  ${exp.photoBase64 ? renderActionIconButton('📸', `currentViewingPhotoDocId='${doc.id}'; viewExpensePhoto('${exp.photoBase64}')`) : ''}
-                  ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'expense')`)}
-                  ${renderActionIconButton('🗑️', `deleteTransaction('${doc.id}')`, true)}
+                  ${exp.photoBase64 ? renderActionIconButton('📸', `currentViewingPhotoDocId='${exp.id}'; viewExpensePhoto('${exp.photoBase64}')`) : ''}
+                  ${renderActionIconButton('✏️', `editTransaction('${exp.id}', 'expense')`)}
+                  ${renderActionIconButton('🗑️', `deleteTransaction('${exp.id}')`, true)}
                 </div>
               </td>
             </tr>
@@ -10532,7 +13004,7 @@
                 <div class="stitch-table-card-title">Histórico de despesas</div>
                 <div class="stitch-table-card-subtitle">Saídas com categoria, forma de pagamento e vínculo bancário.</div>
               </div>
-              <span class="stitch-badge stitch-badge-soft">${snap.size} itens</span>
+              <span class="stitch-badge stitch-badge-soft">${items.length} itens</span>
             </div>
             ${isMobileLayout() ? `
               <div class="stitch-mobile-list">${itemsHtml}</div>
@@ -10869,6 +13341,7 @@
 
     function normalizeBankAccountRecord(record) {
       const bank = normalizeBankNameLocal(record.bank);
+      const parsedBalance = Number(record.balance);
       return {
         id: record.id,
         familyId: record.familyId || currentFamily,
@@ -10877,6 +13350,8 @@
         bank,
         emoji: record.emoji || getBankDefaultEmoji(bank),
         initialBalance: Number(record.initialBalance || 0),
+        balance: Number.isFinite(parsedBalance) ? parsedBalance : null,
+        collections: record.collectionName ? [record.collectionName] : [],
         active: record.active !== false
       };
     }
@@ -10900,7 +13375,9 @@
           bank: record.bank && record.bank !== 'Banco não definido' ? record.bank : existing.bank,
           name: record.name && record.name !== 'Sem conta' ? record.name : existing.name,
           emoji: record.emoji && record.emoji !== '🏦' ? record.emoji : existing.emoji,
-          initialBalance: Number(record.initialBalance || existing.initialBalance || 0)
+          initialBalance: Number(record.initialBalance || existing.initialBalance || 0),
+          balance: Number.isFinite(Number(record.balance)) ? Number(record.balance) : existing.balance,
+          collections: Array.from(new Set([...(existing.collections || []), ...(record.collections || [])]))
         });
       });
 
@@ -12427,10 +14904,10 @@
         familyList.innerHTML = families.map(family => `
           <button onclick="selectFamily('${family.id}')" class="family-card group">
             <div class="flex items-center gap-3">
-              <span class="text-2xl">${family.isOwner ? '👑' : '👨‍👩‍👧‍👦'}</span>
+              <span class="family-card-mark">${family.isOwner ? 'Gestor' : 'Membro'}</span>
               <div class="text-left min-w-0">
                 <p class="family-card-title transition-colors truncate">${family.name}</p>
-                <p class="family-card-subtitle text-xs">${family.isOwner ? 'Você é o chefe' : 'Membro'}</p>
+                <p class="family-card-subtitle text-xs">${family.isOwner ? 'Acesso administrativo' : 'Acesso compartilhado'}</p>
               </div>
             </div>
             <svg class="family-card-arrow w-5 h-5 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -12713,34 +15190,14 @@
       if (!currentFamily || !currentUser) return;
       try {
         const isFamily = (window.dashboardView === 'family');
-        const { startISO, endISO } = getPeriodLimits(dashboardPeriod);
-
-        // Query simples - apenas por familyId (usa índice automático)
-        const allTransactionsSnap = await db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .get();
-
-        let totalIncome = 0, totalExpenses = 0;
-        const txList = [];
-
-        // Filtrar em código: type, userId, date
-        allTransactionsSnap.forEach(doc => {
-          const data = doc.data();
-          const isMatchingUser = isFamily || data.userId === currentUser.uid;
-          const isInPeriod = (data.date || '') >= startISO && (data.date || '') <= endISO;
-
-          if (!isMatchingUser || !isInPeriod) return;
-
-          if (data.type === 'income' || data.type === 'salary') {
-            totalIncome += Number(data.amount || 0);
-            txList.push({ ...data, id: doc.id });
-          } else if (data.type === 'expense') {
-            totalExpenses += Number(data.amount || 0);
-            txList.push({ ...data, id: doc.id });
-          }
+        const dashboardData = await getCachedDashboardData({
+          period: dashboardPeriod,
+          isFamilyView: isFamily
         });
-
-        const monthBalance = totalIncome - totalExpenses;
+        const totalIncome = Number(dashboardData.totalIncome || 0);
+        const totalExpenses = Number(dashboardData.totalExpenses || 0);
+        const txList = Array.isArray(dashboardData.transactions) ? dashboardData.transactions : [];
+        const monthBalance = Number(dashboardData.monthBalance || 0);
 
         // ========== SALDO ACUMULADO ==========
         // Buscar saldo do mês anterior salvo no Firestore
@@ -12756,17 +15213,6 @@
             if (prevBalanceDoc.exists) {
               prevMonthBalance = Number(prevBalanceDoc.data().balance) || 0;
             }
-            // Salvar saldo do mês atual para uso futuro
-            const currentYearMonth = now.toISOString().substring(0, 7);
-            await db.collection('monthlyBalance')
-              .doc(`${currentFamily}_${currentUser.uid}_${currentYearMonth}`)
-              .set({
-                familyId: currentFamily,
-                userId: currentUser.uid,
-                yearMonth: currentYearMonth,
-                balance: monthBalance,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-              });
           }
         } catch (e) {
           console.warn('Erro ao buscar/salvar saldo mensal:', e);
@@ -12775,20 +15221,15 @@
         // Buscar saldo inicial global
         let initialBalance = 0;
         try {
-          if (typeof loadInitialBalanceValue === 'function') {
-            initialBalance = await loadInitialBalanceValue();
-          }
+          initialBalance = await getCachedInitialBalance();
         } catch (e) { /* silencioso */ }
 
         // Buscar saldo das contas bancárias
         let accountsBalance = 0;
         try {
-          const bankAccountsSnap = await db.collection('bankAccounts')
-            .where('familyId', '==', currentFamily)
-            .where('userId', '==', currentUser.uid)
-            .get();
-          bankAccountsSnap.forEach(doc => {
-            accountsBalance += Number(doc.data().initialBalance || 0);
+          const bankAccounts = await getCachedBankAccounts();
+          bankAccounts.forEach((account) => {
+            accountsBalance += Number(account.initialBalance || 0);
           });
         } catch (e) { /* silencioso */ }
 
@@ -12902,7 +15343,7 @@
         }
 
         // Update category chart
-        if (typeof updateCategoryChart === 'function') await updateCategoryChart();
+        if (typeof updateCategoryChart === 'function') await updateCategoryChart(dashboardData);
 
         // Renderizar tabela de compromissos futuros
         if (typeof renderFutureCommitmentsTable === 'function') await renderFutureCommitmentsTable();
@@ -12916,16 +15357,7 @@
         applyGuestCommitmentsToUI();
         bankAccountsCache = mergeBankAccounts(guestDemoState.bankAccounts);
         await updateAccountSelects();
-        await updateDashboard();
-        await loadSalariesList();
-        await loadIncomeHistory();
-        await loadExpenseHistory();
-        await loadBankAccounts();
-        await loadLoans();
-        await loadGoalsList();
-        renderGuestReportPlaceholder();
-        await renderSubscriptions();
-        await renderAIAnalysisFromCache();
+        await renderActivePrimaryTab();
         return;
       }
 
@@ -12955,18 +15387,10 @@
         initializeAllCategoryDropdowns();
 
         await loadCommitmentLabels();
-
-        await loadSalariesList();
-        await loadIncomeHistory();
-        await loadExpenseHistory();
-        await loadGoalsList();
-
-        // Carregar contas bancárias, empréstimos e saldo inicial
-        if (typeof loadBankAccounts === 'function') await loadBankAccounts();
-        if (typeof loadLoans === 'function') await loadLoans();
-
-        await updateDashboard();
+        await getCachedBankAccounts({ force: true });
+        await getCachedInitialBalance({ force: true });
         await updateCommitmentValues();
+        await renderActivePrimaryTab();
         openInitialBalanceOnboarding();
       } catch (error) {
         console.error('Error loading family data:', error);
@@ -13014,20 +15438,7 @@
       syncMobileNavigationState(tabName);
       closeMobileNavigation();
 
-      if (tabName === 'finances') {
-        setFinanceView(currentFinanceView || 'income');
-        if (typeof loadSalariesList === 'function') loadSalariesList();
-        if (typeof loadIncomeHistory === 'function') loadIncomeHistory();
-        if (typeof loadExpenseHistory === 'function') loadExpenseHistory();
-      } else if (tabName === 'commitments_goals') {
-        if (typeof loadGoalsList === 'function') loadGoalsList();
-        if (typeof updateCommitmentValues === 'function') updateCommitmentValues();
-      } else if (tabName === 'dashboard') {
-        if (typeof updateDashboard === 'function') updateDashboard();
-      } else if (tabName === 'ai_analysis') {
-        if (typeof renderAIAnalysisFromCache === 'function') renderAIAnalysisFromCache();
-        if (typeof renderSubscriptions === 'function') renderSubscriptions();
-      }
+      renderActivePrimaryTab();
     }
 
     async function loadSalariesList() {
@@ -13075,20 +15486,17 @@
           return;
         }
 
-        const query = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'salary')
-          .where('userId', '==', currentUser.uid);
+        const salaries = await getCachedTransactionsSlice('salary', {
+          orderByDate: false
+        });
 
-        const snap = await query.get();
-        if (snap.empty) {
+        if (!salaries.length) {
           el.innerHTML = renderSurfaceEmptyState('Nenhum salário cadastrado', 'Cadastre salários fixos para alimentar as divisões e o resumo mensal.');
           return;
         }
 
         const html = [];
-        snap.forEach(doc => {
-          const s = doc.data();
+        salaries.forEach((s) => {
           const monthly = (typeof calculateMonthlySalary === 'function') ? calculateMonthlySalary(s.amount, s.frequency) : (Number(s.amount) || 0);
 
           const expensesPercent = parseFloat(document.getElementById('commit-expenses').value) || 70;
@@ -13112,8 +15520,8 @@
                   <p class="stitch-balance-card-sub">${escapeHTML(formatDisplayDate(s.startDate))} · ${escapeHTML(s.frequency || 'mensal')}</p>
                 </div>
                 <div class="stitch-row-actions">
-                  ${renderActionIconButton('✏️', `editTransaction('${doc.id}', 'salary')`)}
-                  ${renderActionIconButton('🗑️', `deleteSalaryItem('${doc.id}')`, true)}
+                  ${renderActionIconButton('✏️', `editTransaction('${s.id}', 'salary')`)}
+                  ${renderActionIconButton('🗑️', `deleteSalaryItem('${s.id}')`, true)}
                 </div>
               </div>
               <div class="value stitch-value-positive">${formatCurr(monthly)}</div>
@@ -13542,19 +15950,15 @@
       if (!currentFamily || !currentFamilyData) return;
 
       try {
-        const salariesQuery = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'salary')
-          .where('userId', '==', currentUser.uid)
-          .where('isActive', '==', true);
-
-        const salariesSnap = await salariesQuery.get();
+        const salaries = await getCachedTransactionsSlice('salary', {
+          activeOnly: true,
+          orderByDate: false
+        });
         let totalMonthlySalary = 0;
 
         const today = new Date().toISOString().split('T')[0];
 
-        salariesSnap.forEach(doc => {
-          const data = doc.data();
+        salaries.forEach((data) => {
           const startOk = data.startDate <= today;
           const endOk = !data.endDate || data.endDate >= today;
 
@@ -13564,16 +15968,12 @@
         });
 
         const currentMonth = today.substring(0, 7);
-        const incomeQuery = db.collection('transactions')
-          .where('familyId', '==', currentFamily)
-          .where('type', '==', 'income')
-          .where('userId', '==', currentUser.uid);
-
-        const incomeSnap = await incomeQuery.get();
+        const incomes = await getCachedTransactionsSlice('income', {
+          orderByDate: false
+        });
         let totalMonthlyIncome = 0;
 
-        incomeSnap.forEach(doc => {
-          const data = doc.data();
+        incomes.forEach((data) => {
           if (data.date && data.date.substring(0, 7) === currentMonth) {
             totalMonthlyIncome += Number(data.amount) || 0;
           }
@@ -14865,7 +17265,7 @@
         userPlan = plan;
         updatePlanBadge();
         closeModal();
-        showToast('✅', `Plano atualizado para ${plan === 'premium' ? '⭐ Premium' : '👑 Executivo'}!`);
+        showToast('✅', `Plano atualizado para ${plan === 'premium' ? 'Plano Premium' : 'Plano Executivo'}!`);
       } catch (error) {
         console.error('Erro ao atualizar plano:', error);
         showToast('❌', 'Erro ao atualizar plano');
@@ -15824,7 +18224,7 @@
           </div>
           <button type="button" class="stitch-ai-refresh-btn" onclick="fetchAIAnalysis()">${escapeHTML(refreshLabel)}</button>
         </div>
-        ${stale ? '<div class="stitch-ai-stale-alert">Há novos lançamentos. Clique em "Gerar nova análise" para atualizar o Smart Summary.</div>' : ''}
+        ${stale ? '<div class="stitch-ai-stale-alert">Há novos lançamentos. Gere uma nova análise para atualizar o resumo financeiro salvo.</div>' : ''}
       `;
     }
 
@@ -15840,7 +18240,7 @@
             stale
           })}
           <div class="analysis-rich-card text-slate-500 text-center p-6">
-            Nenhuma análise salva para esta família. Clique em "Gerar primeira análise" para criar o Smart Summary.
+            Nenhuma análise salva para esta família. Clique em "Gerar primeira análise" para criar o resumo financeiro.
           </div>
         </div>
       `;
@@ -16083,7 +18483,7 @@
           </div>
 
           <div class="stitch-smart-insights">
-            <h4 class="stitch-smart-insights-title">Smart Insights</h4>
+            <h4 class="stitch-smart-insights-title">Pontos de atenção</h4>
             <div class="stitch-smart-insights-list">
               ${insightItems.map((item) => `
                 <div class="stitch-smart-insight-item">
@@ -16097,11 +18497,11 @@
           ${narrative ? `
             <div class="stitch-smart-summary-actions">
               <button type="button" class="stitch-analysis-toggle-btn" onclick="toggleAIAnalysisDetails(this)">
-                Ver análise completa da IA
+                Ver análise detalhada
               </button>
             </div>
             <div class="stitch-analysis-details" data-ai-analysis-details="true">
-              <h4 class="stitch-analysis-details-title">Análise completa da IA</h4>
+              <h4 class="stitch-analysis-details-title">Análise detalhada da IA</h4>
               <div class="stitch-analysis-details-body">${escapeHTML(narrative)}</div>
             </div>
           ` : ''}
@@ -16117,7 +18517,7 @@
       if (!details || !button) return;
 
       const isOpen = details.classList.toggle('is-open');
-      button.textContent = isOpen ? 'Ocultar análise completa da IA' : 'Ver análise completa da IA';
+      button.textContent = isOpen ? 'Ocultar análise detalhada' : 'Ver análise detalhada';
     }
 
     function setAIChatLoading(isLoading) {
