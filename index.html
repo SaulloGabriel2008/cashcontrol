@@ -12848,21 +12848,14 @@
           button.innerHTML = '<span>⏳</span> Enviando...';
         }
 
-        await auth.sendPasswordResetEmail(email, {
-          url: getPasswordResetActionUrl(),
-          handleCodeInApp: true
-        });
+        await auth.sendPasswordResetEmail(email);
 
         passwordResetCooldownUntil = Date.now() + 30000;
-        messageEl.innerHTML = `✅ Enviamos um link de redefinição para <strong>${email}</strong>. Verifique sua caixa de entrada e spam. O link abrirá esta tela para você criar a nova senha.`;
+        messageEl.innerHTML = `✅ Enviamos um link de redefinição para <strong>${email}</strong>. Verifique sua caixa de entrada e spam. O link abrirá a tela segura de redefinição do Firebase para você criar a nova senha.`;
         messageEl.classList.remove('hidden');
         errorEl.classList.add('hidden');
 
         document.getElementById('reset-email').value = '';
-
-        setTimeout(() => {
-          showLogin();
-        }, 5000);
       } catch (error) {
         errorEl.textContent = getErrorMessage(error.code);
         errorEl.classList.remove('hidden');
