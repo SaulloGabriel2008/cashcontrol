@@ -13,6 +13,10 @@ export default async function handler(req, res) {
     const transactions = await fetchTransactionsForScope({
       uid: context.uid,
       familyId,
+      includeUserFilter: true,
+      startDate: req.query.startDate,
+      endDate: req.query.endDate,
+      orderByDate: true,
     });
     const filteredTransactions = filterTransactionsByQuery(transactions, req.query || {});
     const bankAccounts = await listFamilyBankAccounts(familyId, { uid: context.uid });

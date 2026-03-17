@@ -10887,17 +10887,24 @@
       if (!bankAccountId || !Number.isFinite(Number(delta)) || Number(delta) === 0) return;
 
       const numericDelta = Number(delta);
-      const collectionsToUpdate = [];
-      try {
-        const primaryDoc = await db.collection('bankAccounts').doc(bankAccountId).get();
-        if (primaryDoc.exists) collectionsToUpdate.push('bankAccounts');
-      } catch (error) { }
-      try {
-        const legacyDoc = await db.collection('bank_accounts').doc(bankAccountId).get();
-        if (legacyDoc.exists) collectionsToUpdate.push('bank_accounts');
-      } catch (error) { }
+      const cachedAccount = findBankAccountInCache(bankAccountId);
+      let targets = Array.isArray(cachedAccount?.collections) && cachedAccount.collections.length
+        ? [...new Set(cachedAccount.collections)]
+        : [];
 
-      const targets = collectionsToUpdate.length ? [...new Set(collectionsToUpdate)] : ['bankAccounts'];
+      if (!targets.length) {
+        const collectionsToUpdate = [];
+        try {
+          const primaryDoc = await db.collection('bankAccounts').doc(bankAccountId).get();
+          if (primaryDoc.exists) collectionsToUpdate.push('bankAccounts');
+        } catch (error) { }
+        try {
+          const legacyDoc = await db.collection('bank_accounts').doc(bankAccountId).get();
+          if (legacyDoc.exists) collectionsToUpdate.push('bank_accounts');
+        } catch (error) { }
+        targets = collectionsToUpdate.length ? [...new Set(collectionsToUpdate)] : ['bankAccounts'];
+      }
+
       await Promise.all(targets.map((collectionName) =>
         db.collection(collectionName).doc(bankAccountId).set({
           balance: firebase.firestore.FieldValue.increment(numericDelta),
@@ -11273,9 +11280,9 @@
       const activeTab = window._activePrimaryTab || 'dashboard';
 
       if (activeTab === 'finances') {
-        await setFinanceView(currentFinanceView || 'income');
         const reportStart = document.getElementById('report-start')?.value;
         const reportEnd = document.getElementById('report-end')?.value;
+        await setFinanceView(currentFinanceView || 'income');
         if (reportStart && reportEnd && typeof generateReport === 'function') {
           await generateReport();
         }
@@ -12427,6 +12434,8 @@
       } else {
         currentUser = null;
         userPlan = 'basic';
+        bankAccountsCache = [];
+        transactionCache = [];
         aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
         userUiPreferences = {
           dismissedTabIntros: {},
@@ -12556,6 +12565,7 @@
 
       currentFamily = null;
       currentFamilyData = null;
+      bankAccountsCache = [];
       customCategories = [];
       aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
       showFamilySelection();
@@ -15318,6 +15328,8 @@
 
     async function selectFamily(familyId) {
       currentFamily = familyId;
+      bankAccountsCache = [];
+      transactionCache = [];
       initialBalancePromptShownThisSession = false;
       shouldPromptInitialBalance = false;
       if (typeof renderDashboardScanFeedback === 'function') renderDashboardScanFeedback();
@@ -15696,10 +15708,13 @@
       if (!currentFamily || !currentFamilyData) return;
 
       try {
-        const commitDoc = await db.collection('finances')
-          .doc(`${currentFamily}_commitments_${currentUser.uid}`).get();
-        if (commitDoc.exists) {
-          const data = commitDoc.data();
+        const commitmentData = await getOrLoadStoreSlice('commitments', async () => {
+          const commitDoc = await db.collection('finances')
+            .doc(`${currentFamily}_commitments_${currentUser.uid}`).get();
+          return commitDoc.exists ? (commitDoc.data() || null) : null;
+        }, { force: true });
+        if (commitmentData) {
+          const data = commitmentData;
           document.getElementById('commit-expenses').value = data.expenses || 70;
           document.getElementById('commit-invest').value = data.invest || 20;
           document.getElementById('commit-tithe').value = data.tithe || 10;
@@ -16399,6 +16414,15 @@
         });
 
         showToast('✅', 'Divisão salva!');
+        setStoreSlice('commitments', {
+          familyId: currentFamily,
+          expenses,
+          invest,
+          tithe,
+          emergency,
+          userId: currentUser.uid
+        });
+        invalidateStoreSliceByPrefix('dashboard::');
         await updateCommitmentValues();
         if (typeof loadIncomeHistory === 'function') await loadIncomeHistory();
         if (typeof loadExpenseHistory === 'function') await loadExpenseHistory();
@@ -16966,6 +16990,7 @@
         closeModal();
         editingBankAccountId = null;
         showToast('✅', 'Conta atualizada!');
+        invalidateStoreSlices(['bankAccounts']);
         await loadBankAccounts();
         updateDashboard();
       } catch (error) {
@@ -17125,6 +17150,8 @@
           console.warn('Espelho opcional em bank_accounts falhou:', error);
         });
         showToast('✅', 'Conta removida');
+        invalidateStoreSlices(['bankAccounts']);
+        invalidateStoreSliceByPrefix('dashboard::');
         await loadBankAccounts();
         updateDashboard();
       } catch (error) {

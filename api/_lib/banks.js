@@ -176,6 +176,7 @@ async function createBankAccountForImport({ familyId, uid, bank }) {
     bank: canonicalBank,
     emoji: getDefaultBankEmoji(canonicalBank),
     initialBalance: 0,
+    balance: 0,
     active: true,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   };
@@ -362,6 +363,7 @@ export {
   createBankAccountForImport,
   filterTransactionsByQuery,
   findBankAccountById,
+  findBankAccountCollections,
   findFamilyBankAccountByBank,
   findUndefinedBankAccount,
   getDefaultBankEmoji,

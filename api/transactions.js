@@ -1,5 +1,5 @@
 import { admin, db, resolveFamilyId, verifyRequest } from "./_lib/firebase.js";
-import { findBankAccountById } from "./_lib/banks.js";
+import { findBankAccountById, findBankAccountCollections } from "./_lib/banks.js";
 import { cleanDescription, detectInstallment, inferCategory, inferBankByPatterns, normalizeDate } from "./_lib/importPipeline.js";
 
 function normalizeManualAmount(value) {
@@ -50,8 +50,11 @@ export default async function handler(req, res) {
     const bank = bankAccount.bank || body.bank || inferBankByPatterns(description);
     const docRef = db.collection("transactions").doc();
     const category = body.category || inferCategory(description);
+    const accountCollections = await findBankAccountCollections(bankAccountId);
+    const signedAmount = type === "income" ? amount : -amount;
+    const batch = db.batch();
 
-    await docRef.set({
+    batch.set(docRef, {
       id: docRef.id,
       familyId,
       userId: context.uid,
@@ -74,6 +77,23 @@ export default async function handler(req, res) {
       source: "manual",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    const collectionsToUpdate = accountCollections.length
+      ? [...new Set(accountCollections)]
+      : [bankAccount.collectionName || "bankAccounts"];
+
+    collectionsToUpdate.forEach((collectionName) => {
+      batch.set(
+        db.collection(collectionName).doc(bankAccountId),
+        {
+          balance: admin.firestore.FieldValue.increment(signedAmount),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    });
+
+    await batch.commit();
 
     return res.status(201).json({
       success: true,

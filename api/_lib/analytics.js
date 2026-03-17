@@ -19,6 +19,10 @@ function toNumber(value) {
   return Number.isFinite(amount) ? amount : 0;
 }
 
+function normalizeText(value) {
+  return String(value || "").trim();
+}
+
 function aggregateTransactions(transactions) {
   const totals = {
     totalIncome: 0,
@@ -166,10 +170,57 @@ function buildStructuredAnalysis(summary, narrative) {
   };
 }
 
-async function fetchTransactionsForScope({ uid, familyId }) {
-  const query = familyId
+async function fetchTransactionsForScope({
+  uid,
+  familyId,
+  includeUserFilter = false,
+  startDate = "",
+  endDate = "",
+  type = "",
+  paymentMethod = "",
+  orderByDate = false,
+  orderDirection = "desc",
+  limit = 0,
+  applyPaymentFilterToAllTypes = false,
+}) {
+  let query = familyId
     ? db.collection("transactions").where("familyId", "==", familyId)
     : db.collection("transactions").where("userId", "==", uid);
+
+  if (familyId && includeUserFilter && uid) {
+    query = query.where("userId", "==", uid);
+  }
+
+  const normalizedType = normalizeText(type);
+  if (normalizedType) {
+    query = query.where("type", "==", normalizedType);
+  }
+
+  const normalizedPaymentMethod = normalizeText(paymentMethod).toLowerCase();
+  if (
+    normalizedPaymentMethod &&
+    normalizedPaymentMethod !== "todas" &&
+    (normalizedType === "expense" || applyPaymentFilterToAllTypes)
+  ) {
+    query = query.where("paymentMethod", "==", normalizedPaymentMethod);
+  }
+
+  const normalizedStartDate = normalizeText(startDate);
+  const normalizedEndDate = normalizeText(endDate);
+  if (normalizedStartDate) {
+    query = query.where("date", ">=", normalizedStartDate);
+  }
+  if (normalizedEndDate) {
+    query = query.where("date", "<=", normalizedEndDate);
+  }
+
+  if (orderByDate || normalizedStartDate || normalizedEndDate) {
+    query = query.orderBy("date", orderDirection === "asc" ? "asc" : "desc");
+  }
+
+  if (Number(limit) > 0) {
+    query = query.limit(Number(limit));
+  }
 
   const snapshot = await query.get();
   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
