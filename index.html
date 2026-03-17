@@ -7293,6 +7293,30 @@
       box-shadow: none !important;
     }
 
+    select.input-field,
+    select.input-dark,
+    select,
+    #modal-content select,
+    .modal-content select {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-color: var(--cc-surface-2) !important;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none'><path d='M7 10l5 5 5-5' stroke='%238da2bd' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 14px center !important;
+      background-size: 16px 16px !important;
+      padding-right: 42px !important;
+    }
+
+    body[data-theme="light"] select.input-field,
+    body[data-theme="light"] select.input-dark,
+    body[data-theme="light"] select,
+    body[data-theme="light"] #modal-content select,
+    body[data-theme="light"] .modal-content select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none'><path d='M7 10l5 5 5-5' stroke='%236e8096' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+    }
+
     .btn-secondary:hover,
     .btn-outline:hover,
     .mobile-nav-link:hover,
@@ -7933,6 +7957,7 @@
       --cc-accent: var(--brand-accent);
       --cc-accent-2: var(--brand-accent-2);
       --cc-accent-soft: var(--brand-accent-soft);
+      --cc-active-text: #111827;
       --cc-success: var(--brand-success);
       --cc-danger: var(--brand-danger);
       --cc-warning: var(--brand-warning);
@@ -7993,6 +8018,7 @@
       --cc-accent: var(--brand-accent);
       --cc-accent-2: var(--brand-accent-2);
       --cc-accent-soft: var(--brand-accent-soft);
+      --cc-active-text: #1f2937;
       --cc-success: var(--brand-success);
       --cc-danger: var(--brand-danger);
       --cc-warning: var(--brand-warning);
@@ -8003,6 +8029,7 @@
 
     html {
       background: var(--cc-page-gradient) !important;
+      background-image: var(--cc-page-gradient) !important;
     }
 
     body,
@@ -8015,6 +8042,7 @@
 
     body {
       background: var(--cc-page-gradient) !important;
+      background-image: var(--cc-page-gradient) !important;
       color: var(--cc-text) !important;
       font-size: 15px !important;
       line-height: 1.55 !important;
@@ -8022,7 +8050,10 @@
     }
 
     body::before {
-      background: transparent !important;
+      content: none !important;
+      display: none !important;
+      background: none !important;
+      background-image: none !important;
     }
 
     .gradient-bg,
@@ -8030,11 +8061,13 @@
     #family-screen,
     #main-screen {
       background: transparent !important;
+      background-image: none !important;
     }
 
     #family-screen main,
     #main-screen main {
       background: transparent !important;
+      background-image: none !important;
       padding-top: 24px !important;
     }
 
@@ -8264,8 +8297,13 @@
     .mobile-nav-link.active {
       background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
       border-color: transparent !important;
-      color: #ffffff !important;
+      color: var(--cc-active-text) !important;
       box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18) !important;
+    }
+
+    .tab-btn.active *,
+    .mobile-nav-link.active * {
+      color: inherit !important;
     }
 
     .input-field,
@@ -8399,11 +8437,13 @@
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2)) !important;
+      background: var(--cc-card-gradient-soft) !important;
       color: #ffffff !important;
       font-weight: 800 !important;
       letter-spacing: -0.06em !important;
-      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.18) !important;
+      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.12) !important;
+      border: 1px solid var(--cc-line) !important;
+      overflow: hidden !important;
     }
 
     .login-logo {
@@ -8419,6 +8459,15 @@
       height: 46px !important;
       border-radius: 16px !important;
       font-size: 16px !important;
+    }
+
+    .login-logo img,
+    .header-brand-icon img {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+      object-fit: contain !important;
+      padding: 4px !important;
     }
 
     .preview-mini-grid {
@@ -9051,7 +9100,7 @@
 
         <div class="login-card card-glass auth-form-panel">
           <div class="login-header">
-            <div class="login-logo">CC</div>
+            <div class="login-logo"><img src="Navy Blue Finance App Logo (192 x 192 px).png" alt="Cash Control"></div>
             <h1 class="login-title">Cash Control</h1>
             <p class="login-subtitle">Operação financeira familiar com extratos, contas, metas e inteligência aplicada aos seus dados.</p>
           </div>
@@ -9166,7 +9215,7 @@
         <div class="container">
           <div class="header-left">
             <div class="header-brand">
-              <div class="header-brand-icon">CC</div>
+              <div class="header-brand-icon"><img src="Navy Blue Finance App Logo (192 x 192 px).png" alt="Cash Control"></div>
               <div>
                 <h1>Minhas Famílias</h1>
                 <p>Escolha o ambiente que deseja gerenciar</p>
@@ -9237,7 +9286,7 @@
           <div class="header-left">
             <button onclick="goToFamilySelection()" class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0">←</button>
             <div class="header-brand">
-              <div class="header-brand-icon">CC</div>
+              <div class="header-brand-icon"><img src="Navy Blue Finance App Logo (192 x 192 px).png" alt="Cash Control"></div>
               <div class="header-info">
                 <h1 id="current-family-name">Cash Control</h1>
                 <p id="current-user-name">Usuário</p>
@@ -9486,7 +9535,7 @@
               <button onclick="setFinanceView('expenses')" class="btn btn-secondary" data-view="expenses">Despesas</button>
               <button onclick="setFinanceView('accounts')" class="btn btn-secondary" data-view="accounts">Contas</button>
               <button onclick="setFinanceView('loans')" class="btn btn-secondary" data-view="loans">Empréstimos</button>
-              <button onclick="setFinanceView('report')" class="btn btn-secondary col-span-2" data-view="report">Relatórios</button>
+              <button onclick="setFinanceView('report')" class="btn btn-secondary" data-view="report">Relatórios</button>
             </div>
 
             <!-- Income View -->
