@@ -9124,6 +9124,8 @@
 
             <button onclick="handleLogin()" class="btn btn-primary w-full mb-3">Entrar</button>
 
+            <button type="button" onclick="handleGoogleLogin()" class="btn btn-outline w-full mb-3">Entrar com Google</button>
+
             <button type="button" onclick="showForgotPassword()" class="btn btn-outline w-full mb-3">Recuperar acesso</button>
 
             <button type="button" onclick="enterGuestMode()" class="btn btn-secondary w-full mb-3">Entrar como visitante</button>
@@ -10280,6 +10282,8 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     auth.languageCode = 'pt-BR';
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
 
     // App State
     let currentUser = null;
@@ -12645,6 +12649,61 @@
       }
     }
 
+    async function ensureUserProfileDocument(user, overrides = {}) {
+      if (!user) return false;
+
+      const docRef = db.collection('users').doc(user.uid);
+      const docSnap = await docRef.get();
+      const baseName = overrides.name || user.displayName || (user.email ? user.email.split('@')[0] : 'Usuário');
+      const baseEmail = overrides.email || user.email || '';
+      const baseUi = {
+        dismissedTabIntros: {},
+        theme: detectSystemTheme(),
+        themePromptSeen: false
+      };
+
+      const payload = {
+        name: baseName,
+        email: baseEmail,
+        ui: {
+          ...(docSnap.exists ? (docSnap.data()?.ui || {}) : {}),
+          ...baseUi,
+          ...(overrides.ui || {})
+        },
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      if (!docSnap.exists) {
+        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      }
+
+      await docRef.set(payload, { merge: true });
+      return true;
+    }
+
+    async function handleGoogleLogin() {
+      const errorEl = document.getElementById('login-error');
+
+      try {
+        if (errorEl) errorEl.classList.add('hidden');
+        const userCredential = await auth.signInWithPopup(googleProvider);
+        await ensureUserProfileDocument(userCredential.user);
+
+        const isValidUser = await validateUserCredentials(userCredential.user);
+        if (isValidUser) {
+          showToast('✅', 'Login com Google realizado com sucesso!');
+        } else {
+          showToast('⚠️', 'Login com Google concluído, mas houve um problema ao validar seu perfil.');
+        }
+      } catch (error) {
+        console.error('Erro no login com Google:', error);
+        if (errorEl) {
+          errorEl.textContent = getErrorMessage(error.code);
+          errorEl.classList.remove('hidden');
+        }
+      }
+    }
+
     // Validate user credentials after login
     async function validateUserCredentials(user) {
       try {
@@ -12749,16 +12808,9 @@
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         await userCredential.user.updateProfile({ displayName: name });
 
-        // Create user document
-        await db.collection('users').doc(userCredential.user.uid).set({
-          name: name,
-          email: email,
-          ui: {
-            dismissedTabIntros: {},
-            theme: detectSystemTheme(),
-            themePromptSeen: false
-          },
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        await ensureUserProfileDocument(userCredential.user, {
+          name,
+          email
         });
 
         showToast('✅', 'Conta criada com sucesso!');
@@ -15249,7 +15301,11 @@
         'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde',
         'auth/invalid-action-code': 'O link de recuperação é inválido ou já foi usado.',
         'auth/expired-action-code': 'O link de recuperação expirou. Solicite um novo email.',
-        'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.'
+        'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
+        'auth/popup-closed-by-user': 'A janela de login com Google foi fechada antes da conclusão.',
+        'auth/popup-blocked': 'O navegador bloqueou a janela do Google. Libere pop-ups e tente novamente.',
+        'auth/cancelled-popup-request': 'Já existe uma solicitação de login em andamento.',
+        'auth/account-exists-with-different-credential': 'Este email já está vinculado a outro método de acesso.'
       };
       return messages[code] || 'Erro ao processar. Tente novamente.';
     }
