@@ -1792,10 +1792,12 @@
 
     select.input-field,
     select.input-dark {
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%2310233e" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-      background-size: 20px;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #10233e 50%),
+        linear-gradient(135deg, #10233e 50%, transparent 50%);
+      background-repeat: no-repeat, no-repeat;
+      background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+      background-size: 7px 7px, 7px 7px;
       padding-right: 42px;
     }
 
@@ -3733,7 +3735,7 @@
     .stitch-total-track-fill {
       position: absolute;
       inset: 0 auto 0 0;
-      background: repeating-linear-gradient(135deg, #1495c4, #1495c4 10px, #39c872 10px, #39c872 20px);
+      background: linear-gradient(135deg, #1495c4 0%, #39c872 100%);
       transition: width 0.2s ease;
     }
 
@@ -6602,12 +6604,12 @@
 
     select.input-field,
     select.input-dark {
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%23a9bdd8" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') !important;
+      --select-caret-color: #a9bdd8;
     }
 
     body[data-theme="light"] select.input-field,
     body[data-theme="light"] select.input-dark {
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%235b708c" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') !important;
+      --select-caret-color: #5b708c;
     }
 
     .stitch-table thead th {
@@ -7302,11 +7304,20 @@
       -webkit-appearance: none !important;
       -moz-appearance: none !important;
       background-color: var(--cc-surface-2) !important;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none'><path d='M7 10l5 5 5-5' stroke='%238da2bd' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
-      background-repeat: no-repeat !important;
-      background-position: right 14px center !important;
-      background-size: 16px 16px !important;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--select-caret-color, #8da2bd) 50%),
+        linear-gradient(135deg, var(--select-caret-color, #8da2bd) 50%, transparent 50%) !important;
+      background-repeat: no-repeat, no-repeat !important;
+      background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px) !important;
+      background-size: 7px 7px, 7px 7px !important;
+      background-origin: border-box !important;
       padding-right: 42px !important;
+    }
+
+    select::-ms-expand,
+    #modal-content select::-ms-expand,
+    .modal-content select::-ms-expand {
+      display: none;
     }
 
     body[data-theme="light"] select.input-field,
@@ -7314,7 +7325,7 @@
     body[data-theme="light"] select,
     body[data-theme="light"] #modal-content select,
     body[data-theme="light"] .modal-content select {
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none'><path d='M7 10l5 5 5-5' stroke='%236e8096' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+      --select-caret-color: #6e8096 !important;
     }
 
     .btn-secondary:hover,
@@ -8231,6 +8242,26 @@
       gap: 8px !important;
     }
 
+    .header-meta {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      flex-wrap: wrap !important;
+      margin-top: 6px !important;
+      min-width: 0 !important;
+    }
+
+    .header-info p {
+      margin: 0 !important;
+    }
+
+    .header-actions {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      flex-shrink: 0 !important;
+    }
+
     .mobile-nav-sheet,
     .bottom-sheet,
     .mobile-nav-trigger {
@@ -8990,14 +9021,140 @@
       header.app-topbar .container,
       header.family-topbar .container {
         margin-top: 16px !important;
-        padding: 16px !important;
+        padding: 14px !important;
         border-radius: 20px !important;
+      }
+
+      .mobile-nav-trigger,
+      .mobile-nav-overlay,
+      .mobile-nav-drawer {
+        display: none !important;
+      }
+
+      body.mobile-nav-open {
+        overflow: auto !important;
+      }
+
+      header.app-topbar .container {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+
+      .header-left {
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr) !important;
+        align-items: center !important;
+        gap: 12px !important;
+        min-width: 0 !important;
+      }
+
+      .header-brand {
+        min-width: 0 !important;
+        gap: 10px !important;
+      }
+
+      .header-brand-icon {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 14px !important;
+      }
+
+      .header-info {
+        min-width: 0 !important;
+      }
+
+      .header-info h1 {
+        max-width: none !important;
+        font-size: 15px !important;
+        line-height: 1.08 !important;
+      }
+
+      .header-meta {
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        margin-top: 4px !important;
+      }
+
+      .header-info p {
+        display: block !important;
+        min-width: 0 !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+
+      #plan-badge {
+        display: inline-flex !important;
+        margin-top: 0 !important;
+        padding: 5px 9px !important;
+        font-size: 10px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+      }
+
+      .header-actions {
+        gap: 8px !important;
+      }
+
+      nav.app-tabs-nav {
+        display: block !important;
+        position: static !important;
+        top: auto !important;
+        margin-top: 10px !important;
+      }
+
+      nav.app-tabs-nav .container {
+        padding: 0 4px !important;
       }
 
       nav.app-tabs-nav .tabs {
         width: 100% !important;
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 10px !important;
+        margin-top: 0 !important;
+        padding: 6px !important;
+      }
+
+      nav.app-tabs-nav .tabs::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      .tab-btn {
+        flex: 0 0 auto !important;
+        min-width: max-content !important;
+        min-height: 42px !important;
+        padding: 0 16px !important;
+        white-space: nowrap !important;
+      }
+
+      .stitch-finance-nav {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        grid-template-columns: none !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 10px !important;
+        padding: 6px !important;
+        margin: 0 0 18px !important;
+      }
+
+      .stitch-finance-nav::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      .stitch-finance-nav .btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 132px !important;
+        padding: 0 16px !important;
       }
 
       .tab-btn,
@@ -9029,7 +9186,6 @@
       .auth-kpi-grid,
       .dash-hero-stats,
       .stitch-summary-cards,
-      .stitch-finance-nav,
       .stitch-subscriptions-unified,
       .stitch-subscription-grid,
       .family-grid {
@@ -9291,19 +9447,14 @@
               <div class="header-brand-icon"><img src="Navy Blue Finance App Logo (192 x 192 px).png" alt="Cash Control"></div>
               <div class="header-info">
                 <h1 id="current-family-name">Cash Control</h1>
-                <p id="current-user-name">Usuário</p>
-                <span id="plan-badge" class="text-xs font-bold text-slate-400">Plano Free</span>
+                <div class="header-meta">
+                  <p id="current-user-name">Usuário</p>
+                  <span id="plan-badge" class="text-xs font-bold text-slate-400">Plano Free</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="flex gap-2">
-            <button type="button" id="mobile-nav-trigger" onclick="toggleMobileNavigation()" class="mobile-nav-trigger" aria-label="Abrir navegação" aria-expanded="false">
-              <span class="mobile-nav-trigger-icon">☰</span>
-              <span class="mobile-nav-trigger-copy">
-                <span class="mobile-nav-trigger-label">Seção</span>
-                <span class="mobile-nav-trigger-current" id="mobile-nav-current">Dashboard</span>
-              </span>
-            </button>
+          <div class="header-actions">
             <button onclick="togglePrivacyMode()" id="privacy-toggle-btn"
               class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0" title="Alternar Visibilidade">👁️</button>
             <button onclick="openModal('settings')" class="btn btn-outline !w-11 !h-11 !p-0 flex-shrink-0"
@@ -16052,8 +16203,8 @@
       if (totalBarEl) {
         totalBarEl.style.width = `${clampedTotal}%`;
         totalBarEl.style.background = total === 100
-          ? 'repeating-linear-gradient(135deg, #1495c4, #1495c4 10px, #39c872 10px, #39c872 20px)'
-          : 'repeating-linear-gradient(135deg, #ef4444, #ef4444 10px, #f97316 10px, #f97316 20px)';
+          ? 'linear-gradient(135deg, #1495c4 0%, #39c872 100%)'
+          : 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)';
       }
     }
 
