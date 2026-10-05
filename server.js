@@ -11,11 +11,27 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (index.html, assets, etc.)
-app.use(express.static(__dirname));
+// Aumentar limites para acomodar uploads maiores em multipart
+// JSON reduzido (não precisamos de 20mb JSON mais)
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+
+// Servir apenas assets públicos esperados (whitelist mínima)
+// Evitar expor .env, arquivos de config, etc
+app.use(express.static(__dirname, {
+  index: ['index.html'],
+  // Bloquear acesso a arquivos sensíveis
+  dotfiles: 'deny',
+  // Negar acesso a padrões perigosos
+  ignore: [
+    '**/.*',
+    '**/node_modules/**',
+    '**/.*json',
+    '**/.env*',
+    '**/functions/**'
+  ]
+}));
 
 import analysisHandler from './api/analysis.js';
 import askPDFHandler from './api/askPDF.js';

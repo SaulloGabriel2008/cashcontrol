@@ -1,9 +1,9 @@
-﻿﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR" class="h-full scroll-smooth">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>Cash Control - Simplifique seu Controle Financeiro</title>
   <meta name="description" content="Gerencie seus ganhos e gastos de forma simples e intuitiva com o Cash Control. O controle financeiro online feito para quem busca praticidade no dia a dia.">
   <meta name="keywords" content="controle financeiro, gestão de gastos, finanças pessoais, organizar dinheiro, cash control online">
@@ -21,23 +21,9 @@
   <meta name="apple-mobile-web-app-title" content="Cash Control">
   <link rel="apple-touch-icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%2310b981' width='180' height='180'/><text x='90' y='110' font-size='90' font-weight='bold' fill='white' text-anchor='middle'>💰</text></svg>">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Scripts críticos de configuração apenas — sem bloqueio -->
   <script>
-    const pdfjsGlobal = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
-    if (pdfjsGlobal) {
-      pdfjsGlobal.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    } else {
-      console.error("pdf.js não pôde ser carregado corretamente via CDN.");
-    }
-  </script>
-  <script>
-    // Resolve API base URL for local and production environments.
+    // Resolve API base URL for local and production environments (executado ANTES dos scripts deferred)
     function getDefaultApiBase() {
       if (location.protocol === 'file:') return 'http://localhost:3000/api';
       return '/api';
@@ -56,6 +42,7 @@
       return window.API_BASE_URL;
     }
 
+    // Iniciar carregamento assincronamente sem bloquear
     async function loadApiConfig() {
       if (location.protocol === 'file:') {
         window.API_BASE_URL = getDefaultApiBase();
@@ -91,7 +78,7 @@
       --color-border: #475569;
       --color-text: #f1f5f9;
       --color-text-secondary: #cbd5e1;
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition: background-color, border-color, box-shadow, color, opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * {
@@ -122,10 +109,10 @@
 
     .card {
       background: rgba(30, 41, 59, 0.8);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
       border: 1px solid rgba(71, 85, 105, 0.2);
       border-radius: 16px;
-      transition: var(--transition);
+      transition: background-color, border-color, box-shadow 0.3s ease-out;
     }
 
     .card:hover {
@@ -135,7 +122,7 @@
 
     .card-glass {
       background: rgba(30, 41, 59, 0.8);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
       border: 1px solid rgba(71, 85, 105, 0.2);
       border-radius: 16px;
     }
@@ -151,7 +138,7 @@
       border-radius: 12px;
       border: none;
       cursor: pointer;
-      transition: var(--transition);
+      transition: background-color, color, box-shadow, transform 0.3s ease-out;
       gap: 8px;
       white-space: nowrap;
     }
@@ -207,7 +194,7 @@
       padding: 12px 16px;
       border-radius: 12px;
       font-size: 16px;
-      transition: var(--transition);
+      transition: border-color, box-shadow 0.2s ease-out;
       font-family: inherit;
     }
 
@@ -228,7 +215,7 @@
       padding: 12px 16px;
       border-radius: 12px;
       font-size: 16px;
-      transition: var(--transition);
+      transition: border-color, box-shadow 0.2s ease-out;
       font-family: inherit;
     }
 
@@ -296,12 +283,13 @@
 
     /* Header Melhorado */
     header {
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
       background: rgba(30, 41, 59, 0.85);
       border-bottom: 1px solid rgba(71, 85, 105, 0.1);
       position: sticky;
-      top: 0;
+      top: max(0px, env(safe-area-inset-top));
       z-index: 50;
+      --header-height: 56px;
     }
 
     header .container {
@@ -346,6 +334,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 150px;
     }
 
     .header-info p {
@@ -356,11 +345,11 @@
 
     /* Tabs Melhoradas */
     nav {
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
       background: rgba(30, 41, 59, 0.85);
       border-bottom: 1px solid rgba(71, 85, 105, 0.1);
       position: sticky;
-      top: 56px;
+      top: calc(var(--header-height) + max(0px, env(safe-area-inset-top)));
       z-index: 40;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -387,7 +376,7 @@
       background: transparent;
       color: #94a3b8;
       cursor: pointer;
-      transition: var(--transition);
+      transition: background-color, color 0.2s ease-out;
       white-space: nowrap;
       flex-shrink: 0;
     }
@@ -532,7 +521,7 @@
       border: 1px solid rgba(71, 85, 105, 0.2);
       border-radius: 12px;
       padding: 16px;
-      transition: var(--transition);
+      transition: background-color, border-color, box-shadow 0.2s ease-out;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -582,7 +571,7 @@
       color: #6366f1;
       cursor: pointer;
       font-size: 16px;
-      transition: var(--transition);
+      transition: background-color, color 0.2s ease-out;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -598,7 +587,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(2px);
       z-index: 50;
       display: none;
       align-items: center;
@@ -645,7 +634,7 @@
       color: #6366f1;
       cursor: pointer;
       font-size: 20px;
-      transition: var(--transition);
+      transition: background-color, color 0.2s ease-out;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -779,6 +768,10 @@
         padding-bottom: 100px;
       }
 
+      header {
+        --header-height: auto;
+      }
+
       header .container {
         padding: 12px 12px;
         gap: 8px;
@@ -794,11 +787,12 @@
         width: 32px;
         height: 32px;
         font-size: 16px;
+        flex-shrink: 0;
       }
 
       .header-info h1 {
         font-size: 14px;
-        max-width: 120px;
+        max-width: 160px;
       }
 
       .header-info p {
@@ -806,7 +800,7 @@
       }
 
       nav {
-        top: 50px;
+        top: calc(var(--header-height, auto) + max(0px, env(safe-area-inset-top)));
       }
 
       nav .tabs {
@@ -840,7 +834,7 @@
       }
 
       .btn {
-        min-height: 40px;
+        min-height: 44px;
         padding: 10px 14px;
         font-size: 13px;
         gap: 6px;
@@ -937,51 +931,51 @@
         }
 
         .dash-hero-stats {
-          grid-template-columns: 1fr !important;
-          gap: 12px !important;
+          grid-template-columns: 1fr;
+          gap: 12px;
         }
 
         .dash-hero-stat {
-          text-align: left !important;
-          padding: 10px !important;
-          background: rgba(255, 255, 255, 0.05) !important;
-          border-radius: 12px !important;
+          text-align: left;
+          padding: 10px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
         }
       }
 
       /* Compact Commitment Cards */
       .commitment-row {
-        flex-direction: row !important;
-        align-items: center !important;
-        padding: 12px 16px !important;
+        flex-direction: row;
+        align-items: center;
+        padding: 12px 16px;
       }
 
       .commitment-row .text-3xl {
-        font-size: 24px !important;
+        font-size: 24px;
       }
 
       .commitment-row input {
-        padding: 6px 10px !important;
-        font-size: 14px !important;
+        padding: 6px 10px;
+        font-size: 14px;
         max-width: 80px;
         text-align: right;
       }
 
       .btn-grid-mobile {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
       }
 
       .btn-grid-mobile .col-span-2 {
-        grid-column: span 2 !important;
+        grid-column: span 2;
       }
 
       .btn-grid-mobile .btn {
-        width: 100% !important;
-        font-size: 12px !important;
-        padding: 8px !important;
-        min-height: 38px !important;
+        width: 100%;
+        font-size: 12px;
+        padding: 8px;
+        min-height: 38px;
       }
 
       @media (max-width: 500px) {
@@ -9201,6 +9195,191 @@
         max-width: none !important;
       }
     }
+
+    /* ===== MOBILE FIRST (override final) ===== */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    img, video, canvas, svg {
+      max-width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      /* Evita zoom automático do iOS ao focar campos */
+      input, select, textarea, .input-field {
+        font-size: 16px !important;
+        min-height: 46px;
+      }
+
+      textarea.input-field {
+        min-height: 88px;
+      }
+
+      .btn, button.tab-btn, .bottom-sheet-action, .modal-close {
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      /* Espaço para a barra inferior */
+      #main-screen {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+      }
+
+      .container {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+      }
+
+      /* Header compacto, fixo no topo */
+      header.app-topbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 40 !important;
+        padding-top: env(safe-area-inset-top);
+      }
+
+      header.app-topbar .container {
+        margin-top: 8px !important;
+        padding: 10px 12px !important;
+        border-radius: 16px !important;
+      }
+
+      .header-brand-icon {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 12px !important;
+      }
+
+      /* Abas viram barra de navegação inferior */
+      nav.app-tabs-nav {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
+        margin: 0 !important;
+        z-index: 55 !important;
+        padding-bottom: env(safe-area-inset-bottom);
+        background: var(--cc-card, rgba(15, 23, 42, 0.96));
+        border-top: 1px solid var(--cc-line, rgba(71, 85, 105, 0.4));
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.25);
+      }
+
+      nav.app-tabs-nav .container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+
+      nav.app-tabs-nav .tabs {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        overflow: visible !important;
+        gap: 2px !important;
+        padding: 6px !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+      }
+
+      nav.app-tabs-nav .tab-btn {
+        min-width: 0 !important;
+        width: 100% !important;
+        min-height: 48px !important;
+        padding: 0 4px !important;
+        font-size: 12px !important;
+        line-height: 1.15 !important;
+        white-space: normal !important;
+        border-radius: 12px !important;
+      }
+
+      /* FAB acima da barra inferior */
+      .fab {
+        bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+        right: 14px !important;
+        width: 54px !important;
+        height: 54px !important;
+        z-index: 56 !important;
+      }
+
+      /* Modais como bottom sheet de tela cheia */
+      .modal-overlay {
+        padding: 0 !important;
+        align-items: flex-end !important;
+      }
+
+      .modal-content {
+        max-width: none !important;
+        width: 100% !important;
+        max-height: 94dvh !important;
+        border-radius: 22px 22px 0 0 !important;
+        padding: 20px 16px calc(20px + env(safe-area-inset-bottom)) !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+      }
+
+      .bottom-sheet {
+        z-index: 70 !important;
+        max-height: 85dvh !important;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .bottom-sheet-overlay {
+        z-index: 65 !important;
+      }
+
+      /* Tabelas rolam na horizontal em vez de quebrar o layout */
+      .stitch-table-card, .table-wrap, .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      table {
+        max-width: 100%;
+      }
+
+      .section, .section-surface, .stitch-panel, .stitch-unified-section,
+      .stitch-table-card, .dash-hero, .scanner-feature-card {
+        padding: 16px !important;
+        border-radius: 18px !important;
+      }
+
+      h2, .section-title {
+        font-size: 1.15rem !important;
+      }
+
+      .stitch-finance-nav .btn {
+        min-width: 112px !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      nav.app-tabs-nav .tab-btn {
+        font-size: 11px !important;
+      }
+
+      .dash-hero-balance {
+        font-size: 2rem !important;
+      }
+    }
+
+    @media (max-width: 768px) and (orientation: landscape) {
+      .modal-content {
+        max-height: 100dvh !important;
+      }
+    }
   </style>
 </head>
 
@@ -12734,10 +12913,16 @@
       return true;
     }
 
-    function showFamilySelection() {
+    async function showFamilySelection() {
       if (isGuestMode) {
         showMainApp();
         return;
+      }
+      if (!skipAutoFamilyOpen && getLastFamilyId()) {
+        // Evita piscar a tela de login enquanto tenta abrir a última família
+        document.getElementById('login-screen').classList.add('hidden');
+        const opened = await tryAutoOpenLastFamily();
+        if (opened) return;
       }
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('family-screen').classList.remove('hidden');
@@ -12772,6 +12957,7 @@
       bankAccountsCache = [];
       customCategories = [];
       aiAnalysisCacheState = { familyId: null, analyses: [], activeAnalysisId: null, stale: false };
+      skipAutoFamilyOpen = true;
       showFamilySelection();
     }
 
@@ -13084,6 +13270,7 @@
     }
 
     function handleLogout() {
+      skipAutoFamilyOpen = false;
       auth.signOut();
       showToast('👋', 'Até logo!');
     }
@@ -15575,7 +15762,8 @@
       }
     }
 
-    async function selectFamily(familyId) {
+    async function selectFamily(familyId, options = {}) {
+      const silent = options.silent === true;
       currentFamily = familyId;
       bankAccountsCache = [];
       transactionCache = [];
@@ -15592,12 +15780,48 @@
 
           await loadFamilySettings(familyId);
 
+          saveLastFamilyId(familyId);
           showMainApp();
+          return true;
         }
+        currentFamily = null;
+        clearLastFamilyId();
+        return false;
       } catch (error) {
-        showToast('❌', 'Erro ao selecionar família');
+        currentFamily = null;
+        currentFamilyData = null;
+        if (!silent) showToast('❌', 'Erro ao selecionar família');
         console.error('Error selecting family:', error);
+        return false;
       }
+    }
+
+    // Persistência da última família selecionada (por usuário)
+    const LAST_FAMILY_STORAGE_PREFIX = 'cashcontrol_lastFamily_';
+    let skipAutoFamilyOpen = false;
+
+    function saveLastFamilyId(familyId) {
+      try {
+        if (currentUser && familyId) localStorage.setItem(LAST_FAMILY_STORAGE_PREFIX + currentUser.uid, familyId);
+      } catch (e) { /* storage indisponível */ }
+    }
+
+    function getLastFamilyId() {
+      try {
+        return currentUser ? localStorage.getItem(LAST_FAMILY_STORAGE_PREFIX + currentUser.uid) : null;
+      } catch (e) { return null; }
+    }
+
+    function clearLastFamilyId() {
+      try {
+        if (currentUser) localStorage.removeItem(LAST_FAMILY_STORAGE_PREFIX + currentUser.uid);
+      } catch (e) { /* ignore */ }
+    }
+
+    async function tryAutoOpenLastFamily() {
+      const lastFamilyId = getLastFamilyId();
+      if (!lastFamilyId || skipAutoFamilyOpen) return false;
+      return await selectFamily(lastFamilyId, { silent: true });
     }
 
     async function loadFamilySettings(familyId) {
@@ -19300,6 +19524,60 @@
       </div>
     </div>
   </div>
+
+  <!-- Script de layout dinâmico: atualizar header height para nav positioning -->
+  <script>
+    function updateHeaderHeight() {
+      const header = document.querySelector('header');
+      if (header) {
+        const height = header.offsetHeight + 'px';
+        document.documentElement.style.setProperty('--header-height', height);
+      }
+    }
+
+    // Executar ao carregar e ao redimensionar
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateHeaderHeight);
+    } else {
+      updateHeaderHeight();
+    }
+    
+    // Recalcular ao redimensionar (orientação, resize)
+    window.addEventListener('resize', updateHeaderHeight);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateHeaderHeight, 100);
+    });
+  </script>
+
+  <!-- Scripts carregados defer — não bloqueiam parsing/paint -->
+  <!-- Tailwind deve ser o primeiro pois fornece utilidades CSS -->
+  <script defer src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Firebase - dependência crítica para auth -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+  
+  <!-- Element SDK (Elemento.ai) -->
+  <script defer src="/_sdk/element_sdk.js"></script>
+  
+  <!-- PDF.js para parsing de documentos -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script defer>
+    // Configurar PDF.js worker quando pdf.min.js terminar de carregar
+    window.addEventListener('load', function() {
+      const pdfjsGlobal = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+      if (pdfjsGlobal) {
+        pdfjsGlobal.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      } else {
+        console.warn('pdf.js library não está disponível');
+      }
+    });
+  </script>
+  
+  <!-- App logic (carregado por último) -->
+  <script defer src="/app.js"></script>
 
 </body>
 
